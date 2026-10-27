@@ -2,6 +2,12 @@
 
 Current prototype: [LCC110 + AD8400ARZ50](sony-interface.md). User approved trying SOIC-8 hand soldering, with practice first. No new purchases reported. Listings researched 2026-10-27; advertised identity/package are not proof of authenticity or actual shipped contents. Prices, live stock and delivery were not verified. Some product pages failed to load; chip links are indexed candidates, not confirmed offers.
 
+## Price correction
+
+The user reports the Amazon AD8400 listing costs about $20; it is not recommended at that price. On 2026-10-27, the retrieved [DigiKey exact-part page](https://www.digikey.com/en/products/detail/analog-devices-inc/AD8400ARZ50/997982) lists **$5.56 for one**, with 649 in stock. This is the component price, not a delivered quote: shipping, tax and any tariff remain unpriced. The user prefers Amazon; DigiKey is recorded as a cost comparison/alternative, not a purchase decision. Combining supporting parts into one distributor order may reduce shipping overhead, but total cost must be checked.
+
+Analog Devices now labels the [AD8400 product](https://www.analog.com/en/products/ad8400.html) Last Time Buy; DigiKey lists a last-time-buy date of 2027-07-29. It remains a prototype candidate, but lifecycle is a reason to avoid expensive marketplace stock. Do not silently substitute a cheaper MCP41xx chip without revisiting its control interface.
+
 ## Pot, adapter and practice
 
 | Item | Qty needed | Amazon US candidate | Verification / selection |
