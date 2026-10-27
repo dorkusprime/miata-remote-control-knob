@@ -37,11 +37,14 @@ Initial functional diagnostic complete: USB/I2C, rotation, button, RGB, and repe
 - [x] Included steering-remote adapter is on hand: Input 1, Input 2, ST Remote GND (user observation recorded 2026-10-27).
 - [ ] Confirm adapter model and which remote input to use; verify plug-contact mapping if needed.
 - [ ] Measure remote voltage and test passive resistor commands/learning.
-- [ ] Select circuit and resistor values.
+- [x] Select PhotoMOS ladder prototype and exact resistor values; document schematic, BOM, pad layout, and meter checks (2026-10-26 client local date).
+- [ ] Assemble and measure receiver-disconnected breadboard prototype; record LED current and all five resistance outputs.
 - [x] Choose a small soldered protoboard near the Sony for interface construction (user decision, 2026-10-27).
-- [ ] After circuit validation, lay out the protoboard and select its size, connectors, insulation, and mounting.
+- [x] Draft no-cut ElectroCookie Mini placement and six-wire control/two-wire Sony pinouts.
+- [ ] Dry-fit actual components and finish insulation/mounting before permanent assembly.
 - [ ] Validate reset defaults and powered-off behavior.
-- [ ] Finalize remote harness and connector pinout.
+- [x] Define prototype harness/contact numbers; old mux pin allocation superseded.
+- [ ] Validate connector mating orientation, cable lengths, and strain relief on hardware.
 - [ ] Enable hardware outputs only after interface validation.
 
 ## Camera and installation

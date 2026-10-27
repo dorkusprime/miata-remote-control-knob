@@ -1,0 +1,378 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1070" height="800" viewBox="0 0 1070 800">
+<title>ElectroCookie Mini resistor-interface placement: top view</title>
+<style>text{font-family:Arial,sans-serif;fill:#172033} .small{font-size:12px} .wire{fill:none;stroke-width:2.4;stroke-linejoin:round}</style>
+<rect width="1070" height="800" fill="white"/>
+<text x="25" y="30" text-anchor="start" style="font-size:23px">ElectroCookie Mini - TOP VIEW</text>
+<text x="25" y="53" text-anchor="start" style="font-size:13px;fill:#a33">38.1 x 50.8mm; no board cuts. Verify strip continuity on your actual board first.</text>
+<rect x="9" y="65" width="457" height="610" rx="20" fill="#f3f7fb" stroke="#637187"/>
+<path class="wire" stroke="#c4d1df" d="M70.0,126.0 L191.92000000000002,126.0"/>
+<path class="wire" stroke="#c4d1df" d="M283.36,126.0 L405.28,126.0"/>
+<circle cx="70.0" cy="126.0" r="4" fill="#a5b3c3"/>
+<circle cx="100.48" cy="126.0" r="4" fill="#a5b3c3"/>
+<circle cx="130.96" cy="126.0" r="4" fill="#a5b3c3"/>
+<circle cx="161.44" cy="126.0" r="4" fill="#a5b3c3"/>
+<circle cx="191.92000000000002" cy="126.0" r="4" fill="#a5b3c3"/>
+<circle cx="283.36" cy="126.0" r="4" fill="#a5b3c3"/>
+<circle cx="313.84" cy="126.0" r="4" fill="#a5b3c3"/>
+<circle cx="344.32" cy="126.0" r="4" fill="#a5b3c3"/>
+<circle cx="374.8" cy="126.0" r="4" fill="#a5b3c3"/>
+<circle cx="405.28" cy="126.0" r="4" fill="#a5b3c3"/>
+<text x="32" y="130.0" text-anchor="start" style="font-size:11px">1</text>
+<path class="wire" stroke="#c4d1df" d="M70.0,156.48 L191.92000000000002,156.48"/>
+<path class="wire" stroke="#c4d1df" d="M283.36,156.48 L405.28,156.48"/>
+<circle cx="70.0" cy="156.48" r="4" fill="#a5b3c3"/>
+<circle cx="100.48" cy="156.48" r="4" fill="#a5b3c3"/>
+<circle cx="130.96" cy="156.48" r="4" fill="#a5b3c3"/>
+<circle cx="161.44" cy="156.48" r="4" fill="#a5b3c3"/>
+<circle cx="191.92000000000002" cy="156.48" r="4" fill="#a5b3c3"/>
+<circle cx="283.36" cy="156.48" r="4" fill="#a5b3c3"/>
+<circle cx="313.84" cy="156.48" r="4" fill="#a5b3c3"/>
+<circle cx="344.32" cy="156.48" r="4" fill="#a5b3c3"/>
+<circle cx="374.8" cy="156.48" r="4" fill="#a5b3c3"/>
+<circle cx="405.28" cy="156.48" r="4" fill="#a5b3c3"/>
+<text x="32" y="160.48" text-anchor="start" style="font-size:11px">2</text>
+<path class="wire" stroke="#c4d1df" d="M70.0,186.96 L191.92000000000002,186.96"/>
+<path class="wire" stroke="#c4d1df" d="M283.36,186.96 L405.28,186.96"/>
+<circle cx="70.0" cy="186.96" r="4" fill="#a5b3c3"/>
+<circle cx="100.48" cy="186.96" r="4" fill="#a5b3c3"/>
+<circle cx="130.96" cy="186.96" r="4" fill="#a5b3c3"/>
+<circle cx="161.44" cy="186.96" r="4" fill="#a5b3c3"/>
+<circle cx="191.92000000000002" cy="186.96" r="4" fill="#a5b3c3"/>
+<circle cx="283.36" cy="186.96" r="4" fill="#a5b3c3"/>
+<circle cx="313.84" cy="186.96" r="4" fill="#a5b3c3"/>
+<circle cx="344.32" cy="186.96" r="4" fill="#a5b3c3"/>
+<circle cx="374.8" cy="186.96" r="4" fill="#a5b3c3"/>
+<circle cx="405.28" cy="186.96" r="4" fill="#a5b3c3"/>
+<text x="32" y="190.96" text-anchor="start" style="font-size:11px">3</text>
+<path class="wire" stroke="#c4d1df" d="M70.0,217.44 L191.92000000000002,217.44"/>
+<path class="wire" stroke="#c4d1df" d="M283.36,217.44 L405.28,217.44"/>
+<circle cx="70.0" cy="217.44" r="4" fill="#a5b3c3"/>
+<circle cx="100.48" cy="217.44" r="4" fill="#a5b3c3"/>
+<circle cx="130.96" cy="217.44" r="4" fill="#a5b3c3"/>
+<circle cx="161.44" cy="217.44" r="4" fill="#a5b3c3"/>
+<circle cx="191.92000000000002" cy="217.44" r="4" fill="#a5b3c3"/>
+<circle cx="283.36" cy="217.44" r="4" fill="#a5b3c3"/>
+<circle cx="313.84" cy="217.44" r="4" fill="#a5b3c3"/>
+<circle cx="344.32" cy="217.44" r="4" fill="#a5b3c3"/>
+<circle cx="374.8" cy="217.44" r="4" fill="#a5b3c3"/>
+<circle cx="405.28" cy="217.44" r="4" fill="#a5b3c3"/>
+<text x="32" y="221.44" text-anchor="start" style="font-size:11px">4</text>
+<path class="wire" stroke="#c4d1df" d="M70.0,247.92000000000002 L191.92000000000002,247.92000000000002"/>
+<path class="wire" stroke="#c4d1df" d="M283.36,247.92000000000002 L405.28,247.92000000000002"/>
+<circle cx="70.0" cy="247.92000000000002" r="4" fill="#a5b3c3"/>
+<circle cx="100.48" cy="247.92000000000002" r="4" fill="#a5b3c3"/>
+<circle cx="130.96" cy="247.92000000000002" r="4" fill="#a5b3c3"/>
+<circle cx="161.44" cy="247.92000000000002" r="4" fill="#a5b3c3"/>
+<circle cx="191.92000000000002" cy="247.92000000000002" r="4" fill="#a5b3c3"/>
+<circle cx="283.36" cy="247.92000000000002" r="4" fill="#a5b3c3"/>
+<circle cx="313.84" cy="247.92000000000002" r="4" fill="#a5b3c3"/>
+<circle cx="344.32" cy="247.92000000000002" r="4" fill="#a5b3c3"/>
+<circle cx="374.8" cy="247.92000000000002" r="4" fill="#a5b3c3"/>
+<circle cx="405.28" cy="247.92000000000002" r="4" fill="#a5b3c3"/>
+<text x="32" y="251.92000000000002" text-anchor="start" style="font-size:11px">5</text>
+<path class="wire" stroke="#c4d1df" d="M70.0,278.4 L191.92000000000002,278.4"/>
+<path class="wire" stroke="#c4d1df" d="M283.36,278.4 L405.28,278.4"/>
+<circle cx="70.0" cy="278.4" r="4" fill="#a5b3c3"/>
+<circle cx="100.48" cy="278.4" r="4" fill="#a5b3c3"/>
+<circle cx="130.96" cy="278.4" r="4" fill="#a5b3c3"/>
+<circle cx="161.44" cy="278.4" r="4" fill="#a5b3c3"/>
+<circle cx="191.92000000000002" cy="278.4" r="4" fill="#a5b3c3"/>
+<circle cx="283.36" cy="278.4" r="4" fill="#a5b3c3"/>
+<circle cx="313.84" cy="278.4" r="4" fill="#a5b3c3"/>
+<circle cx="344.32" cy="278.4" r="4" fill="#a5b3c3"/>
+<circle cx="374.8" cy="278.4" r="4" fill="#a5b3c3"/>
+<circle cx="405.28" cy="278.4" r="4" fill="#a5b3c3"/>
+<text x="32" y="282.4" text-anchor="start" style="font-size:11px">6</text>
+<path class="wire" stroke="#c4d1df" d="M70.0,308.88 L191.92000000000002,308.88"/>
+<path class="wire" stroke="#c4d1df" d="M283.36,308.88 L405.28,308.88"/>
+<circle cx="70.0" cy="308.88" r="4" fill="#a5b3c3"/>
+<circle cx="100.48" cy="308.88" r="4" fill="#a5b3c3"/>
+<circle cx="130.96" cy="308.88" r="4" fill="#a5b3c3"/>
+<circle cx="161.44" cy="308.88" r="4" fill="#a5b3c3"/>
+<circle cx="191.92000000000002" cy="308.88" r="4" fill="#a5b3c3"/>
+<circle cx="283.36" cy="308.88" r="4" fill="#a5b3c3"/>
+<circle cx="313.84" cy="308.88" r="4" fill="#a5b3c3"/>
+<circle cx="344.32" cy="308.88" r="4" fill="#a5b3c3"/>
+<circle cx="374.8" cy="308.88" r="4" fill="#a5b3c3"/>
+<circle cx="405.28" cy="308.88" r="4" fill="#a5b3c3"/>
+<text x="32" y="312.88" text-anchor="start" style="font-size:11px">7</text>
+<path class="wire" stroke="#c4d1df" d="M70.0,339.36 L191.92000000000002,339.36"/>
+<path class="wire" stroke="#c4d1df" d="M283.36,339.36 L405.28,339.36"/>
+<circle cx="70.0" cy="339.36" r="4" fill="#a5b3c3"/>
+<circle cx="100.48" cy="339.36" r="4" fill="#a5b3c3"/>
+<circle cx="130.96" cy="339.36" r="4" fill="#a5b3c3"/>
+<circle cx="161.44" cy="339.36" r="4" fill="#a5b3c3"/>
+<circle cx="191.92000000000002" cy="339.36" r="4" fill="#a5b3c3"/>
+<circle cx="283.36" cy="339.36" r="4" fill="#a5b3c3"/>
+<circle cx="313.84" cy="339.36" r="4" fill="#a5b3c3"/>
+<circle cx="344.32" cy="339.36" r="4" fill="#a5b3c3"/>
+<circle cx="374.8" cy="339.36" r="4" fill="#a5b3c3"/>
+<circle cx="405.28" cy="339.36" r="4" fill="#a5b3c3"/>
+<text x="32" y="343.36" text-anchor="start" style="font-size:11px">8</text>
+<path class="wire" stroke="#c4d1df" d="M70.0,369.84000000000003 L191.92000000000002,369.84000000000003"/>
+<path class="wire" stroke="#c4d1df" d="M283.36,369.84000000000003 L405.28,369.84000000000003"/>
+<circle cx="70.0" cy="369.84000000000003" r="4" fill="#a5b3c3"/>
+<circle cx="100.48" cy="369.84000000000003" r="4" fill="#a5b3c3"/>
+<circle cx="130.96" cy="369.84000000000003" r="4" fill="#a5b3c3"/>
+<circle cx="161.44" cy="369.84000000000003" r="4" fill="#a5b3c3"/>
+<circle cx="191.92000000000002" cy="369.84000000000003" r="4" fill="#a5b3c3"/>
+<circle cx="283.36" cy="369.84000000000003" r="4" fill="#a5b3c3"/>
+<circle cx="313.84" cy="369.84000000000003" r="4" fill="#a5b3c3"/>
+<circle cx="344.32" cy="369.84000000000003" r="4" fill="#a5b3c3"/>
+<circle cx="374.8" cy="369.84000000000003" r="4" fill="#a5b3c3"/>
+<circle cx="405.28" cy="369.84000000000003" r="4" fill="#a5b3c3"/>
+<text x="32" y="373.84000000000003" text-anchor="start" style="font-size:11px">9</text>
+<path class="wire" stroke="#c4d1df" d="M70.0,400.32 L191.92000000000002,400.32"/>
+<path class="wire" stroke="#c4d1df" d="M283.36,400.32 L405.28,400.32"/>
+<circle cx="70.0" cy="400.32" r="4" fill="#a5b3c3"/>
+<circle cx="100.48" cy="400.32" r="4" fill="#a5b3c3"/>
+<circle cx="130.96" cy="400.32" r="4" fill="#a5b3c3"/>
+<circle cx="161.44" cy="400.32" r="4" fill="#a5b3c3"/>
+<circle cx="191.92000000000002" cy="400.32" r="4" fill="#a5b3c3"/>
+<circle cx="283.36" cy="400.32" r="4" fill="#a5b3c3"/>
+<circle cx="313.84" cy="400.32" r="4" fill="#a5b3c3"/>
+<circle cx="344.32" cy="400.32" r="4" fill="#a5b3c3"/>
+<circle cx="374.8" cy="400.32" r="4" fill="#a5b3c3"/>
+<circle cx="405.28" cy="400.32" r="4" fill="#a5b3c3"/>
+<text x="32" y="404.32" text-anchor="start" style="font-size:11px">10</text>
+<path class="wire" stroke="#c4d1df" d="M70.0,430.8 L191.92000000000002,430.8"/>
+<path class="wire" stroke="#c4d1df" d="M283.36,430.8 L405.28,430.8"/>
+<circle cx="70.0" cy="430.8" r="4" fill="#a5b3c3"/>
+<circle cx="100.48" cy="430.8" r="4" fill="#a5b3c3"/>
+<circle cx="130.96" cy="430.8" r="4" fill="#a5b3c3"/>
+<circle cx="161.44" cy="430.8" r="4" fill="#a5b3c3"/>
+<circle cx="191.92000000000002" cy="430.8" r="4" fill="#a5b3c3"/>
+<circle cx="283.36" cy="430.8" r="4" fill="#a5b3c3"/>
+<circle cx="313.84" cy="430.8" r="4" fill="#a5b3c3"/>
+<circle cx="344.32" cy="430.8" r="4" fill="#a5b3c3"/>
+<circle cx="374.8" cy="430.8" r="4" fill="#a5b3c3"/>
+<circle cx="405.28" cy="430.8" r="4" fill="#a5b3c3"/>
+<text x="32" y="434.8" text-anchor="start" style="font-size:11px">11</text>
+<path class="wire" stroke="#c4d1df" d="M70.0,461.28000000000003 L191.92000000000002,461.28000000000003"/>
+<path class="wire" stroke="#c4d1df" d="M283.36,461.28000000000003 L405.28,461.28000000000003"/>
+<circle cx="70.0" cy="461.28000000000003" r="4" fill="#a5b3c3"/>
+<circle cx="100.48" cy="461.28000000000003" r="4" fill="#a5b3c3"/>
+<circle cx="130.96" cy="461.28000000000003" r="4" fill="#a5b3c3"/>
+<circle cx="161.44" cy="461.28000000000003" r="4" fill="#a5b3c3"/>
+<circle cx="191.92000000000002" cy="461.28000000000003" r="4" fill="#a5b3c3"/>
+<circle cx="283.36" cy="461.28000000000003" r="4" fill="#a5b3c3"/>
+<circle cx="313.84" cy="461.28000000000003" r="4" fill="#a5b3c3"/>
+<circle cx="344.32" cy="461.28000000000003" r="4" fill="#a5b3c3"/>
+<circle cx="374.8" cy="461.28000000000003" r="4" fill="#a5b3c3"/>
+<circle cx="405.28" cy="461.28000000000003" r="4" fill="#a5b3c3"/>
+<text x="32" y="465.28000000000003" text-anchor="start" style="font-size:11px">12</text>
+<path class="wire" stroke="#c4d1df" d="M70.0,491.76 L191.92000000000002,491.76"/>
+<path class="wire" stroke="#c4d1df" d="M283.36,491.76 L405.28,491.76"/>
+<circle cx="70.0" cy="491.76" r="4" fill="#a5b3c3"/>
+<circle cx="100.48" cy="491.76" r="4" fill="#a5b3c3"/>
+<circle cx="130.96" cy="491.76" r="4" fill="#a5b3c3"/>
+<circle cx="161.44" cy="491.76" r="4" fill="#a5b3c3"/>
+<circle cx="191.92000000000002" cy="491.76" r="4" fill="#a5b3c3"/>
+<circle cx="283.36" cy="491.76" r="4" fill="#a5b3c3"/>
+<circle cx="313.84" cy="491.76" r="4" fill="#a5b3c3"/>
+<circle cx="344.32" cy="491.76" r="4" fill="#a5b3c3"/>
+<circle cx="374.8" cy="491.76" r="4" fill="#a5b3c3"/>
+<circle cx="405.28" cy="491.76" r="4" fill="#a5b3c3"/>
+<text x="32" y="495.76" text-anchor="start" style="font-size:11px">13</text>
+<path class="wire" stroke="#c4d1df" d="M70.0,522.24 L191.92000000000002,522.24"/>
+<path class="wire" stroke="#c4d1df" d="M283.36,522.24 L405.28,522.24"/>
+<circle cx="70.0" cy="522.24" r="4" fill="#a5b3c3"/>
+<circle cx="100.48" cy="522.24" r="4" fill="#a5b3c3"/>
+<circle cx="130.96" cy="522.24" r="4" fill="#a5b3c3"/>
+<circle cx="161.44" cy="522.24" r="4" fill="#a5b3c3"/>
+<circle cx="191.92000000000002" cy="522.24" r="4" fill="#a5b3c3"/>
+<circle cx="283.36" cy="522.24" r="4" fill="#a5b3c3"/>
+<circle cx="313.84" cy="522.24" r="4" fill="#a5b3c3"/>
+<circle cx="344.32" cy="522.24" r="4" fill="#a5b3c3"/>
+<circle cx="374.8" cy="522.24" r="4" fill="#a5b3c3"/>
+<circle cx="405.28" cy="522.24" r="4" fill="#a5b3c3"/>
+<text x="32" y="526.24" text-anchor="start" style="font-size:11px">14</text>
+<path class="wire" stroke="#c4d1df" d="M70.0,552.72 L191.92000000000002,552.72"/>
+<path class="wire" stroke="#c4d1df" d="M283.36,552.72 L405.28,552.72"/>
+<circle cx="70.0" cy="552.72" r="4" fill="#a5b3c3"/>
+<circle cx="100.48" cy="552.72" r="4" fill="#a5b3c3"/>
+<circle cx="130.96" cy="552.72" r="4" fill="#a5b3c3"/>
+<circle cx="161.44" cy="552.72" r="4" fill="#a5b3c3"/>
+<circle cx="191.92000000000002" cy="552.72" r="4" fill="#a5b3c3"/>
+<circle cx="283.36" cy="552.72" r="4" fill="#a5b3c3"/>
+<circle cx="313.84" cy="552.72" r="4" fill="#a5b3c3"/>
+<circle cx="344.32" cy="552.72" r="4" fill="#a5b3c3"/>
+<circle cx="374.8" cy="552.72" r="4" fill="#a5b3c3"/>
+<circle cx="405.28" cy="552.72" r="4" fill="#a5b3c3"/>
+<text x="32" y="556.72" text-anchor="start" style="font-size:11px">15</text>
+<path class="wire" stroke="#c4d1df" d="M70.0,583.2 L191.92000000000002,583.2"/>
+<path class="wire" stroke="#c4d1df" d="M283.36,583.2 L405.28,583.2"/>
+<circle cx="70.0" cy="583.2" r="4" fill="#a5b3c3"/>
+<circle cx="100.48" cy="583.2" r="4" fill="#a5b3c3"/>
+<circle cx="130.96" cy="583.2" r="4" fill="#a5b3c3"/>
+<circle cx="161.44" cy="583.2" r="4" fill="#a5b3c3"/>
+<circle cx="191.92000000000002" cy="583.2" r="4" fill="#a5b3c3"/>
+<circle cx="283.36" cy="583.2" r="4" fill="#a5b3c3"/>
+<circle cx="313.84" cy="583.2" r="4" fill="#a5b3c3"/>
+<circle cx="344.32" cy="583.2" r="4" fill="#a5b3c3"/>
+<circle cx="374.8" cy="583.2" r="4" fill="#a5b3c3"/>
+<circle cx="405.28" cy="583.2" r="4" fill="#a5b3c3"/>
+<text x="32" y="587.2" text-anchor="start" style="font-size:11px">16</text>
+<path class="wire" stroke="#c4d1df" d="M70.0,613.6800000000001 L191.92000000000002,613.6800000000001"/>
+<path class="wire" stroke="#c4d1df" d="M283.36,613.6800000000001 L405.28,613.6800000000001"/>
+<circle cx="70.0" cy="613.6800000000001" r="4" fill="#a5b3c3"/>
+<circle cx="100.48" cy="613.6800000000001" r="4" fill="#a5b3c3"/>
+<circle cx="130.96" cy="613.6800000000001" r="4" fill="#a5b3c3"/>
+<circle cx="161.44" cy="613.6800000000001" r="4" fill="#a5b3c3"/>
+<circle cx="191.92000000000002" cy="613.6800000000001" r="4" fill="#a5b3c3"/>
+<circle cx="283.36" cy="613.6800000000001" r="4" fill="#a5b3c3"/>
+<circle cx="313.84" cy="613.6800000000001" r="4" fill="#a5b3c3"/>
+<circle cx="344.32" cy="613.6800000000001" r="4" fill="#a5b3c3"/>
+<circle cx="374.8" cy="613.6800000000001" r="4" fill="#a5b3c3"/>
+<circle cx="405.28" cy="613.6800000000001" r="4" fill="#a5b3c3"/>
+<text x="32" y="617.6800000000001" text-anchor="start" style="font-size:11px">17</text>
+<text x="70.0" y="110" text-anchor="middle" style="font-size:11px">A</text>
+<text x="100.48" y="110" text-anchor="middle" style="font-size:11px">B</text>
+<text x="130.96" y="110" text-anchor="middle" style="font-size:11px">C</text>
+<text x="161.44" y="110" text-anchor="middle" style="font-size:11px">D</text>
+<text x="191.92000000000002" y="110" text-anchor="middle" style="font-size:11px">E</text>
+<text x="283.36" y="110" text-anchor="middle" style="font-size:11px">F</text>
+<text x="313.84" y="110" text-anchor="middle" style="font-size:11px">G</text>
+<text x="344.32" y="110" text-anchor="middle" style="font-size:11px">H</text>
+<text x="374.8" y="110" text-anchor="middle" style="font-size:11px">I</text>
+<text x="405.28" y="110" text-anchor="middle" style="font-size:11px">J</text>
+<circle cx="237.64" cy="126.0" r="19" fill="white"/>
+<circle cx="237.64" cy="613.6800000000001" r="19" fill="white"/>
+<path class="wire" stroke="#087f8c" d="M70.0,186.96 L70.0,278.4"/>
+<path class="wire" stroke="#087f8c" d="M100.48,278.4 L70.0,369.84000000000003"/>
+<path class="wire" stroke="#087f8c" d="M100.48,369.84000000000003 L70.0,461.28000000000003"/>
+<path class="wire" stroke="#087f8c" d="M100.48,461.28000000000003 L70.0,552.72"/>
+<path class="wire" stroke="#087f8c" d="M100.48,552.72 L100.48,613.6800000000001"/>
+<path class="wire" stroke="#b45309" d="M374.8,186.96 L374.8,278.4"/>
+<path class="wire" stroke="#b45309" d="M405.28,278.4 L405.28,369.84000000000003"/>
+<path class="wire" stroke="#b45309" d="M374.8,369.84000000000003 L374.8,461.28000000000003"/>
+<path class="wire" stroke="#b45309" d="M405.28,461.28000000000003 L405.28,552.72"/>
+<path class="wire" stroke="#b45309" d="M374.8,552.72 L344.32,613.6800000000001"/>
+<path class="wire" stroke="#b45309" d="M313.84,126.0 L344.32,583.2"/>
+<path class="wire" stroke="#237d35" d="M100.48,126.0 L100.48,132.096"/>
+<path class="wire" stroke="#237d35" d="M100.48,150.38400000000001 L100.48,156.48"/>
+<rect x="-9.143999999999997" y="-5" width="18.287999999999993" height="10" fill="white" stroke="#237d35" stroke-width="2" transform="translate(100.48,141.24) rotate(90.0)"/>
+<path class="wire" stroke="#237d35" d="M130.96,126.0 L130.96,141.48000000000002"/>
+<path class="wire" stroke="#237d35" d="M130.96,171.48000000000002 L130.96,186.96"/>
+<rect x="-15" y="-5" width="30" height="10" fill="white" stroke="#237d35" stroke-width="2" transform="translate(130.96,156.48000000000002) rotate(90.0)"/>
+<path class="wire" stroke="#237d35" d="M100.48,217.44 L100.48,223.536"/>
+<path class="wire" stroke="#237d35" d="M100.48,241.824 L100.48,247.92000000000002"/>
+<rect x="-9.144000000000005" y="-5" width="18.28800000000001" height="10" fill="white" stroke="#237d35" stroke-width="2" transform="translate(100.48,232.68) rotate(90.0)"/>
+<path class="wire" stroke="#237d35" d="M130.96,217.44 L130.96,232.92"/>
+<path class="wire" stroke="#237d35" d="M130.96,262.91999999999996 L130.96,278.4"/>
+<rect x="-15" y="-5" width="30" height="10" fill="white" stroke="#237d35" stroke-width="2" transform="translate(130.96,247.92) rotate(90.0)"/>
+<path class="wire" stroke="#237d35" d="M100.48,308.88 L100.48,314.976"/>
+<path class="wire" stroke="#237d35" d="M100.48,333.264 L100.48,339.36"/>
+<rect x="-9.144000000000005" y="-5" width="18.28800000000001" height="10" fill="white" stroke="#237d35" stroke-width="2" transform="translate(100.48,324.12) rotate(90.0)"/>
+<path class="wire" stroke="#237d35" d="M130.96,308.88 L130.96,324.36"/>
+<path class="wire" stroke="#237d35" d="M130.96,354.36 L130.96,369.84000000000003"/>
+<rect x="-15" y="-5" width="30" height="10" fill="white" stroke="#237d35" stroke-width="2" transform="translate(130.96,339.36) rotate(90.0)"/>
+<path class="wire" stroke="#237d35" d="M100.48,400.32 L100.48,406.416"/>
+<path class="wire" stroke="#237d35" d="M100.48,424.704 L100.48,430.8"/>
+<rect x="-9.144000000000005" y="-5" width="18.28800000000001" height="10" fill="white" stroke="#237d35" stroke-width="2" transform="translate(100.48,415.56) rotate(90.0)"/>
+<path class="wire" stroke="#237d35" d="M130.96,400.32 L130.96,415.8"/>
+<path class="wire" stroke="#237d35" d="M130.96,445.8 L130.96,461.28000000000003"/>
+<rect x="-15" y="-5" width="30" height="10" fill="white" stroke="#237d35" stroke-width="2" transform="translate(130.96,430.8) rotate(90.0)"/>
+<path class="wire" stroke="#237d35" d="M100.48,491.76 L100.48,497.856"/>
+<path class="wire" stroke="#237d35" d="M100.48,516.144 L100.48,522.24"/>
+<rect x="-9.144000000000005" y="-5" width="18.28800000000001" height="10" fill="white" stroke="#237d35" stroke-width="2" transform="translate(100.48,507.0) rotate(90.0)"/>
+<path class="wire" stroke="#237d35" d="M130.96,491.76 L130.96,507.24"/>
+<path class="wire" stroke="#237d35" d="M130.96,537.24 L130.96,552.72"/>
+<rect x="-15" y="-5" width="30" height="10" fill="white" stroke="#237d35" stroke-width="2" transform="translate(130.96,522.24) rotate(90.0)"/>
+<path class="wire" stroke="#b45309" d="M344.32,126.0 L344.32,156.72"/>
+<path class="wire" stroke="#b45309" d="M344.32,186.72 L344.32,217.44"/>
+<rect x="-15" y="-5" width="30" height="10" fill="white" stroke="#b45309" stroke-width="2" transform="translate(344.32,171.72) rotate(90.0)"/>
+<path class="wire" stroke="#b45309" d="M374.8,217.44 L366.2682039324994,200.37640786499873"/>
+<path class="wire" stroke="#b45309" d="M352.85179606750063,173.54359213500123 L344.32,156.48"/>
+<rect x="-15" y="-5" width="30" height="10" fill="white" stroke="#b45309" stroke-width="2" transform="translate(359.56,186.95999999999998) rotate(-116.56505117707799)"/>
+<path class="wire" stroke="#b45309" d="M374.8,156.48 L362.50174202707274,217.97128986463622"/>
+<path class="wire" stroke="#b45309" d="M356.61825797292727,247.3887101353638 L344.32,308.88"/>
+<rect x="-15" y="-5" width="30" height="10" fill="white" stroke="#b45309" stroke-width="2" transform="translate(359.56,232.68) rotate(101.30993247402021)"/>
+<path class="wire" stroke="#b45309" d="M374.8,308.88 L366.2682039324994,291.8164078649987"/>
+<path class="wire" stroke="#b45309" d="M352.85179606750063,264.98359213500123 L344.32,247.92000000000002"/>
+<rect x="-15" y="-5" width="30" height="10" fill="white" stroke="#b45309" stroke-width="2" transform="translate(359.56,278.4) rotate(-116.56505117707802)"/>
+<path class="wire" stroke="#b45309" d="M374.8,247.92000000000002 L364.3034164902526,279.4097505292423"/>
+<path class="wire" stroke="#b45309" d="M354.81658350974743,307.8702494707577 L344.32,339.36"/>
+<rect x="-15" y="-5" width="30" height="10" fill="white" stroke="#b45309" stroke-width="2" transform="translate(359.56,293.64) rotate(108.43494882292202)"/>
+<path class="wire" stroke="#b45309" d="M374.8,339.36 L364.3034164902526,370.8497505292423"/>
+<path class="wire" stroke="#b45309" d="M354.81658350974743,399.31024947075775 L344.32,430.8"/>
+<rect x="-15" y="-5" width="30" height="10" fill="white" stroke="#b45309" stroke-width="2" transform="translate(359.56,385.08000000000004) rotate(108.43494882292202)"/>
+<path class="wire" stroke="#b45309" d="M374.8,430.8 L364.3034164902526,462.28975052924227"/>
+<path class="wire" stroke="#b45309" d="M354.81658350974743,490.7502494707577 L344.32,522.24"/>
+<rect x="-15" y="-5" width="30" height="10" fill="white" stroke="#b45309" stroke-width="2" transform="translate(359.56,476.52) rotate(108.43494882292202)"/>
+<rect x="184.92000000000002" y="143.48" width="105.44" height="56.48000000000002" rx="3" fill="#e8e9ef" stroke="#38405a"/>
+<text x="237.64000000000001" y="174.48" text-anchor="middle" style="font-size:13px">U1</text>
+<circle cx="199.92000000000002" cy="151.48" r="3" fill="#111"/>
+<text x="194.92000000000002" y="160.48" text-anchor="start" style="font-size:10px">1</text>
+<text x="194.92000000000002" y="190.96" text-anchor="start" style="font-size:10px">2</text>
+<text x="273.36" y="190.96" text-anchor="start" style="font-size:10px">3</text>
+<text x="273.36" y="160.48" text-anchor="start" style="font-size:10px">4</text>
+<rect x="184.92000000000002" y="234.92000000000002" width="105.44" height="56.47999999999996" rx="3" fill="#e8e9ef" stroke="#38405a"/>
+<text x="237.64000000000001" y="265.92" text-anchor="middle" style="font-size:13px">U2</text>
+<circle cx="199.92000000000002" cy="242.92000000000002" r="3" fill="#111"/>
+<text x="194.92000000000002" y="251.92000000000002" text-anchor="start" style="font-size:10px">1</text>
+<text x="194.92000000000002" y="282.4" text-anchor="start" style="font-size:10px">2</text>
+<text x="273.36" y="282.4" text-anchor="start" style="font-size:10px">3</text>
+<text x="273.36" y="251.92000000000002" text-anchor="start" style="font-size:10px">4</text>
+<rect x="184.92000000000002" y="326.36" width="105.44" height="56.48000000000002" rx="3" fill="#e8e9ef" stroke="#38405a"/>
+<text x="237.64000000000001" y="357.36" text-anchor="middle" style="font-size:13px">U3</text>
+<circle cx="199.92000000000002" cy="334.36" r="3" fill="#111"/>
+<text x="194.92000000000002" y="343.36" text-anchor="start" style="font-size:10px">1</text>
+<text x="194.92000000000002" y="373.84000000000003" text-anchor="start" style="font-size:10px">2</text>
+<text x="273.36" y="373.84000000000003" text-anchor="start" style="font-size:10px">3</text>
+<text x="273.36" y="343.36" text-anchor="start" style="font-size:10px">4</text>
+<rect x="184.92000000000002" y="417.8" width="105.44" height="56.48000000000002" rx="3" fill="#e8e9ef" stroke="#38405a"/>
+<text x="237.64000000000001" y="448.8" text-anchor="middle" style="font-size:13px">U4</text>
+<circle cx="199.92000000000002" cy="425.8" r="3" fill="#111"/>
+<text x="194.92000000000002" y="434.8" text-anchor="start" style="font-size:10px">1</text>
+<text x="194.92000000000002" y="465.28000000000003" text-anchor="start" style="font-size:10px">2</text>
+<text x="273.36" y="465.28000000000003" text-anchor="start" style="font-size:10px">3</text>
+<text x="273.36" y="434.8" text-anchor="start" style="font-size:10px">4</text>
+<rect x="184.92000000000002" y="509.24" width="105.44" height="56.48000000000002" rx="3" fill="#e8e9ef" stroke="#38405a"/>
+<text x="237.64000000000001" y="540.24" text-anchor="middle" style="font-size:13px">U5</text>
+<circle cx="199.92000000000002" cy="517.24" r="3" fill="#111"/>
+<text x="194.92000000000002" y="526.24" text-anchor="start" style="font-size:10px">1</text>
+<text x="194.92000000000002" y="556.72" text-anchor="start" style="font-size:10px">2</text>
+<text x="273.36" y="556.72" text-anchor="start" style="font-size:10px">3</text>
+<text x="273.36" y="526.24" text-anchor="start" style="font-size:10px">4</text>
+<circle cx="70.0" cy="613.6800000000001" r="6" fill="#087f8c"/>
+<circle cx="70.0" cy="126.0" r="6" fill="#087f8c"/>
+<circle cx="70.0" cy="217.44" r="6" fill="#087f8c"/>
+<circle cx="70.0" cy="308.88" r="6" fill="#087f8c"/>
+<circle cx="70.0" cy="400.32" r="6" fill="#087f8c"/>
+<circle cx="70.0" cy="491.76" r="6" fill="#087f8c"/>
+<circle cx="405.28" cy="583.2" r="6" fill="#b45309"/>
+<circle cx="405.28" cy="613.6800000000001" r="6" fill="#b45309"/>
+<text x="25" y="715" text-anchor="start" style="font-size:13px">Teal: controller ground / J1. Orange: Sony-side wiring / J2.</text>
+<text x="25" y="738" text-anchor="start" style="font-size:13px">Green: input resistors. Gray rows show factory-connected groups of five pads.</text>
+<text x="25" y="761" text-anchor="start" style="font-size:13px">Use insulated jumpers; crossings are not connections. Some resistors stand upright.</text>
+<text x="510" y="95" text-anchor="start" style="font-size:18px">Relay placement / pin orientation</text>
+<text x="510" y="120" text-anchor="start" style="font-size:13px">Pin 1 dot at upper left. Each package spans the center gap.</text>
+<text x="510" y="150" text-anchor="start" style="font-size:12px">U1: mute_att  |  1=E2, 2=E3, 3=F3, 4=F2</text>
+<text x="510" y="175" text-anchor="start" style="font-size:12px">U2: next_track  |  1=E5, 2=E6, 3=F6, 4=F5</text>
+<text x="510" y="200" text-anchor="start" style="font-size:12px">U3: previous_track  |  1=E8, 2=E9, 3=F9, 4=F8</text>
+<text x="510" y="225" text-anchor="start" style="font-size:12px">U4: volume_up  |  1=E11, 2=E12, 3=F12, 4=F11</text>
+<text x="510" y="250" text-anchor="start" style="font-size:12px">U5: volume_down  |  1=E14, 2=E15, 3=F15, 4=F14</text>
+<text x="510" y="310" text-anchor="start" style="font-size:18px">Resistors: ref / value / pad endpoints</text>
+<text x="510" y="337" text-anchor="start" style="font-size:12px">RL1   220     B1 - B2</text>
+<text x="510" y="355" text-anchor="start" style="font-size:12px">RP1   47k     C1 - C3</text>
+<text x="510" y="373" text-anchor="start" style="font-size:12px">RL2   220     B4 - B5</text>
+<text x="510" y="391" text-anchor="start" style="font-size:12px">RP2   47k     C4 - C6</text>
+<text x="510" y="409" text-anchor="start" style="font-size:12px">RL3   220     B7 - B8</text>
+<text x="510" y="427" text-anchor="start" style="font-size:12px">RP3   47k     C7 - C9</text>
+<text x="510" y="445" text-anchor="start" style="font-size:12px">RL4   220     B10 - B11</text>
+<text x="510" y="463" text-anchor="start" style="font-size:12px">RP4   47k     C10 - C12</text>
+<text x="510" y="481" text-anchor="start" style="font-size:12px">RL5   220     B13 - B14</text>
+<text x="510" y="499" text-anchor="start" style="font-size:12px">RP5   47k     C13 - C15</text>
+<text x="510" y="517" text-anchor="start" style="font-size:12px">R1    2.2k    H1 - H4</text>
+<text x="510" y="535" text-anchor="start" style="font-size:12px">R2    2.2k    I4 - H2</text>
+<text x="510" y="553" text-anchor="start" style="font-size:12px">R3    2.2k    I2 - H7</text>
+<text x="510" y="571" text-anchor="start" style="font-size:12px">R4    2.2k    I7 - H5</text>
+<text x="510" y="589" text-anchor="start" style="font-size:12px">R5    3.3k    I5 - H8</text>
+<text x="510" y="607" text-anchor="start" style="font-size:12px">R6    4.7k    I8 - H11</text>
+<text x="510" y="625" text-anchor="start" style="font-size:12px">R7    6.8k    I11 - H14</text>
+<text x="510" y="682" text-anchor="start" style="font-size:12px">J1 pigtail: 1=A17, 2=A1, 3=A4, 4=A7, 5=A10, 6=A13</text>
+<text x="510" y="707" text-anchor="start" style="font-size:12px">J2 vertical 2-pin header: 1=J16 (Input 1), 2=J17 (Sony GND)</text>
+<text x="510" y="732" text-anchor="start" style="font-size:12px">Use corner mounts; leave central M3 holes unused near relays.</text>
+<text x="510" y="757" text-anchor="start" style="font-size:12px">Dry-fit actual lead lengths / insulation / enclosure before soldering.</text>
+</svg>

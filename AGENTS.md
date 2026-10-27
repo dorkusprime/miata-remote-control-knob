@@ -4,7 +4,7 @@
 - Preserve the minimal mechanical design. A small soldered protoboard near the Sony is approved for the remote-control interface. No carrier PCB is planned for the Twist and XIAO; justify any further boards.
 - The opaque knob needs full-brightness idle RGB. LED feedback acknowledges observed input/gestures; never latch a camera or mute indication based on unverified head-unit state.
 - Use hardware I2C on XIAO D4/D5 for the Twist. Verify board labels versus actual RP2040 GPIO numbers.
-- Keep proposed wiring distinct from bench-validated wiring.
+- Keep proposed wiring distinct from bench-validated wiring. The Sony prototype in docs/sony-interface.md uses five PhotoMOS switches; the old mux cable allocation is superseded. Keep logic and Sony grounds separate on the interface board.
 - Start with USB serial diagnostics; Sony remote and camera outputs remain disabled until the interface is validated.
 - Flashing attached hardware or energizing the Sony requires an explicit instruction to perform that hardware action.
 - Never wire vehicle 12 V or the Sony remote input directly to XIAO GPIO.

@@ -37,7 +37,7 @@ Its Sony implementation uses these nominal resistances:
 
 It uses 50 ms command and release intervals. These are external implementation values, not Sony-published specifications or validated requirements for our receiver.
 
-A CD74HCT4051 with fixed resistors was proposed as a different implementation: 5 V supply and 3.3 V-compatible control thresholds. This is not a completed circuit. Remote voltage limits, power sequencing, and off-state behavior must be resolved first.
+The initial CD74HCT4051 proposal is superseded by an isolated PhotoMOS-switched resistor ladder. Five AQY212EH switches and seven fixed resistors produce the target values without a mux supply or GPIO connection to the Sony signal. See [the schematic, BOM, placement, and multimeter procedure](sony-interface.md). This is a reviewed prototype design, not a physically validated interface; receiver acceptance remains pending.
 
 No upstream firmware is included here. Review the upstream GPL-3.0 license before code reuse.
 

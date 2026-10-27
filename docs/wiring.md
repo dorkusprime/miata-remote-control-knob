@@ -44,49 +44,35 @@ Component side facing you, USB-C at top; each edge listed top to bottom:
 
 D pins support digital I/O and PWM. GPIO signals use 3.3 V logic.
 
-## Proposed Sony control harness — NOT ready to assemble
+## Sony resistor-interface prototype — receiver disconnected
 
-### Included steering-remote adapter
+The selected prototype uses five AQY212EH normally-open PhotoMOS switches and a seven-resistor ladder. It supersedes the analog-multiplexer proposal and its cable assignment. The schematic, exact ElectroCookie Mini pad layout, BOM, and receiver-disconnected multimeter procedure are in [Sony interface prototype](sony-interface.md). The design is ready to mock up; no physical interface or Sony acceptance test has been performed.
 
-User observation recorded 2026-10-27: the Sony includes a cable marked "Steering Remote," with an apparently 3.5 mm plug at one end and three labeled wires at the other. The exact adapter model and plug-contact mapping have not been verified.
+The Sony includes a Steering Remote adapter with an apparently 3.5mm plug and leads labeled Input 1, Input 2, ST Remote GND (user observation). Use those labeled leads; no added audio breakout is needed. Exact adapter model/plug-contact mapping is not needed for the labeled-lead mock-up. Input selection/recognition remains a receiver acceptance test.
 
-| Adapter lead label | Proposed connection |
-| --- | --- |
-| Input 1 | Switched-resistance command interface, pending bench verification |
-| Input 2 | Leave individually insulated and unconnected initially |
-| ST Remote GND | Remote-command return for the resistor interface |
+### Controller cable J1 — replaces the old eight-wire mux allocation
 
-Use these factory-labeled leads as the connection point; no additional audio-style breakout cable is needed. The initial proposal switches resistance between Input 1 and ST Remote GND. Input selection, voltage, and command behavior still require validation. Do not connect Input 1 or Input 2 directly to XIAO GPIO or to vehicle 12 V.
-
-### Controller-to-interface cable
-
-The remote input needs switched resistances, not a direct GPIO connection. One proposal places an analog multiplexer and fixed resistors near the Sony. IC choice, resistor values, and electrical defaults still need validation.
-
-Construction decision (2026-10-27): mount the interface on a small soldered protoboard near the Sony. It will support the switching component, resistors, bypass capacitor, and any required bias/protection components. Use removable cable connections, strain relief, and an insulating enclosure or cover. Secure the assembly independently of its wires. Choose board dimensions and the solder layout after validating the circuit; this is not a solderless breadboard installation. The Twist and XIAO do not need a shared carrier board.
-
-Reserve these pins provisionally:
-
-| Conductor | XIAO | GPIO | Proposed purpose |
+| Contact | XIAO label | GPIO | Purpose |
 | --- | --- | --- | --- |
-| 1 | GND | — | Interface ground |
-| 2 | 5V / VBUS | — | Interface supply if required |
-| 3 | D0 | 26 | Resistance select A |
-| 4 | D1 | 27 | Resistance select B |
-| 5 | D2 | 28 | Resistance select C |
-| 6 | D3 | 29 | Command enable / disconnect |
-| 7 | D6 | 0 | Manual camera-view request to interface |
-| 8 | Not assigned | — | Spare |
+| 1 | GND | — | PhotoMOS LED return, logic side only |
+| 2 | D0 | 26 | Mute/ATT, U1 |
+| 3 | D1 | 27 | Next track, U2 |
+| 4 | D2 | 28 | Previous track, U3 |
+| 5 | D3 | 29 | Volume up, U4 |
+| 6 | D6 | 0 | Volume down, U5 |
 
-D7–D10 remain unassigned. Power and signal cables are separate; this proposed eight-wire harness is not the four-wire Twist cable.
+No 5V/VBUS wire is required. The old pin-2 5V assignment must not be used. An optional eight-conductor cable may reserve contact 7 for D7/GPIO1 to a future camera interface and contact 8 as spare; leave both unconnected now. D8–D10 remain free. This cable is separate from the four-wire Twist cable.
 
-Before finalizing the Sony harness, verify:
+### Sony connector J2
 
-1. Included adapter identity, remote input voltage, input selection, and resistance/learning behavior. Verify plug-contact mapping only if needed; use the labeled leads for assembly.
-2. Switch analog limits, control thresholds, on-resistance, and leakage.
-3. No back-powering when Sony is on and XIAO/interface is off, including USB programming scenarios.
-4. Hardware defaults that release all commands at startup/reset/disconnection.
-5. Camera trigger voltage margin, switching circuit, and ground requirements.
-6. Connector pin numbers/viewing direction, cable length, and strain relief.
+| Contact | Adapter lead |
+| --- | --- |
+| 1 | Input 1, resistor-ladder input |
+| 2 | ST Remote GND, PhotoMOS contact return |
+
+Input 2 remains individually insulated. Keep logic GND and Sony ST Remote GND separate on this board; PhotoMOS control inputs and output contacts are optically separate. Do not connect Sony signal leads to GPIO, 3V3, 5V, or raw vehicle 12V. Sony stays disconnected throughout resistance-output testing. Existing firmware does not drive these command outputs.
+
+Before connecting to the receiver, measure the prototype, verify release/reset behavior with its future backend, check Sony remote voltage against the design envelope, and test command learning/recognition. Camera trigger and video routing remain separate work.
 
 ## Camera routing — pending bench test
 

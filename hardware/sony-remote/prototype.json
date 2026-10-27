@@ -1,0 +1,369 @@
+{
+  "status": "Design reviewed; unbuilt and unmeasured; Sony acceptance pending",
+  "board": {
+    "name": "ElectroCookie Mini",
+    "width_mm": 38.1,
+    "height_mm": 50.8,
+    "columns": "ABCDEFGHIJ",
+    "rows": 17,
+    "connected_strips": [
+      "ABCDE",
+      "FGHIJ"
+    ]
+  },
+  "j1": [
+    {
+      "pin": 1,
+      "signal": "LOGIC_GND",
+      "pad": "A17",
+      "xiao": "GND"
+    },
+    {
+      "pin": 2,
+      "signal": "MUTE_ATT",
+      "pad": "A1",
+      "xiao": "D0",
+      "gpio": 26
+    },
+    {
+      "pin": 3,
+      "signal": "NEXT_TRACK",
+      "pad": "A4",
+      "xiao": "D1",
+      "gpio": 27
+    },
+    {
+      "pin": 4,
+      "signal": "PREVIOUS_TRACK",
+      "pad": "A7",
+      "xiao": "D2",
+      "gpio": 28
+    },
+    {
+      "pin": 5,
+      "signal": "VOLUME_UP",
+      "pad": "A10",
+      "xiao": "D3",
+      "gpio": 29
+    },
+    {
+      "pin": 6,
+      "signal": "VOLUME_DOWN",
+      "pad": "A13",
+      "xiao": "D6",
+      "gpio": 0
+    }
+  ],
+  "j2": [
+    {
+      "pin": 1,
+      "signal": "REMOTE_INPUT_1",
+      "pad": "J16"
+    },
+    {
+      "pin": 2,
+      "signal": "REMOTE_GND",
+      "pad": "J17"
+    }
+  ],
+  "relays": [
+    {
+      "ref": "U1",
+      "part": "AQY212EH",
+      "action": "mute_att",
+      "gpio": 26,
+      "xiao": "D0",
+      "pins": {
+        "1": "E2",
+        "2": "E3",
+        "3": "F3",
+        "4": "F2"
+      }
+    },
+    {
+      "ref": "U2",
+      "part": "AQY212EH",
+      "action": "next_track",
+      "gpio": 27,
+      "xiao": "D1",
+      "pins": {
+        "1": "E5",
+        "2": "E6",
+        "3": "F6",
+        "4": "F5"
+      }
+    },
+    {
+      "ref": "U3",
+      "part": "AQY212EH",
+      "action": "previous_track",
+      "gpio": 28,
+      "xiao": "D2",
+      "pins": {
+        "1": "E8",
+        "2": "E9",
+        "3": "F9",
+        "4": "F8"
+      }
+    },
+    {
+      "ref": "U4",
+      "part": "AQY212EH",
+      "action": "volume_up",
+      "gpio": 29,
+      "xiao": "D3",
+      "pins": {
+        "1": "E11",
+        "2": "E12",
+        "3": "F12",
+        "4": "F11"
+      }
+    },
+    {
+      "ref": "U5",
+      "part": "AQY212EH",
+      "action": "volume_down",
+      "gpio": 0,
+      "xiao": "D6",
+      "pins": {
+        "1": "E14",
+        "2": "E15",
+        "3": "F15",
+        "4": "F14"
+      }
+    }
+  ],
+  "resistors": [
+    {
+      "ref": "RL1",
+      "ohms": 220,
+      "role": "LED series",
+      "pads": [
+        "B1",
+        "B2"
+      ]
+    },
+    {
+      "ref": "RP1",
+      "ohms": 47000,
+      "role": "GPIO pulldown",
+      "pads": [
+        "C1",
+        "C3"
+      ]
+    },
+    {
+      "ref": "RL2",
+      "ohms": 220,
+      "role": "LED series",
+      "pads": [
+        "B4",
+        "B5"
+      ]
+    },
+    {
+      "ref": "RP2",
+      "ohms": 47000,
+      "role": "GPIO pulldown",
+      "pads": [
+        "C4",
+        "C6"
+      ]
+    },
+    {
+      "ref": "RL3",
+      "ohms": 220,
+      "role": "LED series",
+      "pads": [
+        "B7",
+        "B8"
+      ]
+    },
+    {
+      "ref": "RP3",
+      "ohms": 47000,
+      "role": "GPIO pulldown",
+      "pads": [
+        "C7",
+        "C9"
+      ]
+    },
+    {
+      "ref": "RL4",
+      "ohms": 220,
+      "role": "LED series",
+      "pads": [
+        "B10",
+        "B11"
+      ]
+    },
+    {
+      "ref": "RP4",
+      "ohms": 47000,
+      "role": "GPIO pulldown",
+      "pads": [
+        "C10",
+        "C12"
+      ]
+    },
+    {
+      "ref": "RL5",
+      "ohms": 220,
+      "role": "LED series",
+      "pads": [
+        "B13",
+        "B14"
+      ]
+    },
+    {
+      "ref": "RP5",
+      "ohms": 47000,
+      "role": "GPIO pulldown",
+      "pads": [
+        "C13",
+        "C15"
+      ]
+    },
+    {
+      "ref": "R1",
+      "ohms": 2200,
+      "role": "ladder",
+      "pads": [
+        "H1",
+        "H4"
+      ]
+    },
+    {
+      "ref": "R2",
+      "ohms": 2200,
+      "role": "ladder",
+      "pads": [
+        "I4",
+        "H2"
+      ]
+    },
+    {
+      "ref": "R3",
+      "ohms": 2200,
+      "role": "ladder",
+      "pads": [
+        "I2",
+        "H7"
+      ]
+    },
+    {
+      "ref": "R4",
+      "ohms": 2200,
+      "role": "ladder",
+      "pads": [
+        "I7",
+        "H5"
+      ]
+    },
+    {
+      "ref": "R5",
+      "ohms": 3300,
+      "role": "ladder",
+      "pads": [
+        "I5",
+        "H8"
+      ]
+    },
+    {
+      "ref": "R6",
+      "ohms": 4700,
+      "role": "ladder",
+      "pads": [
+        "I8",
+        "H11"
+      ]
+    },
+    {
+      "ref": "R7",
+      "ohms": 6800,
+      "role": "ladder",
+      "pads": [
+        "I11",
+        "H14"
+      ]
+    }
+  ],
+  "jumpers": [
+    {
+      "pads": [
+        "A3",
+        "A6"
+      ]
+    },
+    {
+      "pads": [
+        "B6",
+        "A9"
+      ]
+    },
+    {
+      "pads": [
+        "B9",
+        "A12"
+      ]
+    },
+    {
+      "pads": [
+        "B12",
+        "A15"
+      ]
+    },
+    {
+      "pads": [
+        "B15",
+        "B17"
+      ]
+    },
+    {
+      "pads": [
+        "I3",
+        "I6"
+      ]
+    },
+    {
+      "pads": [
+        "J6",
+        "J9"
+      ]
+    },
+    {
+      "pads": [
+        "I9",
+        "I12"
+      ]
+    },
+    {
+      "pads": [
+        "J12",
+        "J15"
+      ]
+    },
+    {
+      "pads": [
+        "I15",
+        "H17"
+      ]
+    },
+    {
+      "pads": [
+        "G1",
+        "H16"
+      ]
+    }
+  ],
+  "reserved": {
+    "J1_optional_7": "D7/GPIO1, future camera interface only; unconnected",
+    "J1_optional_8": "spare, unconnected"
+  },
+  "sources": [
+    "https://mediap.industry.panasonic.eu/assets/download-files/import/semi_eng_ge1a_aqy21_e_dip4.pdf",
+    "https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf",
+    "https://github.com/pounamu-electronics/RE_SWC_FW/blob/main/lib/headunit_swc/src/sony/sony_swc.cpp",
+    "https://www.amazon.com/dp/B081MSKJJX"
+  ]
+}

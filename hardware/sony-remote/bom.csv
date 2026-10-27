@@ -1,0 +1,13 @@
+Item,Quantity,Specification,Notes
+PhotoMOS switch,5,"Panasonic AQY212EH DIP-4 through hole, normally open",Do not substitute EHA surface mount or normally closed parts
+Ladder resistor,4,"2.2k ohm, 1%, axial 0.25W",R1-R4
+Ladder resistor,1,"3.3k ohm, 1%, axial 0.25W",R5
+Ladder resistor,1,"4.7k ohm, 1%, axial 0.25W",R6
+Ladder resistor,1,"6.8k ohm, 1%, axial 0.25W",R7
+LED series resistor,5,"220 ohm, 1%, axial 0.25W",RL1-RL5; stand upright where needed
+Control pulldown,5,"47k ohm, 1%, axial 0.25W",RP1-RP5
+Protoboard,1,ElectroCookie Mini 38.1 x 50.8mm,"Existing choice; connected-row layout, no trimming"
+Controller connector,1,"6-contact removable pigtail, 2.54mm or existing equivalent",Five GPIO leads plus logic ground; optional 8-way reserves camera/spare
+Sony connector,1,"2-contact removable connector, 2.54mm",Input 1 and ST Remote GND; pitch matches J16/J17
+Hookup wire,as needed,Insulated 26-28AWG suitable for through-hole wiring,Separate logic and Sony-side bundles; strain relief
+Enclosure / mounting,as needed,Insulating support using board corner mounts,No support by signal wires; final fit untested
