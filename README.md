@@ -1,38 +1,40 @@
 # Miata remote-control knob
 
-A minimal multifunction knob for a Sony XAV-9000ES in a 2005 Mazdaspeed Miata, using a Seeed Studio XIAO RP2040 and SparkFun Qwiic Twist RGB encoder.
+A multifunction knob for a Sony XAV-9000ES in a 2005 Mazdaspeed Miata: Seeed Studio XIAO RP2040 plus SparkFun Qwiic Twist RGB, mounted in the cigarette-lighter location.
 
-The knob will occupy the cigarette-lighter location. Use removable connections. A small soldered protoboard near the Sony will support the remote-control interface; no carrier board is planned for the Twist and XIAO.
+## Current status
 
-## Status
+The user has bench-verified rotation, button events, gestures and RGB feedback over USB. Idle lighting is full-brightness blue for the opaque cap; gesture colors are brief acknowledgements, not confirmed radio state. The original diagnostic is preserved. Picotool updates were user-verified without physical button access.
 
-The XIAO, Twist, Sony receiver, a camera, and the Sony's included steering-remote adapter are on hand. The adapter has leads labeled Input 1, Input 2, and ST Remote GND. The initial functional diagnostic is complete: the user verified diagnostic v2 rotation, button events, rotation while pressed, and RGB tests. The user has confirmed two consecutive Picotool uploads without button access or unplugging USB. The selected prototype uses one LCC110 and an AD8400ARZ50 digital pot. The user will hand-solder its SOIC-8 package onto a small adapter after practicing first; circuit, pinout and assembly steps are documented. It has not been assembled or verified against the Sony.
+The selected Sony interface is **MCP41050-I/P + SN74HCT125N + one existing LCC110**, with a 2N3904 optical-input driver. All parts are through-hole. Supporting components were ordered from DigiKey on 2026-10-27, with intentional spares. The circuit is not assembled, calibrated or receiver-validated. Firmware currently simulates commands; Sony and camera outputs remain disabled.
 
-The separate gesture controller and live translation monitor are host-tested and user bench-verified: the user reports all gestures functional. Radio and camera-control outputs remain disabled until the Sony interface is validated.
+A small protoboard near the Sony is approved. Twist and XIAO need no carrier board. Final enclosure, no-cut permanent board placement, cable length, vehicle power protection and camera switching remain unfinished.
 
-Controller v2 adds full-brightness blue idle lighting and brief gesture feedback. Camera gestures pulse amber, with no latched camera-state color. This LED update is compiled, host-tested, and user bench-verified.
+## Start here
+
+| Document | Purpose |
+| --- | --- |
+| [Design and evidence](docs/design.md) | Requirements, choices, what is and is not verified |
+| [Sony circuit](docs/sony-interface.md) | Current schematic overview, complete pin map, limits and backend contract |
+| [Assembly and test](docs/assembly-and-test.md) | Breadboard order, calibration and acceptance gates |
+| [Wiring](docs/wiring.md) | Twist/XIAO pins, six-wire harness, power and camera plan |
+| [Parts and order](docs/parts-sourcing.md) | Exact ordered parts, quantities, existing supplies |
+| [Hardware index](hardware/sony-remote/README.md) | Current BOM and layout status |
+| [Development checklist](docs/tasks.md) | Completed work and next milestones |
+| [Gestures and monitor](docs/gestures.md) | Mapping, timing, LED behavior and serial protocol |
+| [Firmware environment](firmware/README.md) | Pinned toolchain, diagnostics and USB recovery |
+| [Workspace](docs/workspace.md) | Repository access and working conventions |
+| [Archive](docs/archive/README.md) | Superseded designs; not build instructions |
+
+## Development
 
 ```sh
+python3 scripts/test.py
 scripts/knob.sh build controller
-scripts/knob.sh upload controller
+scripts/knob.sh size controller
 scripts/knob.sh monitor
 ```
 
-Close any running monitor before upload. The monitor detects the USB port automatically; actions are simulations. The original diagnostic is preserved: use `build diagnostic`, `upload diagnostic`, and `raw-monitor PORT` with the same helper. Run host tests with `python3 scripts/test.py`.
+The user performs flashing: close the monitor, then explicitly run `scripts/knob.sh upload controller` after a successful build. The upload reports flash and static RAM usage. It does not rebuild automatically. Use target `diagnostic` for the original hardware diagnostic; `raw-monitor PORT` reads its output. See the firmware guide before first upload or recovery.
 
-Upload prints the selected build's flash-image and static RAM usage before flashing. Preview the report without uploading with `scripts/knob.sh size` or `scripts/knob.sh size diagnostic`.
-
-## Documents
-
-- [Wiring and cable plan](docs/wiring.md)
-- [Sony interface circuit, parts, pinout, and bench procedure](docs/sony-interface.md)
-- [Digital-potentiometer simplification and voltage evidence](docs/sony-interface-simplification.md)
-- [Amazon component sourcing](docs/parts-sourcing.md)
-- [SOIC-8 practice and assembly](docs/smd-assembly.md)
-- [Design decisions and evidence](docs/design.md)
-- [Development checklist](docs/tasks.md)
-- [Firmware environment](firmware/README.md)
-- [Gesture mapping and live monitor](docs/gestures.md)
-- [Workspace and access](docs/workspace.md)
-
-Hardware tests must be recorded as observations, with date and configuration. Do not treat a proposed pin reservation or external example as confirmation of compatibility.
+Host tests never communicate with physical hardware. Historical five-PhotoMOS netlist tests are retained but do not validate the current circuit. Record hardware observations with date and configuration; a passing compile or host test is not receiver acceptance. Read [AGENTS.md](AGENTS.md) before changing this public repository.

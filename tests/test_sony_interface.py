@@ -11,9 +11,9 @@ interface = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(interface)
 
 
-class SonyInterfaceTests(unittest.TestCase):
+class ArchivedPhotoMosInterfaceTests(unittest.TestCase):
     def setUp(self):
-        self.netlist = json.loads((ROOT / 'hardware/sony-remote/prototype.json').read_text())
+        self.netlist = json.loads((ROOT / 'hardware/archive/sony-remote-photomos/prototype.json').read_text())
 
     def checked(self):
         with contextlib.redirect_stdout(io.StringIO()):

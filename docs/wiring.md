@@ -46,17 +46,17 @@ D pins support digital I/O and PWM. GPIO signals use 3.3 V logic.
 
 ## Sony interface: one SSR plus digital pot — proposed
 
-The selected prototype uses one LCC110, AD8400ARZ50, and a 2N3904 input driver. [Complete circuit, physical IC pin mapping, BOM and acceptance checks](sony-interface.md). The old five-relay and mux/buffer cable allocations are obsolete.
+The selected prototype uses one LCC110, MCP41050-I/P, SN74HCT125N SPI buffer, and a 2N3904 input driver. [Complete circuit, physical IC pin mapping, BOM and acceptance checks](sony-interface.md). The old five-relay and other candidate cable allocations are obsolete.
 
-**New harness: contact 2 carries 5 V. Do not plug in an earlier harness by matching contact numbers.** Number and label the actual connector at both ends.
+**New harness: contact 2 carries 5 V. Do not plug in an earlier harness by matching contact numbers.** Number and label the actual connector at both ends. Contact numbers are logical assignments, not a view of an unspecified connector: choose a keyed housing, mark contact 1, and record its mating-face view before crimping. Verify every conductor by continuity; mirrored mating views can reverse a ribbon.
 
 | Contact | XIAO | GPIO | Purpose |
 | --- | --- | ---: | --- |
 | 1 | GND | — | Shared ground |
 | 2 | 5V/VBUS | — | Interface power |
-| 3 | D8/SCK | 2 | Pot clock |
-| 4 | D10/MOSI | 3 | Pot data |
-| 5 | D0 | 26 | Pot CS |
+| 3 | D8/SCK | 2 | Buffer clock input |
+| 4 | D10/MOSI | 3 | Buffer data input |
+| 5 | D0 | 26 | Buffer CS input |
 | 6 | D1 | 27 | Relay enable via base resistor |
 | 7, optional | GND | — | Second ground |
 | 8, optional | Unconnected | — | Future camera-control reserve |
@@ -65,7 +65,7 @@ Six conductors suffice; an eight-conductor cable leaves space for another ground
 
 Sony Input 1 goes through 2.7 kohm, the LCC110 normally-open contact, and the pot W-to-B resistance to ST Remote GND. **ST Remote GND and logic GND are joined** in this design. Input 2 stays insulated. The included Sony adapter already supplies labeled leads; no audio breakout is required. No Sony signal or raw vehicle 12 V connects to GPIO.
 
-All outputs remain disabled. Verify a Sony-disconnected breadboard, commanded resistances, voltage/current limits, reset and supply transitions before receiver connection. Final soldered pad placement and connector orientation are not yet validated. The generated files in hardware/sony-remote describe the archived design, not this one.
+All outputs remain disabled. Verify a Sony-disconnected breadboard, commanded resistances, voltage/current limits, reset and supply transitions before receiver connection. Final soldered pad placement and connector orientation are not yet validated. The [hardware index](../hardware/sony-remote/README.md) links the current BOM; [old generated layouts](../hardware/archive/sony-remote-photomos/README.md) are archived and must not be used.
 
 ## Camera routing — pending bench test
 

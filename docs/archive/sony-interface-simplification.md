@@ -1,4 +1,6 @@
-> Research history only. The selected [AD8400 + LCC110 prototype](sony-interface.md) supersedes the MCP candidate below.
+> ARCHIVED — superseded. Do not build, order parts, or assign cable contacts from this document. Use the [current design](../sony-interface.md). Statements below describe historical decisions.
+
+> Research history only. These earlier MCP candidates preceded the [AD8400 proposal](sony-interface-ad8400.md); neither is the selected MCP41050 circuit.
 
 # Digital-potentiometer simplification research
 

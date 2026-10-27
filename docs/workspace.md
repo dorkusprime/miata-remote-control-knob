@@ -37,6 +37,6 @@ git remote -v
 gh auth status
 ```
 
-Before building firmware, read docs/tasks.md. No toolchain has been installed and no hardware has been flashed by this setup.
+Before building firmware, read docs/tasks.md. The local pinned toolchain is installed; see firmware/README.md. The user has flashed and bench-tested the diagnostic and gesture/LED controller. Agents need explicit authorization before flashing hardware.
 
 This checkout is inside the existing Google Drive-backed project folder. Use one working copy at a time; GitHub is the source-control remote. If simultaneous editing/sync conflicts become a problem, move the active checkout to an approved non-synced local project folder rather than maintaining two competing working copies.

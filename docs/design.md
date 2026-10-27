@@ -37,7 +37,9 @@ Its Sony implementation uses these nominal resistances:
 
 It uses 50 ms command and release intervals. These are external implementation values, not Sony-published specifications or validated requirements for our receiver.
 
-The selected prototype uses one LCC110 and one AD8400ARZ50 digital pot, with a small NPN relay-input driver. The pot accepts 3.3 V SPI while powered from 5 V; no buffer IC is needed. See [the circuit, pinout, parts and validation plan](sony-interface.md). Grounds are shared in this design. It supersedes the five-switch ladder and intermediate buffered-MCP proposal. Physical validation, power-loss transitions and receiver acceptance remain pending.
+The selected through-hole prototype uses one LCC110, one MCP41050-I/P digital pot, one SN74HCT125N SPI buffer and a 2N3904 relay-input driver. The pot runs at 5 V; HCT input thresholds allow 3.3 V XIAO control while delivering 5 V logic to the pot. This buffer is required for the selected pot and does not drive the relay LED. Logic and Sony grounds are shared. See [the complete circuit](sony-interface.md) and [assembly procedure](assembly-and-test.md).
+
+The user ordered the supporting parts on 2026-10-27, intentionally including spares. No circuit assembly or Sony electrical validation has been reported. Exact sensing voltage/current, safe power transitions and command recognition remain acceptance gates. The [archive](archive/README.md) preserves the superseded five-switch, SMD AD8400 and earlier MCP research; none supplies current pin assignments.
 
 No upstream firmware is included here. Review the upstream GPL-3.0 license before code reuse.
 
@@ -52,6 +54,6 @@ No upstream firmware is included here. Review the upstream GPL-3.0 license befor
 - [Sony installation manual](https://www.sony.com/electronics/support/res/manuals/5046/7d50ce75a9ea9f148dd92ba1db86be98/50462371M.pdf)
 - [Existing knob firmware](https://github.com/pounamu-electronics/RE_SWC_FW)
 - [Existing Sony implementation](https://github.com/pounamu-electronics/RE_SWC_FW/blob/main/lib/headunit_swc/src/sony/sony_swc.cpp)
-- [TI CD74HCT4051](https://www.ti.com/product/CD74HCT4051)
+- [Current component datasheets](sony-interface.md#sources)
 
 References recorded 2026-10-26. Record hardware test results separately with dates and observed configuration.

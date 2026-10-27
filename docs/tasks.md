@@ -38,20 +38,22 @@ Initial functional diagnostic complete: USB/I2C, rotation, button, RGB, and repe
 - [ ] Confirm adapter model and which remote input to use; verify plug-contact mapping if needed.
 - [ ] Measure remote voltage and test passive resistor commands/learning.
 - [x] Archive five-relay ladder; select one LCC110 plus digital pot (user direction, 2026-10-27).
-- [x] Document AD8400ARZ50, NPN input driver, shared ground, fresh cable pinout, nominal codes and bench checks.
+- [x] Select MCP41050-I/P + SN74HCT125N + existing LCC110 and NPN driver; all through-hole.
+- [x] Document pin-level circuit, current limits, harness, calibration and acceptance procedure.
+- [x] User ordered DigiKey components, including intentional spares (2026-10-27).
+- [x] Consolidate active docs and archive superseded build instructions.
 - [x] Choose a small soldered protoboard near the Sony (prior user decision).
-- [x] User chose SOIC-8 hand soldering after practice; retain AD8400 design (2026-10-27).
-- [x] Record Amazon candidates for the exact 50 kohm pot, solder-on adapter and practice chip; price/delivery not confirmed.
-- [ ] Obtain components and verify actual packages/adapter dimensions; check passives and tools on hand first.
-- [ ] Practice soldering one SOIC-8 chip; inspect and verify all eight pin-to-header connections.
-- [ ] Solder actual AD8400 onto adapter, inspect and check continuity before adding headers.
-- [ ] Assemble Sony-disconnected breadboard; measure LED current and calibrate five resistance settings.
-- [ ] Add separate calibration/driver diagnostic; user performs flashing.
-- [ ] Validate reset defaults and simulated-input power-loss transitions before installation approval.
-- [ ] Dry-fit permanent components and finish a new pad map; old placement is archived.
-- [ ] Validate connector orientation, cable length, mounting and strain relief.
-- [ ] Validate Sony voltage/current, command recognition and timing.
-- [ ] Enable controller outputs only after interface validation.
+- [ ] Receive and inspect parts; verify actual packages, polarity and pin orientation.
+- [ ] Dry-fit permanent components; document a no-cut pad map after fit checks.
+- [ ] Assemble the receiver-disconnected solderless prototype; verify rails and relay LED current.
+- [ ] Implement a separate calibration/driver diagnostic with relay-off defaults; user performs flashing.
+- [ ] Measure and record the five calibrated output resistances.
+- [ ] Validate simulated-input current, reset/fault behavior and both supply-loss orders.
+- [ ] Measure Sony voltage/source impedance; determine whether the pot's limits are met with margin.
+- [ ] Validate Sony recognition, learning and pulse timing at low volume.
+- [ ] Validate final cable length, connector orientation, mounting and strain relief.
+- [ ] Solder the validated prototype; repeat electrical acceptance after assembly.
+- [ ] Add a nonblocking bounded backend and watchdog; enable controller outputs only after validation.
 
 ## Camera and installation
 

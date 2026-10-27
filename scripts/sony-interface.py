@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check the resistor-interface netlist and generate its schematic, placement, BOM."""
+"""Historical five-PhotoMOS design only: check and regenerate archived artifacts."""
 import argparse
 import csv
 import heapq
@@ -11,7 +11,7 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
-FOLDER = ROOT / 'hardware/sony-remote'
+FOLDER = ROOT / 'hardware/archive/sony-remote-photomos'
 EXPECTED = {'mute_att': 4400, 'next_track': 8800, 'previous_track': 12100,
             'volume_up': 16800, 'volume_down': 23600}
 

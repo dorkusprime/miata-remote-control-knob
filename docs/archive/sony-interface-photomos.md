@@ -1,4 +1,6 @@
-> Archived design: superseded by [one SSR plus digital pot](sony-interface.md). Its diagrams and cable assignments are not current.
+> ARCHIVED — superseded. Do not build, order parts, or assign cable contacts from this document. Use the [current design](../sony-interface.md). Statements below describe historical decisions.
+
+> Archived design: superseded by [one SSR plus digital pot](../sony-interface.md). Its diagrams and cable assignments are not current.
 
 # Sony steering-remote prototype
 
@@ -12,7 +14,7 @@ This supersedes the earlier CD74HCT4051 proposal. It uses more switch packages, 
 
 This prototype is for a low-current remote-control signal up to **16V DC magnitude**, not raw vehicle power. The PhotoMOS device rating is higher, but that is not a claim of automotive surge qualification. Panasonic's application note asks designers to consult them for automotive applications; installation temperature/transient validation remains separate from this breadboard design.
 
-![Circuit schematic](../hardware/sony-remote/schematic.svg)
+![Circuit schematic](../../hardware/archive/sony-remote-photomos/schematic.svg)
 
 ## Resistor ladder and output targets
 
@@ -75,7 +77,7 @@ Input 2 stays insulated. The included Sony cable supplies the plug and labeled l
 
 ## Parts
 
-[Machine-readable BOM](../hardware/sony-remote/bom.csv):
+[Machine-readable BOM](../../hardware/archive/sony-remote-photomos/bom.csv):
 
 | Quantity | Part |
 | ---: | --- |
@@ -90,15 +92,15 @@ Input 2 stays insulated. The included Sony cable supplies the plug and labeled l
 
 DIP sockets are optional and add height. Parts marked **EHA/EHAX** have different lead forms; buy the exact through-hole **AQY212EH** for this plan. No part has been purchased or substituted by the agent.
 
-[Amazon US sourcing links and exact quantities](parts-sourcing.md): two ten-pack listings advertise AQY212EH DIP-4, and a verified-value-list resistor assortment covers the BOM. Live relay price/delivery could not be confirmed; the advertised part/package match is not independent verification of the shipped components. The user has four LCC110 devices but chose to retain this original design.
+[Amazon US sourcing links and exact quantities](../parts-sourcing.md): two ten-pack listings advertise AQY212EH DIP-4, and a verified-value-list resistor assortment covers the BOM. Live relay price/delivery could not be confirmed; the advertised part/package match is not independent verification of the shipped components. The user has four LCC110 devices but chose to retain this original design.
 
 ## Permanent-board placement, without cutting
 
-![Top-view placement](../hardware/sony-remote/placement.svg)
+![Top-view placement](../../hardware/archive/sony-remote-photomos/placement.svg)
 
 The layout uses all five relays across the board's center gap. **A–E within each numbered row are connected; F–J within that row are connected separately.** There are no connections across the gap unless a component/wire provides one. Our placement is derived from the product's top/bottom routing image; confirm it with continuity on the actual board before assembly. No board or track cuts are planned.
 
-The exact pads for every component and jumper are in [prototype.json](../hardware/sony-remote/prototype.json) and the placement drawing. The five packages occupy E/F row pairs 2/3, 5/6, 8/9, 11/12, 14/15, with inputs on the A–E side. Stand RL1–RL5, RP1–RP5, and R1–R4 upright and insulate their folded leads. R5–R7 may lie flat only if the actual body/lead bends fit; otherwise stand them too. The drawing shows electrical pad endpoints rather than flat component bodies. The 38.1 × 50.8mm figure is board area, not assembled height. Dry-fit actual package/socket/lead lengths before soldering. Use corner mounting holes; the central M3 holes are too close to the relay bodies for mounting screws in this layout.
+The exact pads for every component and jumper are in [prototype.json](../../hardware/archive/sony-remote-photomos/prototype.json) and the placement drawing. The five packages occupy E/F row pairs 2/3, 5/6, 8/9, 11/12, 14/15, with inputs on the A–E side. Stand RL1–RL5, RP1–RP5, and R1–R4 upright and insulate their folded leads. R5–R7 may lie flat only if the actual body/lead bends fit; otherwise stand them too. The drawing shows electrical pad endpoints rather than flat component bodies. The 38.1 × 50.8mm figure is board area, not assembled height. Dry-fit actual package/socket/lead lengths before soldering. Use corner mounting holes; the central M3 holes are too close to the relay bodies for mounting screws in this layout.
 
 J1 uses a removable pigtail landing at A17 (logic ground), A1 (mute), A4 (next), A7 (previous), A10 (volume up), A13 (volume down); these are not one adjacent six-pin board header. This avoids another board or custom crimp requirement if existing pre-crimped leads are used. J2 can use a vertical two-pin header at J16/J17. Label mating connectors by contact number and signal; do not infer plug pin order from ribbon color. Support cable strain independently of solder joints.
 

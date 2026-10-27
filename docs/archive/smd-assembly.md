@@ -1,6 +1,8 @@
+> ARCHIVED — superseded. Do not build, order parts, or assign cable contacts from this document. Use the [current design](sony-interface-ad8400.md). Statements below describe historical decisions.
+
 # SOIC-8 practice and AD8400 assembly
 
-User chose this direction on 2026-10-27. No soldering or electrical validation has yet been reported. Follow the [current circuit](sony-interface.md) and [parts candidates](parts-sourcing.md); the archived five-relay diagrams are not applicable.
+User chose this direction on 2026-10-27. No soldering or electrical validation has yet been reported. Follow the [current circuit](sony-interface-ad8400.md) and [parts candidates](parts-sourcing-history.md); the archived five-relay diagrams are not applicable.
 
 ## Tools and geometry
 

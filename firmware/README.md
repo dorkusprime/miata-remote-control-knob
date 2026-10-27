@@ -39,7 +39,7 @@ The diagnostic starts USB serial at 115200, scans I2C, and looks for a Twist at 
 | `w` | All channels at 8/255 |
 | `o` | LED off |
 
-This milestone reports raw events; gestures, volume/track commands, and camera switching are not implemented. Snapshot reads check the device ID and exact returned byte count. Read failures suspend events and trigger a retry; this diagnostic is not a validated fault-tolerant controller. The difference register is shown for comparison but is no longer cleared or used to derive TURN events.
+This diagnostic reports raw events only. The separate [controller sketch](../docs/gestures.md) implements gestures and LED feedback; real Sony commands and camera switching remain unimplemented. Snapshot reads check the device ID and exact returned byte count. Read failures suspend events and trigger a retry; this diagnostic is not a validated fault-tolerant controller. The difference register is shown for comparison but is no longer cleared or used to derive TURN events.
 
 ## USB updates without board-button access
 
