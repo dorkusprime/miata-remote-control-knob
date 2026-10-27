@@ -65,7 +65,7 @@ Six conductors suffice; an eight-conductor cable leaves space for another ground
 
 Sony Input 1 goes through 2.7 kohm, the LCC110 normally-open contact, and the pot W-to-B resistance to ST Remote GND. **ST Remote GND and logic GND are joined** in this design. Input 2 stays insulated. The included Sony adapter already supplies labeled leads; no audio breakout is required. No Sony signal or raw vehicle 12 V connects to GPIO.
 
-All outputs remain disabled. Verify a Sony-disconnected breadboard, commanded resistances, voltage/current limits, reset and supply transitions before receiver connection. Final soldered pad placement and connector orientation are not yet validated. The [hardware index](../hardware/sony-remote/README.md) links the current BOM; [old generated layouts](../hardware/archive/sony-remote-photomos/README.md) are archived and must not be used.
+All outputs remain disabled. Verify a Sony-disconnected breadboard, commanded resistances, voltage/current limits, reset and supply transitions before receiver connection. A [complete proposed pad map](../hardware/sony-remote/pad-map.md) now includes the pigtail landing pads; actual fit, soldered assembly and connector orientation remain unvalidated. The [hardware index](../hardware/sony-remote/README.md) links the current BOM; [old generated layouts](../hardware/archive/sony-remote-photomos/README.md) are archived and must not be used.
 
 ## Camera routing — pending bench test
 

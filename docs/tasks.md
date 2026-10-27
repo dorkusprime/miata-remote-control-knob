@@ -45,7 +45,8 @@ Initial functional diagnostic complete: USB/I2C, rotation, button, RGB, and repe
 - [x] Choose a small soldered protoboard near the Sony (prior user decision).
 - [ ] Receive and inspect parts; verify actual packages, polarity and pin orientation.
 - [x] Add a provisional current-design DIP placement image with pin/net reference; not a complete routed layout.
-- [ ] Dry-fit components, socket and mounting clearances; place Q1/passives/connectors and document jumpers plus solder-side routing.
+- [x] Place every component and pigtail in a complete proposed pad map; document top / underside views and check all nets, holes and nominal body separation.
+- [ ] Dry-fit actual components, sockets, mounting holes and lead forming against the proposed map; verify insulation, wire clearance and overall height.
 - [ ] Assemble the receiver-disconnected solderless prototype; verify rails and relay LED current.
 - [ ] Implement a separate calibration/driver diagnostic with relay-off defaults; user performs flashing.
 - [ ] Measure and record the five calibrated output resistances.

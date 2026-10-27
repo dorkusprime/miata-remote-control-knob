@@ -19,7 +19,7 @@ A small protoboard near the Sony is approved. Twist and XIAO need no carrier boa
 | [Assembly and test](docs/assembly-and-test.md) | Breadboard order, calibration and acceptance gates |
 | [Wiring](docs/wiring.md) | Twist/XIAO pins, six-wire harness, power and camera plan |
 | [Parts and order](docs/parts-sourcing.md) | Exact ordered parts, quantities, existing supplies |
-| [Hardware index](hardware/sony-remote/README.md) | Current BOM and layout status |
+| [Hardware index](hardware/sony-remote/README.md) | BOM, all-component placement and checked pad map |
 | [Development checklist](docs/tasks.md) | Completed work and next milestones |
 | [Gestures and monitor](docs/gestures.md) | Mapping, timing, LED behavior and serial protocol |
 | [Firmware environment](firmware/README.md) | Pinned toolchain, diagnostics and USB recovery |
