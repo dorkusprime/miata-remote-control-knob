@@ -62,7 +62,7 @@ Proceed only when voltage/current are compatible with the pot and power-transiti
 
 ## Permanent assembly and fit
 
-The proposed ElectroCookie Mini is 38.1 × 50.8 mm with 17 rows, each side connected in five-pad strips and a center gap. Three DIP packages use 4 + 7 + 4 pin rows before clearance. This arithmetic is not a finished fit check. Dry-fit sockets, transistor, passives, connectors, mounting screws and insulation on the actual board. Check underside access, cable bend radius and enclosure clearance before soldering. No verified permanent pad map exists yet.
+The proposed ElectroCookie Mini is 38.1 × 50.8 mm with 17 rows, each side connected in five-pad strips and a center gap. Three DIP packages use 4 + 7 + 4 pin rows before clearance. This arithmetic is not a finished fit check. Dry-fit sockets, transistor, passives, connectors, mounting screws and insulation on the actual board. Check underside access, cable bend radius and enclosure clearance before soldering. The [proposed IC placement image](../hardware/sony-remote/placement.svg) shows U1 at rows 1–4, U2 at rows 6–12 and K1 at rows 14–17. It does not yet place Q1, passives or wiring; socket envelopes and mounting-hole keepouts remain unmeasured. No verified permanent pad map exists yet.
 
 Keep all placement claims provisional until that dry-fit. If it fits, document both top and solder-side views, label every net, and verify the connected strips before committing the layout. Use insulated jumpers, strain relief and mechanical support independent of the cable. Repeat acceptance after soldering. Never copy the archived isolated-ground layout into this shared-ground circuit.
 
