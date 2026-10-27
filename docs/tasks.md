@@ -37,15 +37,17 @@ Initial functional diagnostic complete: USB/I2C, rotation, button, RGB, and repe
 - [x] Included steering-remote adapter is on hand: Input 1, Input 2, ST Remote GND (user observation recorded 2026-10-27).
 - [ ] Confirm adapter model and which remote input to use; verify plug-contact mapping if needed.
 - [ ] Measure remote voltage and test passive resistor commands/learning.
-- [x] Select PhotoMOS ladder prototype and exact resistor values; document schematic, BOM, pad layout, and meter checks (2026-10-26 client local date).
-- [ ] Assemble and measure receiver-disconnected breadboard prototype; record LED current and all five resistance outputs.
-- [x] Choose a small soldered protoboard near the Sony for interface construction (user decision, 2026-10-27).
-- [x] Draft no-cut ElectroCookie Mini placement and six-wire control/two-wire Sony pinouts.
-- [ ] Dry-fit actual components and finish insulation/mounting before permanent assembly.
-- [ ] Validate reset defaults and powered-off behavior.
-- [x] Define prototype harness/contact numbers; old mux pin allocation superseded.
-- [ ] Validate connector mating orientation, cable lengths, and strain relief on hardware.
-- [ ] Enable hardware outputs only after interface validation.
+- [x] Archive five-relay ladder; select one LCC110 plus digital pot (user direction, 2026-10-27).
+- [x] Document AD8400ARZ50, NPN input driver, shared ground, fresh cable pinout, nominal codes and bench checks.
+- [x] Choose a small soldered protoboard near the Sony (prior user decision).
+- [ ] Source exact 50 kohm AD8400 and correctly sized SOIC-8 adapter; check other parts on hand first.
+- [ ] Assemble Sony-disconnected breadboard; measure LED current and calibrate five resistance settings.
+- [ ] Add separate calibration/driver diagnostic; user performs flashing.
+- [ ] Validate reset defaults and simulated-input power-loss transitions before installation approval.
+- [ ] Dry-fit permanent components and finish a new pad map; old placement is archived.
+- [ ] Validate connector orientation, cable length, mounting and strain relief.
+- [ ] Validate Sony voltage/current, command recognition and timing.
+- [ ] Enable controller outputs only after interface validation.
 
 ## Camera and installation
 

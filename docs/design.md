@@ -37,7 +37,7 @@ Its Sony implementation uses these nominal resistances:
 
 It uses 50 ms command and release intervals. These are external implementation values, not Sony-published specifications or validated requirements for our receiver.
 
-The initial CD74HCT4051 proposal is superseded by an isolated PhotoMOS-switched resistor ladder. Five AQY212EH switches and seven fixed resistors produce the target values without a mux supply or GPIO connection to the Sony signal. See [the schematic, BOM, placement, and multimeter procedure](sony-interface.md). This is a reviewed prototype design, not a physically validated interface; receiver acceptance remains pending.
+The selected prototype uses one LCC110 and one AD8400ARZ50 digital pot, with a small NPN relay-input driver. The pot accepts 3.3 V SPI while powered from 5 V; no buffer IC is needed. See [the circuit, pinout, parts and validation plan](sony-interface.md). Grounds are shared in this design. It supersedes the five-switch ladder and intermediate buffered-MCP proposal. Physical validation, power-loss transitions and receiver acceptance remain pending.
 
 No upstream firmware is included here. Review the upstream GPL-3.0 license before code reuse.
 

@@ -1,136 +1,137 @@
-# Sony steering-remote prototype
+# Sony interface: one LCC110 and one digital potentiometer
 
-Design ready for a receiver-disconnected breadboard mock-up. Nothing in this circuit has been assembled, measured, or tested against the XAV-9000ES yet. The gesture/LED controller remains unchanged and its Sony outputs remain disabled.
+Design date: 2026-10-27. **Prototype design; no physical validation yet.** The user selected one SSR plus one digital pot. All firmware Sony/camera outputs remain disabled. This replaces the five-relay ladder and the intermediate buffered MCP4152 proposal. The [five-relay design](sony-interface-photomos.md), files in `hardware/sony-remote/`, and `scripts/sony-interface.py` are archived references, not this circuit's build instructions.
 
-## Selected circuit
+## Circuit
 
-Use seven fixed resistors in a series ladder and five **Panasonic AQY212EH** normally-open PhotoMOS switches, one per tap. Each switch connects its selected tap to ST Remote GND. All switches open is the released/no-command state. A PhotoMOS is a silent optically controlled semiconductor contact, not a mechanical relay or a transistor-output optocoupler.
+```mermaid
+flowchart TD
+    S["Sony Input 1"] --> R["2.7 kohm fixed resistor"]
+    R --> K["LCC110 normally-open contact"]
+    K --> W["AD8400 wiper W"]
+    W --> B["Pot terminal B / shared ground"]
+    X["XIAO"] -->|"3.3 V SPI"| W
+    X -->|"Enable through NPN driver"| K
+```
 
-This supersedes the earlier CD74HCT4051 proposal. It uses more switch packages, but eliminates the mux supply, analog-rail restriction, address decoding, and a powered-off path through a mux's protection diodes. The control side has no VCC pin: current comes from the selected 3.3V GPIO through an LED resistor. The Sony-side signal never connects to GPIO, 3V3, or 5V on this board. Keep logic ground and ST Remote GND separate on the board, even though vehicle power/USB grounds may connect elsewhere.
+Input 1 connects through a fixed current-limiting resistor, the normally-open SSR contact, and the pot's variable W-to-B resistance to Sony ST Remote GND. Input 2 stays insulated. Logic GND and ST Remote GND are intentionally joined. The relay separates the signal while open; this complete system is not galvanically isolated because the pot and XIAO share ground.
 
-This prototype is for a low-current remote-control signal up to **16V DC magnitude**, not raw vehicle power. The PhotoMOS device rating is higher, but that is not a claim of automotive surge qualification. Panasonic's application note asks designers to consult them for automotive applications; installation temperature/transient validation remains separate from this breadboard design.
+**Pot: AD8400ARZ50**, 50 kohm, 256 positions, SOIC-8. It runs from regulated 5 V and accepts a 2.4 V minimum logic high, so 3.3 V commands need no level translator. Its SPI input is one-way: no MISO or shared input/output pin. This avoids the MCP41xx smart-pull-up issue that caused the previous buffer addition. It is surface mount: use a small SOIC-8-to-DIP adapter for breadboard assembly. That adapter is justified by the package and replaces the need for a separate level-shifting circuit; no carrier is added to the knob/XIAO. Exact adapter pitch, socket footprint and sourcing must be checked before purchase. A 10 kohm AD8400 is not a substitute for the 50 kohm part.
 
-![Circuit schematic](../hardware/sony-remote/schematic.svg)
-
-## Resistor ladder and output targets
-
-Starting at **Input 1**, connect R1 through R7 in series. Close exactly one switch from a listed tap to ST Remote GND:
-
-| Segment | Value, 1% | Cumulative resistance | Switch at this tap | Command |
-| --- | ---: | ---: | --- | --- |
-| R1 | 2.2k | 2.2k | None | Intermediate node |
-| R2 | 2.2k | 4.4k | U1 | Mute/ATT |
-| R3 | 2.2k | 6.6k | None | Intermediate node |
-| R4 | 2.2k | 8.8k | U2 | Next track |
-| R5 | 3.3k | 12.1k | U3 | Previous track |
-| R6 | 4.7k | 16.8k | U4 | Volume up |
-| R7 | 6.8k | 23.6k | U5 | Volume down |
-
-These targets come from the separate RE_SWC_FW Sony implementation, not a Sony-published tolerance specification. We have not copied its code. Its 50ms assertion/50ms release timing is a candidate for later command pulses; it is not established by the DC meter tests below. Continuous holds used for measurement must never be used as an automatic command loop on the radio.
-
-Ideal resistor-only endpoints, at 1% worst-case tolerance: 4,356–4,444; 8,712–8,888; 11,979–12,221; 16,632–16,968; 23,364–23,836 ohms. Actual switched readings also include contact resistance, off-channel leakage, temperature, and meter error. Record them rather than treating these resistor-only bands as a full circuit guarantee. With the specified LED drive at 25°C, the relay's published maximum on resistance is 2.5 ohms, small compared with the ladder.
-
-Only one switch may be on. Multiple closures select the tap closest to Input 1 in the ideal ladder, rather than creating a valid second command. Software must enforce all-off between selections, bounded command duration, and one active output at a time.
-
-## Switch input wiring — repeat five times
-
-| AQY212EH pin | Connection |
-| --- | --- |
-| 1, LED anode | Corresponding command lead through **220 ohms**, 1% |
-| 2, LED cathode | XIAO logic ground |
-| 3, output contact | ST Remote GND |
-| 4, output contact | Corresponding ladder tap |
-
-Put a **47k pulldown** from each command lead to logic ground, before its 220-ohm resistor. Pin numbers refer to the manufacturer's package diagram, top view; pin 1 is upper left, pin 2 lower left, pin 3 lower right, pin 4 upper right when oriented as in the placement drawing. Confirm the pin-1 mark on the actual part.
-
-For the eventual GPIO backend, configure **12mA pad drive**, preload each output LOW, then enable it as an output. This pad setting is drive strength, not a current regulator. Nominal LED current is `(3.3 - 1.14) / 220 = 9.8mA`. Using the RP2040's 2.62V minimum high level and the relay's 1.5V maximum LED drop gives about **5.0mA** with a +1% resistor. The 47k pulldown adds about 0.07mA nominally. One-hot operation keeps total GPIO-source current comfortably below the RP2040's 50mA aggregate limit.
-
-Panasonic recommends at least 5mA LED drive for specified behavior. Its published turn-on/off limits are 4ms/1ms at the stated 5mA, 25°C test conditions; verify actual pulse recognition on the Sony later. No flyback diode, mux supply, or supply bypass capacitor is required for these LED-driven switches. Their output is a bidirectional semiconductor contact; an ordinary PC817/4N35/LTV-817 is not an equivalent substitute.
-
-## Control cable — replaces the old mux pin allocation
-
-J1 is a **six-conductor cable** between the XIAO and the board near the Sony. It carries no 5V supply. The old eight-wire mux allocation is obsolete; in particular, do not reuse its old 5V assignment on conductor 2.
-
-| J1 contact | XIAO label | RP2040 GPIO | Switch | Purpose |
-| --- | --- | ---: | --- | --- |
-| 1 | GND | — | All input cathodes | Logic return only |
-| 2 | D0 | 26 | U1 | Mute/ATT |
-| 3 | D1 | 27 | U2 | Next track |
-| 4 | D2 | 28 | U3 | Previous track |
-| 5 | D3 | 29 | U4 | Volume up |
-| 6 | D6 | 0 | U5 | Volume down |
-
-A future eight-conductor cable may reserve contact 7 for D7/GPIO1 to a separate camera interface, with contact 8 spare. Leave both unconnected now. D4/GPIO6 and D5/GPIO7 remain dedicated to the Twist. D8–D10 stay free.
-
-J2 is a separate two-contact connector:
-
-| J2 contact | Sony adapter lead |
-| --- | --- |
-| 1 | Input 1 |
-| 2 | ST Remote GND |
-
-Input 2 stays insulated. The included Sony cable supplies the plug and labeled leads; no audio breakout is needed. Actual command acceptance on Input 1 remains a receiver test. Camera-trigger circuitry is not part of this resistor interface.
+**SSR: one existing LCC110 DIP-8.** Use its normally-open pins 5/6. The internal optocoupler LED is driven from 5 V by a 2N3904; XIAO drives the transistor base, not the LED load. The transistor also gives a clean off default with a base pull-down. No flyback diode is needed for this optical input.
 
 ## Parts
 
-[Machine-readable BOM](../hardware/sony-remote/bom.csv):
-
-| Quantity | Part |
-| ---: | --- |
-| 5 | **AQY212EH**, through-hole DIP-4, normally open |
-| 4 | 2.2k, 1%, axial 0.25W |
-| 1 each | 3.3k, 4.7k, 6.8k, 1%, axial 0.25W |
-| 5 | 220 ohm, 1%, axial 0.25W |
-| 5 | 47k, 1%, axial 0.25W |
-| 1 | ElectroCookie Mini 38.1 × 50.8mm, the previously selected board |
-| 1 each | Removable six-contact control pigtail and two-contact Sony connector |
-| As needed | Insulated 26–28AWG hookup wire, insulation, enclosure/mounting/strain relief |
-
-DIP sockets are optional and add height. Parts marked **EHA/EHAX** have different lead forms; buy the exact through-hole **AQY212EH** for this plan. No part has been purchased or substituted by the agent.
-
-[Amazon US sourcing links and exact quantities](parts-sourcing.md): two ten-pack listings advertise AQY212EH DIP-4, and a verified-value-list resistor assortment covers the BOM. Live relay price/delivery could not be confirmed; the advertised part/package match is not independent verification of the shipped components. The user has four LCC110 devices but chose to retain this original design.
-
-## Permanent-board placement, without cutting
-
-![Top-view placement](../hardware/sony-remote/placement.svg)
-
-The layout uses all five relays across the board's center gap. **A–E within each numbered row are connected; F–J within that row are connected separately.** There are no connections across the gap unless a component/wire provides one. Our placement is derived from the product's top/bottom routing image; confirm it with continuity on the actual board before assembly. No board or track cuts are planned.
-
-The exact pads for every component and jumper are in [prototype.json](../hardware/sony-remote/prototype.json) and the placement drawing. The five packages occupy E/F row pairs 2/3, 5/6, 8/9, 11/12, 14/15, with inputs on the A–E side. Stand RL1–RL5, RP1–RP5, and R1–R4 upright and insulate their folded leads. R5–R7 may lie flat only if the actual body/lead bends fit; otherwise stand them too. The drawing shows electrical pad endpoints rather than flat component bodies. The 38.1 × 50.8mm figure is board area, not assembled height. Dry-fit actual package/socket/lead lengths before soldering. Use corner mounting holes; the central M3 holes are too close to the relay bodies for mounting screws in this layout.
-
-J1 uses a removable pigtail landing at A17 (logic ground), A1 (mute), A4 (next), A7 (previous), A10 (volume up), A13 (volume down); these are not one adjacent six-pin board header. This avoids another board or custom crimp requirement if existing pre-crimped leads are used. J2 can use a vertical two-pin header at J16/J17. Label mating connectors by contact number and signal; do not infer plug pin order from ribbon color. Support cable strain independently of solder joints.
-
-## Receiver-disconnected test procedure
-
-1. **Leave the Sony cable physically disconnected from the prototype.** Current firmware remains the serial/LED controller; it does not drive these command pins.
-2. Start with the bare seven-resistor ladder on the solderless board. With no power, measure from Input 1's end to each selected tap. Expected nominal totals are the table above. This can be done before obtaining the switches.
-3. Add the five switches and their 220-ohm/47k input networks. Confirm package orientation, separate ground domains, and the row connections before powering anything. With all command leads floating, J2 should be open/high resistance. Allow the meter to settle; this is not an ideal mechanical open, so record leakage-dependent high readings as well as OL.
-4. For manual relay testing, **keep all five command GPIO wires disconnected from the XIAO**. Connect only J1-1 to XIAO GND. Power XIAO via USB. Jumper its **3V3** pin to one board-side J1 command input at a time. Never jumper 3V3 onto a GPIO that firmware might drive LOW.
-5. Measure voltage across the selected 220-ohm resistor. Divide by the measured resistor value to obtain LED current. Record 5–12mA as the prototype's acceptable drive range before any GPIO-backend test. The nominal value is about 9.8mA. Remove the jumper before selecting another input.
-6. With only that LED energized, use ohms mode across J2-1/J2-2. The Sony-side circuit is floating and has no external voltage source, so USB powering the optically separate LED side does not energize the resistance output. Never measure ohms with the Sony connected or another source on J2.
-7. Record all five switched resistances, then remove each enable jumper and verify return to open/high resistance. Check both meter polarities. Disconnect USB and verify all contacts release. Repeat while moving the control cable gently to check for intermittent assembly connections.
-8. Before a GPIO backend is enabled, verify boot/reset/cable-disconnect release behavior with that future test firmware and a meter. Present sketch outputs are still disabled. Only after these checks should the Sony input voltage and actual learning/command response be tested with the powered receiver.
-
-| Condition | Expected nominal | Measured | Result |
+| Ref | Qty | Part | Purpose |
 | --- | ---: | --- | --- |
-| All off / USB off | Open/high resistance | Pending | Pending |
-| U1 only | 4.4k + contact | Pending | Pending |
-| U2 only | 8.8k + contact | Pending | Pending |
-| U3 only | 12.1k + contact | Pending | Pending |
-| U4 only | 16.8k + contact | Pending | Pending |
-| U5 only | 23.6k + contact | Pending | Pending |
-| All enables removed / cable disconnected | Open/high resistance | Pending | Pending |
+| U1 | 1 | AD8400ARZ50, 50 kohm SOIC-8 | All command resistances |
+| U2 | 1 | Existing LCC110 DIP-8 | Command connect/release |
+| Q1 | 1 | 2N3904, TO-92 | Relay LED driver; check manufacturer's E/B/C pinout |
+| R1 | 1 | 330 ohms, 1%, 0.25 W | LCC110 LED current limiting |
+| R2 | 1 | 1 kohm, 1%, axial | Q1 base current limiting |
+| R3 | 1 | 2.7 kohm, 1%, axial | Fixed resistance floor/current limiting |
+| RN1 | 1 | 4605X-101-473LF or equivalent: 4 x 47 kohm bussed SIP-5 | Reset pull-downs, common pin to GND |
+| C1 | 1 | 100 nF ceramic, >=10 V | U1 supply bypass, next to pins 6/2 |
+| Adapter | 1 | SOIC-8, 1.27 mm pitch, to 2.54 mm DIP | Breadboard/socket mounting for U1 |
 
-## Design checks and remaining evidence
+The network can instead be four ordinary 47 kohm resistors for the first mock-up. Its four resistors are electrically distinct and share only ground; do not buy an isolated network or a series ladder by mistake. With the network: **two ICs, one transistor, three discrete resistors, one resistor network, one capacitor**, plus adapter/connectors/protoboard. No external buffer or second power converter. No parts have been purchased or live-stock verified for this design.
 
-`python3 scripts/sony-interface.py --check` verifies the connected-row netlist, component pad occupancy, seven resistor totals, all-off open output, separate logic/Sony grounds, GPIO assignments, LED resistors, and pulldowns. It also checks generated schematic/placement/BOM consistency. Eight layout checks passed, including deliberate ground shorts, an incorrect ladder value, a missing return, wrong LED resistance, GPIO reuse, and duplicate-pad faults. These are topology calculations with ideal contacts; they do not model semiconductor leakage, LED current versus temperature, soldering, or Sony compatibility. Generated SVGs are conceptual schematic/placement guides, not a fabricated PCB or an automotive qualification report.
+## Exact nets
 
-No physical electrical tests have been performed. Actual relay provenance, physical fit, LED current, measured resistance/leakage, firmware sequencing/reset behavior, and head-unit recognition remain to be verified. The resistor interface can be mocked up now; the powered receiver is needed for acceptance afterward, not to start construction.
+IC pin numbers are physical pins, top view. Verify actual package markings before wiring. Adapter header numbering must be continuity-checked; it is not automatically the IC's pin numbering.
 
-References reviewed 2026-10-26 (client local date):
+| Device pin | Connection |
+| --- | --- |
+| AD8400 pin 1, B1 | Shared GND |
+| AD8400 pin 2, GND | Shared GND |
+| AD8400 pin 3, CS | XIAO D0/GPIO26; RN1 branch to GND |
+| AD8400 pin 4, SDI | XIAO D10/GPIO3, hardware MOSI; RN1 branch to GND |
+| AD8400 pin 5, CLK | XIAO D8/GPIO2, hardware SCK; RN1 branch to GND |
+| AD8400 pin 6, VDD | Regulated 5 V; C1 to pin 2 |
+| AD8400 pin 7, W1 | LCC110 pin 6 |
+| AD8400 pin 8, A1 | Unconnected |
+| LCC110 pin 2, LED anode | 5 V through R1, 330 ohms |
+| LCC110 pin 3, LED cathode | Q1 collector |
+| LCC110 pin 5, normally-open contact | R3, 2.7 kohm, then Sony Input 1 |
+| LCC110 pin 6, normally-open contact | AD8400 pin 7 |
+| LCC110 pins 7/8, normally-closed contact | Unconnected, insulated |
+| LCC110 pins 1/4, package NC | Unconnected |
+| Q1 emitter | Shared GND |
+| Q1 base | XIAO D1/GPIO27 through R2, 1 kohm; fourth RN1 branch to GND |
+| RN1 common, marked pin 1 on specified Bourns part | Shared GND |
+| Sony ST Remote GND | Shared GND |
+| Sony Input 2 | Individually insulated |
 
-- [Panasonic GE DIP4 catalog: ratings, LED drive, switching times, dimensions and pin diagram](https://mediap.industry.panasonic.eu/assets/download-files/import/semi_eng_ge1a_aqy21_e_dip4.pdf), especially printed pages 1–3 and 6.
-- [RP2040 datasheet](https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf), GPIO pad control and IO electrical characteristics (printed pages 301 and 615–617).
-- [Sony reference implementation: resistance targets and candidate pulse timing](https://github.com/pounamu-electronics/RE_SWC_FW/blob/main/lib/headunit_swc/src/sony/sony_swc.cpp).
-- [Sony XAV-9000ES Custom steering-wheel settings](https://helpguide.sony.net/ev/xav-9000es/v1/en/contents/TP1000940274.html).
-- [ElectroCookie Mini product listing and routing/dimension image](https://www.amazon.com/dp/B081MSKJJX).
+For the specified RN1, assign branches 2=CS, 3=CLK, 4=SDI, 5=Q1 base. A 2N3904 from another manufacturer must have its pinout checked, not assumed from the flat face.
+
+## Controller cable
+
+Build a fresh labeled harness: **this is incompatible with the previous six-wire ladder and eight-wire mux/buffer pinouts. Contact 2 now carries 5 V.** Mark contact 1 on both housings; actual IDC/key orientation is not established.
+
+| Contact | XIAO | GPIO | Purpose |
+| --- | --- | ---: | --- |
+| 1 | GND | — | Shared GND |
+| 2 | 5V / VBUS | — | Interface power |
+| 3 | D8 / SCK | 2 | Pot CLK |
+| 4 | D10 / MOSI | 3 | Pot SDI |
+| 5 | D0 | 26 | Pot CS |
+| 6 | D1 | 27 | Relay enable, through R2 |
+| 7, optional | GND | — | Second ground in an eight-conductor cable |
+| 8, optional | Unconnected | — | Reserve for future D6/GPIO0 camera interface |
+
+Six conductors are sufficient; use eight if convenient. D9/GPIO4 MISO remains free. Twist stays on D4/GPIO6 SDA and D5/GPIO7 SCL with its unchanged four-wire cable. D2/D3/D6/D7 are free. Power everything from the same regulated 5 V source; never put vehicle 12 V on this harness. Start with short cable and 100 kHz SPI; test final cable length before installation.
+
+## Component calculations and limits
+
+Design supply envelope: **4.75–5.25 V at the board**, to be measured under load. LCC110 LED current is approximately (5 − 1.42 − 0.1)/330 = 10.5 mA. With 4.75 V, VF=1.56 V, a conservative 0.3 V transistor drop and +1% R1, it remains about 8.7 mA, above the 8 mA operate specification. With 5.25 V, VF=0.9 V and −1% R1, it is below 13.4 mA. R1 dissipates under 0.06 W at that bound. These LED data are specified at 25°C; measure actual current and verify eventual temperature behavior.
+
+Q1 base drive is nominally about 2.5 mA through 1 kohm, with negligible diversion into 47 kohm. Use at least 4 mA RP2040 pad drive strength in the future backend. The GPIO is supplying base current; the 5 V rail supplies the optical LED. Allow 20 mA extra interface supply budget pending measurement.
+
+R3 means even a zero-scale programming mistake leaves approximately 2.7 kohm in the signal path, bounding current from an ideal 5.25 V source to under 2 mA. It is **not** a voltage clamp or proof of safe operation at every code. AD8400 current limits depend on resistance/code as well as wiper current. Before receiver connection, measure source impedance and commanded current; a conservative prototype target is <=0.5 mA for all five commands, with code-dependent limits reviewed if exceeded. Use a 5 V pull-up through 10 kohm for initial simulated-input tests.
+
+Analog terminal voltages must stay between GND and actual U1 VDD. Roughly 3.3–5 V sensing is a working expectation, not a Sony-published XAV-9000ES rating. Measure the Sony's open-circuit Input 1 voltage and local U1 supply before connection. The relay does not make the pot 12 V tolerant while closed.
+
+## Commands and firmware behavior
+
+Measure total resistance across the Sony connector with the Sony disconnected. R3 and relay/wiper resistance are included. AD8400 end-to-end resistance tolerance is ±30%, so nominal codes are starting estimates only.
+
+| Command | Target total | Nominal starting code |
+| --- | ---: | ---: |
+| Mute/ATT | 4.4 kohm | 8 |
+| Next | 8.8 kohm | 31 |
+| Previous | 12.1 kohm | 48 |
+| Volume up | 16.8 kohm | 72 |
+| Volume down | 23.6 kohm | 107 |
+
+Codes assume 50 kohm end-to-end, 50 ohm wiper, 23 ohm relay and 2.7 kohm fixed resistor. Formula: `Rtotal ≈ 2700 + Rrelay + Rwiper + 50000 * code / 256`. Store individually calibrated codes in XIAO settings later. Sony Custom learning is the fallback for small residual target differences, subject to actual recognition.
+
+1. Startup: preload D1 LOW and D0 HIGH before output configuration. Initialize SPI mode 0, MSB-first, 100 kHz. The pulled-down Q1 base keeps the relay open while the XIAO starts/resets.
+2. Ensure relay open. Select U1, send 16 bits with channel/address 00 and the 8-bit code in the low byte, then raise CS. The last ten bits are the address/data word. No return-data wire is used.
+3. Allow an initial 1 ms pot-settling interval. Set D1 HIGH for 55 ms, then LOW for at least 55 ms. LCC110 switching can take 4 ms under its stated conditions; these starting timings allow roughly 50 ms effective command/release intervals. Tune on the actual Sony.
+4. Implement with a nonblocking timer state machine. Keep gesture processing and LED feedback unchanged; bound/coalesce volume requests and discard stale ones rather than replaying a backlog.
+5. Reset, Twist failure and failed initialization release D1 and clear queued commands. Add a watchdog when implementing the output backend so a hang is time-limited. SPI transmission provides no confirmation that a chip is present or the Sony acted.
+
+Current firmware remains unchanged. First add a separate Sony-disconnected resistance-calibration diagnostic; only enable controller outputs after physical interface validation. No flashing or receiver power-up is performed as part of this design work.
+
+## Power loss: acceptance boundary
+
+At reset with valid supply, the base pull-down turns Q1 off and opens the relay. At steady power-off the normally-open contact is open. **An abrupt supply loss is not yet proven:** relay release can take milliseconds, while the pot supply can fall earlier. Momentary current could flow from Sony into the falling pot rail. A power-on/off steady DMM check cannot establish transient safety. Use a simulated Sony pull-up and observe the input/pot rail during abrupt removal and slow ramps, preferably on a scope. If it violates the pot limits, the installation needs supply hold-up/disconnect sequencing or a different protected pot. Do not represent this prototype as already solving that transition.
+
+## Build and validation
+
+Use existing solderless boards first. The LCC110, SOIC adapter, transistor and passives should fit the approved small protoboard, but adapter dimensions and actual routing require a dry-fit. No permanent pad map has been validated; the old generated placement is not usable.
+
+- Unpowered: check all nets and no shorts; confirm Input 1 cannot bypass the normally-open contact. Verify adapter and Q1 physical pin numbering.
+- Logic powered, Sony absent: check rails and relay LED current by measuring voltage across R1 and dividing by 330. Ensure XIAO digital nodes remain at 3.3 V logic levels.
+- With no external voltage on the isolated Sony port: measure open/OL idle and each calibrated resistance while the future diagnostic closes the contact. Reset/release must restore open.
+- Simulated input: <=5 V through 10 kohm; check commanded currents, voltage limits, reset and both power-loss orders. Use voltage mode on this energized test, not ohms mode.
+- Actual Sony later: measure Input 1 to ST Remote GND with our circuit disconnected. A known 10 kohm test load allows estimating source resistance as `10000 * (Vopen/Vloaded - 1)` for a steady simple pull-up. Then confirm supply margin/current limits, learn commands as needed and test timing at low volume.
+- Finish pad placement, connector orientation, final cable test and mounting only after the prototype passes. Camera switching remains separate.
+
+## Primary references
+
+- [Analog Devices AD8400/8402/8403 datasheet](https://www.analog.com/media/en/technical-documentation/data-sheets/AD8400_8402_8403.pdf), pages 6, 11–12, 20–22: 50 kohm specs, voltage/current limits, pinout and serial protocol.
+- [Littelfuse LCC110 datasheet](https://www.littelfuse.com/assetdocs/littelfuse-integrated-circuits-lcc110-datasheet?assetguid=fef24721-9a57-4423-a6f7-7e12c72ec530), pages 1–2: LED and contact pins, input current and switching time.
+- [onsemi 2N3903/2N3904 datasheet](https://www.onsemi.com/pdf/datasheet/2n3903-d.pdf): pinout and saturation characteristics.
+- [Bourns 4600X networks](https://www.bourns.com/docs/product-datasheets/4600x.pdf): 101 bussed topology, pin 1 common, 473 value code.
+- [Voltage research](sony-interface-simplification.md) and [stock Sony RM-X2S board scan/resistance table](https://llg.cubic.org/tools/sonyrm/). No third-party firmware copied.

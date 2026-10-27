@@ -1,5 +1,7 @@
 # Parts sourcing — Sony resistor interface
 
+**Archived shopping list:** the selected [one LCC110 plus AD8400 design](sony-interface.md) supersedes this five-switch BOM. Do not buy five AQY212EH devices for the current build. Exact new parts sourcing remains pending.
+
 Original AQY212EH design retained. The user has four LCC110 devices on hand; they are not used in this build. No purchases have been reported for the items below.
 
 Amazon US listings checked 2026-10-26 (client local date). Listing descriptions/indices are evidence of advertised parts, not independent proof of stock, authenticity, or delivery date. The relay product pages did not load reliably enough to confirm live price/shipping.

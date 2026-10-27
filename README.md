@@ -6,7 +6,7 @@ The knob will occupy the cigarette-lighter location. Use removable connections. 
 
 ## Status
 
-The XIAO, Twist, Sony receiver, a camera, and the Sony's included steering-remote adapter are on hand. The adapter has leads labeled Input 1, Input 2, and ST Remote GND. The initial functional diagnostic is complete: the user verified diagnostic v2 rotation, button events, rotation while pressed, and RGB tests. The user has confirmed two consecutive Picotool uploads without button access or unplugging USB. A reviewed PhotoMOS/resistor-ladder prototype schematic, BOM, and meter-test plan are ready; the interface has not been assembled or verified against the Sony.
+The XIAO, Twist, Sony receiver, a camera, and the Sony's included steering-remote adapter are on hand. The adapter has leads labeled Input 1, Input 2, and ST Remote GND. The initial functional diagnostic is complete: the user verified diagnostic v2 rotation, button events, rotation while pressed, and RGB tests. The user has confirmed two consecutive Picotool uploads without button access or unplugging USB. The selected interface prototype uses one LCC110 plus an AD8400 digital pot; its parts, pinout and validation plan are documented. It has not been assembled or verified against the Sony.
 
 The separate gesture controller and live translation monitor are host-tested and user bench-verified: the user reports all gestures functional. Radio and camera-control outputs remain disabled until the Sony interface is validated.
 
@@ -25,7 +25,8 @@ Upload prints the selected build's flash-image and static RAM usage before flash
 ## Documents
 
 - [Wiring and cable plan](docs/wiring.md)
-- [Sony interface schematic, parts, placement, and bench procedure](docs/sony-interface.md)
+- [Sony interface circuit, parts, pinout, and bench procedure](docs/sony-interface.md)
+- [Digital-potentiometer simplification and voltage evidence](docs/sony-interface-simplification.md)
 - [Amazon component sourcing](docs/parts-sourcing.md)
 - [Design decisions and evidence](docs/design.md)
 - [Development checklist](docs/tasks.md)

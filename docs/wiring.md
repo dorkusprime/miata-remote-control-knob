@@ -6,8 +6,8 @@
 | --- | --- | --- | --- |
 | GND | GND | — | Ground |
 | 3.3V | 3V3 | — | Encoder and LED power |
-| SDA | D4 | GPIO6 | I2C0 data |
-| SCL | D5 | GPIO7 | I2C0 clock |
+| SDA | D4 | GPIO6 | I2C1 data |
+| SCL | D5 | GPIO7 | I2C1 clock |
 | INT | Unconnected initially | — | Optional active-low event notification; poll initially |
 | RST | Unconnected | — | Reset input |
 
@@ -31,8 +31,8 @@ Component side facing you, USB-C at top; each edge listed top to bottom:
 | Left | D1 / A1 | 27 | ADC |
 | Left | D2 / A2 | 28 | ADC |
 | Left | D3 / A3 | 29 | ADC |
-| Left | D4 / SDA | 6 | I2C0 SDA |
-| Left | D5 / SCL | 7 | I2C0 SCL |
+| Left | D4 / SDA | 6 | I2C1 SDA |
+| Left | D5 / SCL | 7 | I2C1 SCL |
 | Left | D6 / TX | 0 | UART TX |
 | Right | 5V / VBUS | — | USB 5 V rail |
 | Right | GND | — | Ground |
@@ -44,35 +44,28 @@ Component side facing you, USB-C at top; each edge listed top to bottom:
 
 D pins support digital I/O and PWM. GPIO signals use 3.3 V logic.
 
-## Sony resistor-interface prototype — receiver disconnected
+## Sony interface: one SSR plus digital pot — proposed
 
-The selected prototype uses five AQY212EH normally-open PhotoMOS switches and a seven-resistor ladder. It supersedes the analog-multiplexer proposal and its cable assignment. The schematic, exact ElectroCookie Mini pad layout, BOM, and receiver-disconnected multimeter procedure are in [Sony interface prototype](sony-interface.md). The design is ready to mock up; no physical interface or Sony acceptance test has been performed.
+The selected prototype uses one LCC110, AD8400ARZ50, and a 2N3904 input driver. [Complete circuit, physical IC pin mapping, BOM and acceptance checks](sony-interface.md). The old five-relay and mux/buffer cable allocations are obsolete.
 
-The Sony includes a Steering Remote adapter with an apparently 3.5mm plug and leads labeled Input 1, Input 2, ST Remote GND (user observation). Use those labeled leads; no added audio breakout is needed. Exact adapter model/plug-contact mapping is not needed for the labeled-lead mock-up. Input selection/recognition remains a receiver acceptance test.
+**New harness: contact 2 carries 5 V. Do not plug in an earlier harness by matching contact numbers.** Number and label the actual connector at both ends.
 
-### Controller cable J1 — replaces the old eight-wire mux allocation
+| Contact | XIAO | GPIO | Purpose |
+| --- | --- | ---: | --- |
+| 1 | GND | — | Shared ground |
+| 2 | 5V/VBUS | — | Interface power |
+| 3 | D8/SCK | 2 | Pot clock |
+| 4 | D10/MOSI | 3 | Pot data |
+| 5 | D0 | 26 | Pot CS |
+| 6 | D1 | 27 | Relay enable via base resistor |
+| 7, optional | GND | — | Second ground |
+| 8, optional | Unconnected | — | Future camera-control reserve |
 
-| Contact | XIAO label | GPIO | Purpose |
-| --- | --- | --- | --- |
-| 1 | GND | — | PhotoMOS LED return, logic side only |
-| 2 | D0 | 26 | Mute/ATT, U1 |
-| 3 | D1 | 27 | Next track, U2 |
-| 4 | D2 | 28 | Previous track, U3 |
-| 5 | D3 | 29 | Volume up, U4 |
-| 6 | D6 | 0 | Volume down, U5 |
+Six conductors suffice; an eight-conductor cable leaves space for another ground and future camera control. D9/MISO remains free. The separate Twist cable is unchanged.
 
-No 5V/VBUS wire is required. The old pin-2 5V assignment must not be used. An optional eight-conductor cable may reserve contact 7 for D7/GPIO1 to a future camera interface and contact 8 as spare; leave both unconnected now. D8–D10 remain free. This cable is separate from the four-wire Twist cable.
+Sony Input 1 goes through 2.7 kohm, the LCC110 normally-open contact, and the pot W-to-B resistance to ST Remote GND. **ST Remote GND and logic GND are joined** in this design. Input 2 stays insulated. The included Sony adapter already supplies labeled leads; no audio breakout is required. No Sony signal or raw vehicle 12 V connects to GPIO.
 
-### Sony connector J2
-
-| Contact | Adapter lead |
-| --- | --- |
-| 1 | Input 1, resistor-ladder input |
-| 2 | ST Remote GND, PhotoMOS contact return |
-
-Input 2 remains individually insulated. Keep logic GND and Sony ST Remote GND separate on this board; PhotoMOS control inputs and output contacts are optically separate. Do not connect Sony signal leads to GPIO, 3V3, 5V, or raw vehicle 12V. Sony stays disconnected throughout resistance-output testing. Existing firmware does not drive these command outputs.
-
-Before connecting to the receiver, measure the prototype, verify release/reset behavior with its future backend, check Sony remote voltage against the design envelope, and test command learning/recognition. Camera trigger and video routing remain separate work.
+All outputs remain disabled. Verify a Sony-disconnected breadboard, commanded resistances, voltage/current limits, reset and supply transitions before receiver connection. Final soldered pad placement and connector orientation are not yet validated. The generated files in hardware/sony-remote describe the archived design, not this one.
 
 ## Camera routing — pending bench test
 
