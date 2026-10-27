@@ -22,7 +22,11 @@ Initial functional diagnostic complete: USB/I2C, rotation, button, RGB, and repe
 - [x] Button DOWN/UP events observed by user (2026-10-27).
 - [x] V2 reads rotation in both directions and while pressed (user serial output; 2026-10-27). Original diagnostic failure cause remains unconfirmed.
 - [x] User reports RGB diagnostic tests worked after r/g/b/o test instructions (2026-10-26, client local date).
-- [ ] Implement gestures with serial-only command output.
+- [x] Preserve original diagnostic; implement separate gesture controller with serial-only command output.
+- [x] Add live translated monitor with port detection and reconnection.
+- [x] Pass 19 host gesture scenarios and 15 monitor tests, including virtual serial testing (2026-10-26 client local date).
+- [ ] User uploads controller and tests click/double-click/held-turn timing and translated monitor output.
+- [ ] Confirm repeat Picotool uploads with the controller sketch.
 
 ## Sony interface
 

@@ -1,5 +1,7 @@
 # Firmware environment
 
+Two sketches are available: the preserved [hardware diagnostic](diagnostic/diagnostic.ino) and the new [gesture controller](controller/controller.ino). See [gesture mapping and live monitor](../docs/gestures.md) for controller commands. The build/upload helper now defaults to `controller`; the commands below explicitly select `diagnostic`.
+
 The serial-only diagnostic builds for Seeed XIAO RP2040. User-provided v2 output confirms rotation in both directions, button transitions, and rotation while held. Twist firmware is 1.2. The user confirmed two consecutive Picotool uploads without button access or unplugging USB. Sony and camera outputs are not configured or driven.
 
 ## Pinned dependencies
@@ -14,7 +16,7 @@ From the repository root on Apple Silicon macOS:
 
 ```sh
 python3 scripts/setup-toolchain.py
-scripts/knob.sh build
+scripts/knob.sh build diagnostic
 scripts/arduino.sh board list
 ```
 
@@ -46,7 +48,7 @@ The default UF2 uploader resets the serial device and searches for a mounted dri
 One-time transition: close the serial monitor; enter BOOT mode using the procedure that already worked; then copy the **Picotool-enabled** binary from the repository root:
 
 ```sh
-cp build/picotool/diagnostic.ino.uf2 /Volumes/RPI-RP2/
+cp build/diagnostic-picotool/diagnostic.ino.uf2 /Volumes/RPI-RP2/
 ```
 
 After restart, send `h` in the serial monitor and confirm `USB maintenance: Picotool enabled`. The previous `build/diagnostic` binary does not enable this interface.
@@ -54,13 +56,13 @@ After restart, send `h` in the serial monitor and confirm `USB maintenance: Pico
 For subsequent updates, leave USB connected, close the serial monitor, then run:
 
 ```sh
-scripts/knob.sh build
-scripts/knob.sh upload
+scripts/knob.sh build diagnostic
+scripts/knob.sh upload diagnostic
 scripts/arduino.sh board list
-scripts/knob.sh monitor /dev/cu.usbmodem1412301
+scripts/knob.sh raw-monitor /dev/cu.usbmodem1412301
 ```
 
-Use the current port from `board list` for the monitor; Picotool upload itself does not require a serial-port name. Connect only the intended RP2040 target when uploading: Picotool selects a device over USB. The helper does not compile implicitly during upload; build after each source change. It uploads only from `build/picotool` using the installed Picotool with forced USB reset, read-back verification, and execution (`load -v -f -x`). The build FQBN in `toolchain.json` must retain `uploadmethod=picotool`.
+Use the current port from `board list` for the monitor; Picotool upload itself does not require a serial-port name. Connect only the intended RP2040 target when uploading: Picotool selects a device over USB. The helper does not compile implicitly during upload; build after each source change. With target `diagnostic`, it uploads only from `build/diagnostic-picotool` using the installed Picotool with forced USB reset, read-back verification, and execution (`load -v -f -x`). The build FQBN in `toolchain.json` must retain `uploadmethod=picotool`.
 
 The user confirmed two successive Picotool uploads without pressing buttons or unplugging USB (2026-10-27). This is user-reported hardware validation, separate from compilation. The `h` command can display the maintenance banner. A firmware/USB failure can still require hardware recovery; Picotool is not a guarantee against every hang. Keep an accessible USB data connection in the installation design.
 
