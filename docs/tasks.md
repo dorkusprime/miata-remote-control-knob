@@ -46,7 +46,8 @@ Initial functional diagnostic complete: USB/I2C, rotation, button, RGB, and repe
 - [ ] Receive and inspect parts; verify actual packages, polarity and pin orientation.
 - [x] Add a provisional current-design DIP placement image with pin/net reference; not a complete routed layout.
 - [x] Place every component and pigtail in a complete proposed pad map; document top / underside views and check all nets, holes and nominal body separation.
-- [ ] Dry-fit actual components, sockets, mounting holes and lead forming against the proposed map; verify insulation, wire clearance and overall height.
+- [x] Simplify placement: move R2/R3 to the top and replace nine separate rail links with two tapped buses; one underside resistor and six wire pieces remain.
+- [ ] Dry-fit actual components, sockets, mounting holes, formed leads and bus construction; verify insulation, clearances and overall height.
 - [ ] Assemble the receiver-disconnected solderless prototype; verify rails and relay LED current.
 - [ ] Implement a separate calibration/driver diagnostic with relay-off defaults; user performs flashing.
 - [ ] Measure and record the five calibrated output resistances.

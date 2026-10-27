@@ -61,6 +61,21 @@ class CurrentLayoutTests(unittest.TestCase):
                                     'route':[layout.pad_xy('G14'),layout.pad_xy('D4')]})
         with self.assertRaisesRegex(AssertionError,'Short'):self.check()
 
+    def test_missing_middle_ground_bus_tap(self):
+        bus = next(w for w in self.data['jumpers'] if w['ref'] == 'BG')
+        bus['pads'].remove('J10')
+        with self.assertRaisesRegex(AssertionError,'Open net'):self.check()
+
+    def test_bus_tap_must_be_explicit_on_route(self):
+        bus = next(w for w in self.data['jumpers'] if w['ref'] == 'BG')
+        tap = layout.pad_xy('I8')
+        bus['route'] = [xy for xy in bus['route'] if abs(xy[0]-tap[0])+abs(xy[1]-tap[1]) > 1e-6]
+        with self.assertRaisesRegex(AssertionError,'Missing tap'):self.check()
+
+    def test_top_resistor_lead_cannot_cross_capacitor(self):
+        self.part('R3')['lead_route'].insert(1,self.part('C3')['body'][:2])
+        with self.assertRaisesRegex(AssertionError,'Lead R3 crosses body'):self.check()
+
     def test_mirrored_image_retains_physical_pad_ids(self):
         source = layout.draw(self.data)
         self.assertIn('board flipped left-to-right',source)

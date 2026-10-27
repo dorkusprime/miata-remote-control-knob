@@ -125,7 +125,7 @@
       "ref": "R2",
       "part": "1 kohm",
       "ohms": 1000,
-      "side": "bottom",
+      "side": "top",
       "pins": {
         "1": "A5",
         "2": "A13"
@@ -165,21 +165,21 @@
       "ref": "R3",
       "part": "2.7 kohm",
       "ohms": 2700,
-      "side": "bottom",
+      "side": "top",
       "pins": {
         "1": "J5",
         "2": "J17"
       },
       "body": [
         35.56,
-        22.86,
+        30.48,
         2.6,
         6.8
       ],
       "style": "axial",
       "center": [
         35.56,
-        22.86
+        30.48
       ],
       "angle": 90,
       "lead_route": [
@@ -188,8 +188,16 @@
           15.24
         ],
         [
-          35.56,
+          37,
           15.24
+        ],
+        [
+          37,
+          26
+        ],
+        [
+          35.56,
+          26
         ],
         [
           35.56,
@@ -376,12 +384,17 @@
   ],
   "jumpers": [
     {
-      "ref": "W1",
+      "ref": "BG",
+      "net": "GND",
       "pads": [
         "C4",
-        "G4"
+        "G4",
+        "I8",
+        "J10",
+        "D12",
+        "A9",
+        "B6"
       ],
-      "net": "GND",
       "route": [
         [
           10.16,
@@ -390,73 +403,21 @@
         [
           25.4,
           12.7
-        ]
-      ]
-    },
-    {
-      "ref": "W2",
-      "pads": [
-        "I4",
-        "I8"
-      ],
-      "net": "GND",
-      "route": [
+        ],
         [
           30.48,
           12.7
         ],
         [
           30.48,
-          22.86
-        ]
-      ]
-    },
-    {
-      "ref": "W3",
-      "pads": [
-        "H8",
-        "J10"
-      ],
-      "net": "GND",
-      "route": [
-        [
-          27.94,
           22.86
         ],
         [
           33.02,
           27.94
-        ]
-      ]
-    },
-    {
-      "ref": "W4",
-      "pads": [
-        "G10",
-        "D12"
-      ],
-      "net": "GND",
-      "route": [
-        [
-          25.4,
-          27.94
         ],
         [
           12.7,
-          33.02
-        ]
-      ]
-    },
-    {
-      "ref": "W5",
-      "pads": [
-        "C12",
-        "A9"
-      ],
-      "net": "GND",
-      "route": [
-        [
-          10.16,
           33.02
         ],
         [
@@ -470,17 +431,7 @@
         [
           5.08,
           25.4
-        ]
-      ]
-    },
-    {
-      "ref": "W6",
-      "pads": [
-        "D9",
-        "B6"
-      ],
-      "net": "GND",
-      "route": [
+        ],
         [
           12.7,
           25.4
@@ -493,15 +444,18 @@
           7.62,
           17.78
         ]
-      ]
+      ],
+      "assembly": "One continuous sleeved/tapped wire, exposed and soldered only at the seven listed pads."
     },
     {
-      "ref": "W7",
+      "ref": "BV",
+      "net": "+5V",
       "pads": [
         "G1",
-        "I6"
+        "I6",
+        "G7",
+        "F13"
       ],
-      "net": "+5V",
       "route": [
         [
           25.4,
@@ -518,37 +472,13 @@
         [
           30.48,
           17.78
-        ]
-      ]
-    },
-    {
-      "ref": "W8",
-      "pads": [
-        "G6",
-        "G7"
-      ],
-      "net": "+5V",
-      "route": [
+        ],
         [
           25.4,
           17.78
         ],
         [
           25.4,
-          20.32
-        ]
-      ]
-    },
-    {
-      "ref": "W9",
-      "pads": [
-        "H7",
-        "F13"
-      ],
-      "net": "+5V",
-      "route": [
-        [
-          27.94,
           20.32
         ],
         [
@@ -563,7 +493,8 @@
           22.86,
           35.56
         ]
-      ]
+      ],
+      "assembly": "One continuous sleeved/tapped wire, exposed and soldered only at the four listed pads."
     },
     {
       "ref": "W10",
@@ -665,5 +596,6 @@
         ]
       ]
     }
-  ]
+  ],
+  "revision_notes": "Same circuit and pigtail/component terminal pads. R2/R3 moved to top; six ground links consolidated into BG and three power links into BV. Wire pieces: 13 to 6; solder landings: 26 to 19. One resistor remains underneath."
 }

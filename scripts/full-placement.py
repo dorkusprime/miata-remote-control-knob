@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 """Check and draw the complete proposed MCP41050 interface pad allocation."""
 import argparse
-import csv
 import html
-import io
 import json
 import math
 from pathlib import Path
@@ -74,8 +72,10 @@ def check(d):
     assert len({w['ref'] for w in d['jumpers']})==len(d['jumpers'])
     for w in d['jumpers']:
         for pad in w['pads']:occupy(pad,w['ref'])
-        assert all(math.dist(pad_xy(p),point)<1e-6 for p,point in zip(w['pads'],[w['route'][0],w['route'][-1]])),w['ref']
-        join(*w['pads'])
+        assert len(w['pads'])>=2, w['ref']
+        assert all(any(math.dist(pad_xy(p),point)<1e-6 for point in w['route']) for p in w['pads']), f'Missing tap on route: {w["ref"]}'
+        assert math.dist(pad_xy(w['pads'][0]),w['route'][0])<1e-6 and math.dist(pad_xy(w['pads'][-1]),w['route'][-1])<1e-6, w['ref']
+        for p in w['pads'][1:]:join(w['pads'][0],p)
     root_names={}; net_roots={}
     def label(pad,net):
         root=find(pad)
@@ -98,6 +98,11 @@ def check(d):
         for p in d['parts']:
             if p['side']=='bottom':
                 assert not any(segment_hits_box(a,b,p['body']) for a,b in zip(w['route'],w['route'][1:])),f'Jumper {w["ref"]} crosses body {p["ref"]}'
+    for p in d['parts']:
+        if p['ref'] not in ('R2','R3'):continue
+        for q in d['parts']:
+            if q['ref']==p['ref'] or q['side']!=p['side']:continue
+            assert not any(segment_hits_box(a,b,q['body']) for a,b in zip(p['lead_route'],p['lead_route'][1:])), f'Lead {p["ref"]} crosses body {q["ref"]}'
     print('Current layout: all device nets connected; no shorts, pad reuse or nominal same-side body overlap; jumpers avoid underside resistor bodies.')
 
 
@@ -123,7 +128,7 @@ def draw(d):
     s.text(35,74,'MCP41050 + HCT125 + LCC110 · proposed no-cut ElectroCookie Mini layout',18)
     s.rect(35,94,1690,66,'#fff3cd',radius=8)
     s.text(52,120,'ELECTRICAL PAD ALLOCATION CHECKED · PHYSICAL FIT / SOCKETS / MOUNTING STILL UNVERIFIED',18,'#92400e')
-    s.text(52,145,'Separate faces keep bodies clear. Sleeve extended leads. Only marked endpoints connect; crossing insulated jumpers do not.',16,'#92400e')
+    s.text(52,145,'One underside resistor + six wire pieces. BG/BV are continuous tapped buses; crossing sleeved sections do not connect.',16,'#92400e')
     for side,bx in [('top',55),('bottom',705)]:
         by=220
         def pos(pt):return (bx+(38.1-pt[0] if side=='bottom' else pt[0])*scale,by+pt[1]*scale)
@@ -189,9 +194,9 @@ def draw(d):
                 x,y=pad(c['pad']);s.circle(x,y,5,'#0e7490');s.text(x-4,y-10,c['ref'].replace('J',''),10,'#0e7490')
         s.text(bx,1010,'Bodies shown on this face only. Pads retain the same IDs after flipping.',14)
     x=1325;s.text(x,195,'TOP',20)
-    for i,t in enumerate(['U1   MCP41050-I/P','U2   SN74HCT125N','K1   LCC110','Q1   2N3904BU, formed leads','R4–R7   47 kΩ, upright','C1/C2   100 nF','C3   10 µF, + J7 / − J8']):s.text(x,226+i*27,t,16)
+    for i,t in enumerate(['U1   MCP41050-I/P','U2   SN74HCT125N','K1   LCC110','Q1   2N3904BU, formed leads','R4–R7   47 kΩ, upright','C1/C2   100 nF','C3   10 µF, + J7 / − J8','R2/R3   outer-edge axial resistors']):s.text(x,226+i*27,t,16)
     s.text(x,450,'UNDERSIDE',20)
-    for i,t in enumerate(['R1   330 Ω · C15 ↔ H13','R2   1 kΩ · A5 ↔ A13','R3   2.7 kΩ · J5 ↔ J17','W1–W13   insulated jumpers','No underside resistor bodies cross.','Long leads must be sleeved.']):s.text(x,481+i*27,t,16)
+    for i,t in enumerate(['R1   330 Ω · C15 ↔ H13','BG   one wire, 7 ground taps','BV   one wire, 4 power taps','W10–W13   four signal wires','Six pieces; 19 solder landings.','Sleeve buses between marked taps.']):s.text(x,481+i*27,t,16)
     s.text(x,690,'J1 · six-wire controller pigtail',18)
     for i,t in enumerate(['1 GND → B4','2 +5 V → J6','3 SCK → A10','4 MOSI → I11','5 CS → A7','6 ENABLE → B5']):s.text(x,720+i*25,t,16)
     s.text(x,910,'J2 · Sony pigtail',18)
@@ -200,9 +205,9 @@ def draw(d):
     notes=[
       'Gray bars are factory-connected strips: A–E and F–J for each row. No copper cuts. No shared component/jumper holes.',
       'R4–R7 stand upright; Q1 leads are spread to A12 (E), C13 (B), D16 (C). Insulate formed leads and check actual transistor marking.',
-      'R1–R3 mount underneath with sleeved leads and clearance above the solder joints. R2/R3 run along opposite outer edges.',
+      'Only R1 remains underneath. R2/R3 lie on top along opposite edges; sleeve their extended leads.',
       'C1/C2 leads need careful forming. C3 positive goes to J7 and negative to J8. Do not reverse electrolytic polarity.',
-      'Pigtails land at separate pads; connector bodies remain off-board. Crossed jumpers are insulated, not soldered together.',
+      'BG/BV tack to the marked underside pads; they do not thread through every hole. Sleeve all sections between taps.',
       'Nominal body envelopes do not certify sockets, mounting holes or final height. Dry-fit the actual board before soldering.',
       'See pad-map.md and layout.json for every pin, terminal and jumper. Electrical mapping is checked; hardware remains untested.',
     ]
@@ -215,20 +220,20 @@ def tables(d):
     for p in d['parts']:s.append(f'| {p["ref"]} | {p["part"]} / {p["side"]} | '+', '.join(f'{n} → {pad}' for n,pad in p['pins'].items())+' |')
     s+=['','## Distributed pigtails','', 'These are wire landing pads, not two in-line headers. Fit the existing removable connectors off-board. J1 numbering matches the current harness. Sony Input 2 stays insulated.','', '| Contact | Net | Pad |','| --- | --- | --- |']
     for c in d['contacts']:s.append(f'| {c["ref"]} | {c["net"]} | {c["pad"]} |')
-    s+=['','## Insulated underside jumpers','', 'Crossings are not junctions. Use insulated wire; route clear of resistor bodies and keep leads sleeved over unrelated pads. Coordinates are endpoint and routing references, not validated three-dimensional wire bends.','', '| Jumper | Net | From | To |','| --- | --- | --- | --- |']
-    for w in d['jumpers']:s.append(f'| {w["ref"]} | {w["net"]} | {w["pads"][0]} | {w["pads"][1]} |')
-    s+=['','## Assembly and physical conditions','',
+    s+=['','## Underside wire pieces and bus taps','', 'Crossings are not junctions. Use insulated wire; route clear of resistor bodies and keep leads sleeved over unrelated pads. Coordinates are endpoint and routing references, not validated three-dimensional wire bends.','', '| Wire | Net | Solder pads in order |','| --- | --- | --- |']
+    for w in d['jumpers']:s.append(f'| {w["ref"]} | {w["net"]} | '+ ' → '.join(w['pads'])+' |')
+    s+=['', 'BG and BV are each one continuous conductor with multiple solder taps, not chains of separate jumpers. Expose only the listed tap pads; sleeve all intervening sections. Untapped pads along the drawn route stay insulated. Tack the middle taps to the underside pads rather than threading a wire repeatedly through holes. This reduces wire pieces from 13 to 6 and wire solder landings from 26 to 19; it does not remove electrical nets. Four signal wires remain separate.', '', 'If making continuous tapped buses is awkward, separate insulated segments following the same net connections remain electrically equivalent; they restore some of the original cut/strip work.', '', '## Assembly and physical conditions','',
         '- Fit sockets and top components first, without solder. The IC-only image is now a subset of this candidate.',
         '- R4–R7 use upright mounting to span adjacent rows; the axial bodies do not lie flat between those pads.',
         '- Q1 has a formed-lead footprint, not the default three adjacent TO-92 holes. E=A12, B=C13, C=D16. Check the actual part orientation and preform without force at the body.',
-        '- R1–R3 go on the underside. R2 and R3 use outer-edge lead routes; R1 sits below the relay area. Sleeve extended leads, leave solder-joint clearance, and retain leads long enough until the dry-fit is complete.',
+        '- Only R1 remains on the underside. R2 moves onto the top left edge; R3 moves onto the top right edge and its body shifts down to avoid C3. Top R3 leads jog to x=37 mm past C3. Sleeve extended leads, retain solder-joint clearance and dry-fit before trimming.',
         '- Check supplied lead lengths before trimming. If a lead cannot follow its proposed route safely, revise the model or use an insulated extension; do not force the component.',
         '- C1/C2 leads are spread to the listed pads, rather than matching the stock 2.5 mm lead pitch. Avoid stress at the ceramic coating. C3 is polarized.',
         '- Body envelopes are provisional. The resistor envelope allows 6.8 × 2.6 mm, based on Yageo MFR-25 maximum body dimensions. Socket outlines, capacitor lead availability, mounting-hole locations and assembled height still require actual measurements.',
         '- This candidate uses both faces and distributed pigtails to preserve the no-cut board. It does not promise a single flat layer or accessible center mounting holes.',
         '- On the actual board, verify A–E / F–J strip continuity and orientation first. Do not solder until the dry-fit and receiver-disconnected electrical checks pass.',
         '', '## Verification scope','',
-        '`python3 scripts/full-placement.py --check` verifies the 14 component references, terminal connectivity against an independent device-pin contract, all resistor values, factory strips, no accidental net joins, no reused holes, pigtail assignments, nominal same-face body separation, and jumper avoidance of underside resistor bodies. It also verifies that the SVG/table match the model. This is not a timing, analog-current, power-sequencing or physical-fit simulation.',
+        '`python3 scripts/full-placement.py --check` verifies the 14 component references, terminal connectivity against an independent device-pin contract, all resistor values, factory strips, no accidental net joins, no reused holes, pigtail assignments, nominal same-face body separation, jumper avoidance of underside resistor bodies, and relocated top-resistor lead avoidance of other component bodies. It also verifies that the SVG/table match the model. This is not a timing, analog-current, power-sequencing or physical-fit simulation.',
         '', 'Regenerate with `python3 scripts/full-placement.py`. Tests deliberately introduce a rail short, an open jumper, a transistor-pin swap, pad reuse, a resistor-value error, a body overlap and a wire crossing a resistor body.',
         '', 'Source for resistor envelope: [Yageo MFR datasheet, dimensions](https://yageogroup.com/content/datasheet/asset/file/YAGEO-MFR_DATASHEET). Other envelopes are conservative drawing assumptions, not new manufacturer guarantees.','']
     return '\n'.join(s)

@@ -11,8 +11,8 @@
 | K1 | LCC110 / top | 1 → E14, 2 → E15, 3 → E16, 4 → E17, 8 → F14, 7 → F15, 6 → F16, 5 → F17 |
 | Q1 | 2N3904BU / top | E → A12, B → C13, C → D16 |
 | R1 | 330 ohm / bottom | 1 → C15, 2 → H13 |
-| R2 | 1 kohm / bottom | 1 → A5, 2 → A13 |
-| R3 | 2.7 kohm / bottom | 1 → J5, 2 → J17 |
+| R2 | 1 kohm / top | 1 → A5, 2 → A13 |
+| R3 | 2.7 kohm / top | 1 → J5, 2 → J17 |
 | R4 | 47 kohm / top | 1 → C7, 2 → C6 |
 | R5 | 47 kohm / top | 1 → C10, 2 → C9 |
 | R6 | 47 kohm / top | 1 → H11, 2 → H10 |
@@ -36,32 +36,29 @@ These are wire landing pads, not two in-line headers. Fit the existing removable
 | J2.1 | SONY_IN | I5 |
 | J2.2 | GND | H4 |
 
-## Insulated underside jumpers
+## Underside wire pieces and bus taps
 
 Crossings are not junctions. Use insulated wire; route clear of resistor bodies and keep leads sleeved over unrelated pads. Coordinates are endpoint and routing references, not validated three-dimensional wire bends.
 
-| Jumper | Net | From | To |
-| --- | --- | --- | --- |
-| W1 | GND | C4 | G4 |
-| W2 | GND | I4 | I8 |
-| W3 | GND | H8 | J10 |
-| W4 | GND | G10 | D12 |
-| W5 | GND | C12 | A9 |
-| W6 | GND | D9 | B6 |
-| W7 | +5V | G1 | I6 |
-| W8 | +5V | G6 | G7 |
-| W9 | +5V | H7 | F13 |
-| W10 | CS_OUT | A1 | A8 |
-| W11 | SCK_OUT | B2 | B11 |
-| W12 | MOSI_OUT | C3 | J12 |
-| W13 | PW | H3 | G16 |
+| Wire | Net | Solder pads in order |
+| --- | --- | --- |
+| BG | GND | C4 → G4 → I8 → J10 → D12 → A9 → B6 |
+| BV | +5V | G1 → I6 → G7 → F13 |
+| W10 | CS_OUT | A1 → A8 |
+| W11 | SCK_OUT | B2 → B11 |
+| W12 | MOSI_OUT | C3 → J12 |
+| W13 | PW | H3 → G16 |
+
+BG and BV are each one continuous conductor with multiple solder taps, not chains of separate jumpers. Expose only the listed tap pads; sleeve all intervening sections. Untapped pads along the drawn route stay insulated. Tack the middle taps to the underside pads rather than threading a wire repeatedly through holes. This reduces wire pieces from 13 to 6 and wire solder landings from 26 to 19; it does not remove electrical nets. Four signal wires remain separate.
+
+If making continuous tapped buses is awkward, separate insulated segments following the same net connections remain electrically equivalent; they restore some of the original cut/strip work.
 
 ## Assembly and physical conditions
 
 - Fit sockets and top components first, without solder. The IC-only image is now a subset of this candidate.
 - R4–R7 use upright mounting to span adjacent rows; the axial bodies do not lie flat between those pads.
 - Q1 has a formed-lead footprint, not the default three adjacent TO-92 holes. E=A12, B=C13, C=D16. Check the actual part orientation and preform without force at the body.
-- R1–R3 go on the underside. R2 and R3 use outer-edge lead routes; R1 sits below the relay area. Sleeve extended leads, leave solder-joint clearance, and retain leads long enough until the dry-fit is complete.
+- Only R1 remains on the underside. R2 moves onto the top left edge; R3 moves onto the top right edge and its body shifts down to avoid C3. Top R3 leads jog to x=37 mm past C3. Sleeve extended leads, retain solder-joint clearance and dry-fit before trimming.
 - Check supplied lead lengths before trimming. If a lead cannot follow its proposed route safely, revise the model or use an insulated extension; do not force the component.
 - C1/C2 leads are spread to the listed pads, rather than matching the stock 2.5 mm lead pitch. Avoid stress at the ceramic coating. C3 is polarized.
 - Body envelopes are provisional. The resistor envelope allows 6.8 × 2.6 mm, based on Yageo MFR-25 maximum body dimensions. Socket outlines, capacitor lead availability, mounting-hole locations and assembled height still require actual measurements.
@@ -70,7 +67,7 @@ Crossings are not junctions. Use insulated wire; route clear of resistor bodies 
 
 ## Verification scope
 
-`python3 scripts/full-placement.py --check` verifies the 14 component references, terminal connectivity against an independent device-pin contract, all resistor values, factory strips, no accidental net joins, no reused holes, pigtail assignments, nominal same-face body separation, and jumper avoidance of underside resistor bodies. It also verifies that the SVG/table match the model. This is not a timing, analog-current, power-sequencing or physical-fit simulation.
+`python3 scripts/full-placement.py --check` verifies the 14 component references, terminal connectivity against an independent device-pin contract, all resistor values, factory strips, no accidental net joins, no reused holes, pigtail assignments, nominal same-face body separation, jumper avoidance of underside resistor bodies, and relocated top-resistor lead avoidance of other component bodies. It also verifies that the SVG/table match the model. This is not a timing, analog-current, power-sequencing or physical-fit simulation.
 
 Regenerate with `python3 scripts/full-placement.py`. Tests deliberately introduce a rail short, an open jumper, a transistor-pin swap, pad reuse, a resistor-value error, a body overlap and a wire crossing a resistor body.
 
