@@ -14,8 +14,8 @@
 - [x] User uploaded the first serial diagnostic via BOOT-mode UF2 copy (2026-10-27).
 - [x] User uploaded and tested diagnostic v2; rotation/buttons/held rotation confirmed in supplied serial output.
 - [x] Build Picotool-enabled firmware and add build/upload helper (2026-10-27).
-- [ ] User installs Picotool-enabled build and confirms maintenance banner.
-- [ ] Validate two successive USB uploads without button access or unplugging before installation.
+- [x] User installed Picotool-enabled build; subsequent Picotool uploads succeeded (2026-10-27).
+- [x] User confirmed two successive USB uploads without button access or unplugging (2026-10-27).
 - [ ] Scan I2C and verify the Twist address.
 - [x] Button DOWN/UP events observed by user (2026-10-27).
 - [x] V2 reads rotation in both directions and while pressed (user serial output; 2026-10-27). Original diagnostic failure cause remains unconfirmed.

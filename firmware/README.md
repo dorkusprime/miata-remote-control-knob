@@ -1,6 +1,6 @@
 # Firmware environment
 
-The serial-only diagnostic builds for Seeed XIAO RP2040. User-provided v2 output confirms rotation in both directions, button transitions, and rotation while held. Twist firmware is 1.2. The Picotool-enabled build compiles but its upload path has not yet been hardware-validated. Sony and camera outputs are not configured or driven.
+The serial-only diagnostic builds for Seeed XIAO RP2040. User-provided v2 output confirms rotation in both directions, button transitions, and rotation while held. Twist firmware is 1.2. The user confirmed two consecutive Picotool uploads without button access or unplugging USB. Sony and camera outputs are not configured or driven.
 
 ## Pinned dependencies
 
@@ -62,7 +62,7 @@ scripts/knob.sh monitor /dev/cu.usbmodem1412301
 
 Use the current port from `board list` for the monitor; Picotool upload itself does not require a serial-port name. Connect only the intended RP2040 target when uploading: Picotool selects a device over USB. The helper does not compile implicitly during upload; build after each source change. It uploads only from `build/picotool` using the installed Picotool with forced USB reset, read-back verification, and execution (`load -v -f -x`). The build FQBN in `toolchain.json` must retain `uploadmethod=picotool`.
 
-Before mounting the board, verify the Picotool banner and perform two successive uploads without pressing buttons or unplugging USB, checking the diagnostic still runs afterward. These checks are pending. Do not present compilation as proof of remote upload success. A firmware/USB failure can still require hardware recovery; Picotool is not a guarantee against every hang. Keep an accessible USB data connection in the installation design.
+The user confirmed two successive Picotool uploads without pressing buttons or unplugging USB (2026-10-27). This is user-reported hardware validation, separate from compilation. The `h` command can display the maintenance banner. A firmware/USB failure can still require hardware recovery; Picotool is not a guarantee against every hang. Keep an accessible USB data connection in the installation design.
 
 The user currently performs uploads. An agent must have an explicit instruction before flashing attached hardware, per AGENTS.md. No upload has been performed by the agent.
 
@@ -74,10 +74,10 @@ The user currently performs uploads. An agent must have an explicit instruction 
 - User reports the first upload succeeded after BOOT-mode UF2 copy. Button DOWN/UP events work; turning produces no reported TURN events. Root cause is unconfirmed.
 - User reports a subsequent automatic upload failed after the board drive unmounted; unplugging and entering BOOT mode before re-uploading succeeded. Upload failure cause is unconfirmed.
 - User-provided v2 serial output confirms +1/-1 TURN events, BUTTON DOWN/UP, and turns with button=DOWN. Count/difference change together; firmware=1.2. The original getDiff-based diagnostic failure is not fully explained.
-- Picotool-enabled build passed: 62,640 bytes flash, 9,316 bytes global RAM. Two missing-initializer warnings originate in the core USB.cpp reset-driver structure (name/deinit); no sketch warnings reported. USB upload validation and LED tests remain pending.
+- Picotool-enabled build passed: 62,640 bytes flash, 9,316 bytes global RAM. Two missing-initializer warnings originate in the core USB.cpp reset-driver structure (name/deinit); no sketch warnings reported. User confirmed successful Picotool upload and repeat upload without physical board access; LED tests remain pending.
 
 References: [core installation and first upload](https://arduino-pico.readthedocs.io/en/latest/install.html), [SparkFun library](https://github.com/sparkfun/SparkFun_Qwiic_Twist_Arduino_Library).
 
 ## Historical default-UF2 upload results
 
-The original serial upload reported `No drive to deploy`. The user successfully flashed by unplugging USB, holding B/BOOT, reconnecting USB, releasing B, and copying the UF2 onto RPI-RP2. Automatic serial-reset uploads failed again after the first flash; manual BOOT mode worked again. The report that the drive unmounted does not establish why the upload failed. Retain these observations until the Picotool workflow is verified.
+The original serial upload reported `No drive to deploy`. The user successfully flashed by unplugging USB, holding B/BOOT, reconnecting USB, releasing B, and copying the UF2 onto RPI-RP2. Automatic serial-reset uploads failed again after the first flash; manual BOOT mode worked again. The report that the drive unmounted does not establish why the upload failed. Picotool subsequently succeeded twice without physical intervention; retain these observations as the reason for replacing the default UF2 uploader.
