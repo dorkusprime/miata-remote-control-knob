@@ -1,6 +1,8 @@
 # Sony interface: one LCC110 and one digital potentiometer
 
-Design date: 2026-10-27. **Prototype design; no physical validation yet.** The user selected one SSR plus one digital pot. All firmware Sony/camera outputs remain disabled. This replaces the five-relay ladder and the intermediate buffered MCP4152 proposal. The [five-relay design](sony-interface-photomos.md), files in `hardware/sony-remote/`, and `scripts/sony-interface.py` are archived references, not this circuit's build instructions.
+Design date: 2026-10-27. **The user has chosen to proceed with SOIC-8 hand soldering on an adapter**, after first practicing on an inexpensive chip. The AD8400ARZ50 is the selected prototype pot; the through-hole X9C503 alternative is not selected.
+
+**Prototype design; no physical validation yet.** The user selected one SSR plus one digital pot. All firmware Sony/camera outputs remain disabled. This replaces the five-relay ladder and the intermediate buffered MCP4152 proposal. The [five-relay design](sony-interface-photomos.md), files in `hardware/sony-remote/`, and `scripts/sony-interface.py` are archived references, not this circuit's build instructions.
 
 ## Circuit
 
@@ -34,7 +36,7 @@ Input 1 connects through a fixed current-limiting resistor, the normally-open SS
 | C1 | 1 | 100 nF ceramic, >=10 V | U1 supply bypass, next to pins 6/2 |
 | Adapter | 1 | SOIC-8, 1.27 mm pitch, to 2.54 mm DIP | Breadboard/socket mounting for U1 |
 
-The network can instead be four ordinary 47 kohm resistors for the first mock-up. Its four resistors are electrically distinct and share only ground; do not buy an isolated network or a series ladder by mistake. With the network: **two ICs, one transistor, three discrete resistors, one resistor network, one capacitor**, plus adapter/connectors/protoboard. No external buffer or second power converter. No parts have been purchased or live-stock verified for this design.
+The network can instead be four ordinary 47 kohm resistors for the first mock-up. Its four resistors are electrically distinct and share only ground; do not buy an isolated network or a series ladder by mistake. With the network: **two ICs, one transistor, three discrete resistors, one resistor network, one capacitor**, plus adapter/connectors/protoboard. No external buffer or second power converter. Amazon candidates are recorded in [parts sourcing](parts-sourcing.md); prices, live stock and delivery remain unverified. No new purchases have been reported. Follow [the SMD assembly procedure](smd-assembly.md) before using the actual pot.
 
 ## Exact nets
 

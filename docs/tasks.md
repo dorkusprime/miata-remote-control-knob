@@ -40,7 +40,11 @@ Initial functional diagnostic complete: USB/I2C, rotation, button, RGB, and repe
 - [x] Archive five-relay ladder; select one LCC110 plus digital pot (user direction, 2026-10-27).
 - [x] Document AD8400ARZ50, NPN input driver, shared ground, fresh cable pinout, nominal codes and bench checks.
 - [x] Choose a small soldered protoboard near the Sony (prior user decision).
-- [ ] Source exact 50 kohm AD8400 and correctly sized SOIC-8 adapter; check other parts on hand first.
+- [x] User chose SOIC-8 hand soldering after practice; retain AD8400 design (2026-10-27).
+- [x] Record Amazon candidates for the exact 50 kohm pot, solder-on adapter and practice chip; price/delivery not confirmed.
+- [ ] Obtain components and verify actual packages/adapter dimensions; check passives and tools on hand first.
+- [ ] Practice soldering one SOIC-8 chip; inspect and verify all eight pin-to-header connections.
+- [ ] Solder actual AD8400 onto adapter, inspect and check continuity before adding headers.
 - [ ] Assemble Sony-disconnected breadboard; measure LED current and calibrate five resistance settings.
 - [ ] Add separate calibration/driver diagnostic; user performs flashing.
 - [ ] Validate reset defaults and simulated-input power-loss transitions before installation approval.

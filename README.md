@@ -6,7 +6,7 @@ The knob will occupy the cigarette-lighter location. Use removable connections. 
 
 ## Status
 
-The XIAO, Twist, Sony receiver, a camera, and the Sony's included steering-remote adapter are on hand. The adapter has leads labeled Input 1, Input 2, and ST Remote GND. The initial functional diagnostic is complete: the user verified diagnostic v2 rotation, button events, rotation while pressed, and RGB tests. The user has confirmed two consecutive Picotool uploads without button access or unplugging USB. The selected interface prototype uses one LCC110 plus an AD8400 digital pot; its parts, pinout and validation plan are documented. It has not been assembled or verified against the Sony.
+The XIAO, Twist, Sony receiver, a camera, and the Sony's included steering-remote adapter are on hand. The adapter has leads labeled Input 1, Input 2, and ST Remote GND. The initial functional diagnostic is complete: the user verified diagnostic v2 rotation, button events, rotation while pressed, and RGB tests. The user has confirmed two consecutive Picotool uploads without button access or unplugging USB. The selected prototype uses one LCC110 and an AD8400ARZ50 digital pot. The user will hand-solder its SOIC-8 package onto a small adapter after practicing first; circuit, pinout and assembly steps are documented. It has not been assembled or verified against the Sony.
 
 The separate gesture controller and live translation monitor are host-tested and user bench-verified: the user reports all gestures functional. Radio and camera-control outputs remain disabled until the Sony interface is validated.
 
@@ -28,6 +28,7 @@ Upload prints the selected build's flash-image and static RAM usage before flash
 - [Sony interface circuit, parts, pinout, and bench procedure](docs/sony-interface.md)
 - [Digital-potentiometer simplification and voltage evidence](docs/sony-interface-simplification.md)
 - [Amazon component sourcing](docs/parts-sourcing.md)
+- [SOIC-8 practice and assembly](docs/smd-assembly.md)
 - [Design decisions and evidence](docs/design.md)
 - [Development checklist](docs/tasks.md)
 - [Firmware environment](firmware/README.md)

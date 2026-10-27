@@ -1,8 +1,37 @@
-# Parts sourcing — Sony resistor interface
+# Parts sourcing — one SSR plus digital pot
 
-**Archived shopping list:** the selected [one LCC110 plus AD8400 design](sony-interface.md) supersedes this five-switch BOM. Do not buy five AQY212EH devices for the current build. Exact new parts sourcing remains pending.
+Current prototype: [LCC110 + AD8400ARZ50](sony-interface.md). User approved trying SOIC-8 hand soldering, with practice first. No new purchases reported. Listings researched 2026-10-27; advertised identity/package are not proof of authenticity or actual shipped contents. Prices, live stock and delivery were not verified. Some product pages failed to load; chip links are indexed candidates, not confirmed offers.
 
-Original AQY212EH design retained. The user has four LCC110 devices on hand; they are not used in this build. No purchases have been reported for the items below.
+## Pot, adapter and practice
+
+| Item | Qty needed | Amazon US candidate | Verification / selection |
+| --- | ---: | --- | --- |
+| AD8400ARZ50, 50 kohm, SOIC-8 | 1 | [Single advertised chip, B0F4F4SRPX](https://www.amazon.com/dp/B0F4F4SRPX); [four advertised chips, B0F7SCGRGT](https://www.amazon.com/dp/B0F7SCGRGT) | Indexed titles match exact part/package; seller/price/shipping not confirmed. The REEL suffix is packaging, not an electrical difference. Prefer an offer with credible actual-part photos. Do not choose the 10 kohm version. |
+| Solder-on SOIC-8/SOP-8 to DIP-8 adapter | At least 2: practice + real | [Four-board kit, B096BD3JHV](https://www.amazon.com/dp/B096BD3JHV) | Listing advertises 1.27 mm SMD pitch, 2.54 mm header pitch, roughly 10.16 mm square boards and separate sockets. Check that the supplied side fits narrow 150 mil body SOIC-8. This is a candidate; inspect actual board before soldering. |
+| Inexpensive practice IC in narrow SOIC-8 | 1–2 | [NE555D/NE555DR SOP-8, advertised 20 pieces, B0FP2G4XQY](https://www.amazon.com/dp/B0FP2G4XQY) | Indexed package matches the soldering geometry. Use only for unpowered soldering/continuity practice; it is not a pot substitute. Compare delivered package to the adapter before starting. |
+
+Do not buy a 0.65 mm-only MSOP/TSSOP adapter, wide 5.4 mm body-only adapter, or large programming/ZIF socket for the permanent build. On dual-sided adapters use the 1.27 mm footprint. The AD8400 has approximately 3.9 mm body width and 1.27 mm lead pitch; footprint geometry, not only the ambiguous SOP/SSOP wording in a marketplace title, determines fit. Header row spacing/socket height and final protoboard placement remain physical dry-fit checks.
+
+Practice package size can be verified from the actual NE555D body/lead spacing. A matching spare chip already on hand is equally useful; no need for a dedicated large practice kit.
+
+## Supporting parts — check existing supplies first
+
+| Part | Qty | Notes |
+| --- | ---: | --- |
+| LCC110 DIP-8 | 1 | Four already on hand; use one |
+| 2N3904 TO-92 | 1 | Relay input driver; verify exact E/B/C pinout |
+| 330 ohms, 1%, axial | 1 | Optical LED current |
+| 1 kohm, 1%, axial | 1 | Transistor base current |
+| 2.7 kohm, 1%, axial | 1 | Sony-side series resistor |
+| 47 kohm, axial | 4 | Reset pull-downs; 1–5% acceptable |
+| 100 nF ceramic, >=10 V | 1 | Pot bypass capacitor |
+| 4 x 47 kohm bussed SIP-5 network | Optional replacement for four 47 kohm resistors | Bourns 4605X-101-473LF example; common pin 1 to GND. Not required for the first mock-up |
+
+Use existing solderless boards, headers and sockets for the prototype. Supporting component shopping is not complete; inspect what is already on hand before buying kits. The old seventeen-resistor quantities below do not apply. A practical tool list and assembly order are in [SOIC-8 assembly](smd-assembly.md).
+
+## Archived five-relay shopping list — not for this build
+
+The following preserves previous sourcing evidence only. Do not buy five AQY212EH devices or the old resistor quantities for the current circuit.
 
 Amazon US listings checked 2026-10-26 (client local date). Listing descriptions/indices are evidence of advertised parts, not independent proof of stock, authenticity, or delivery date. The relay product pages did not load reliably enough to confirm live price/shipping.
 
