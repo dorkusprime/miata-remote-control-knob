@@ -67,6 +67,11 @@ uint32_t lastHeartbeat = 0;
 
 void help() {
   Serial.println("Miata knob diagnostic v2 (absolute counter); Sony/camera outputs DISABLED");
+#ifdef ENABLE_PICOTOOL_USB
+  Serial.println("USB maintenance: Picotool enabled");
+#else
+  Serial.println("USB maintenance: legacy UF2/serial reset only");
+#endif
   Serial.println("I2C: D4/GPIO6 SDA, D5/GPIO7 SCL, 100 kHz; Twist default 0x3F");
   Serial.println("Commands: h=help s=scan c=raw counters r/g/b/w=dim LED o=LED off");
 }

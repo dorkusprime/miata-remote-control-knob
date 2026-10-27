@@ -2,7 +2,8 @@
   "arduino_cli": "1.5.1",
   "core": "rp2040:rp2040",
   "core_version": "6.3.1",
-  "fqbn": "rp2040:rp2040:seeed_xiao_rp2040",
+  "picotool_package_version": "5.0.0-9576866",
+  "fqbn": "rp2040:rp2040:seeed_xiao_rp2040:uploadmethod=picotool",
   "library": "SparkFun Qwiic Twist Arduino Library",
   "library_version": "1.0.4",
   "additional_url": "https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json"

@@ -12,10 +12,13 @@
 - [ ] Dry-fit headers, cable plugs, and enclosure clearances.
 - [ ] Verify wiring continuity and absence of shorts while unpowered.
 - [x] User uploaded the first serial diagnostic via BOOT-mode UF2 copy (2026-10-27).
-- [ ] User upload and test diagnostic v2 with absolute count/raw register reporting.
+- [x] User uploaded and tested diagnostic v2; rotation/buttons/held rotation confirmed in supplied serial output.
+- [x] Build Picotool-enabled firmware and add build/upload helper (2026-10-27).
+- [ ] User installs Picotool-enabled build and confirms maintenance banner.
+- [ ] Validate two successive USB uploads without button access or unplugging before installation.
 - [ ] Scan I2C and verify the Twist address.
 - [x] Button DOWN/UP events observed by user (2026-10-27).
-- [ ] Read rotation: first diagnostic produced no TURN events; cause unconfirmed.
+- [x] V2 reads rotation in both directions and while pressed (user serial output; 2026-10-27). Original diagnostic failure cause remains unconfirmed.
 - [ ] Verify low-brightness RGB and LED-off behavior.
 - [ ] Implement gestures with serial-only command output.
 
