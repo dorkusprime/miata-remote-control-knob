@@ -51,10 +51,10 @@ class CurrentLayoutTests(unittest.TestCase):
         self.part('C1')['body'] = self.part('U1')['body'][:]
         with self.assertRaisesRegex(AssertionError,'Body overlap'):self.check()
 
-    def test_jumper_crossing_underside_resistor_body(self):
+    def test_diagonal_jumper_rejected(self):
         w = next(w for w in self.data['jumpers'] if w['ref'] == 'W13')
         w['route'].insert(1,self.part('R1')['body'][:2])
-        with self.assertRaisesRegex(AssertionError,'crosses body'):self.check()
+        with self.assertRaisesRegex(AssertionError,'Diagonal'):self.check()
 
     def test_unused_relay_contact_cannot_become_ground(self):
         self.data['jumpers'].append({'ref':'FAULT','pads':['G14','D4'],'net':'GND',
@@ -73,8 +73,20 @@ class CurrentLayoutTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError,'Missing tap'):self.check()
 
     def test_top_resistor_lead_cannot_cross_capacitor(self):
-        self.part('R3')['lead_route'].insert(1,self.part('C3')['body'][:2])
+        self.part('R3')['lead_route'] = [[33.02,15.24],[33.02,21.59],[35.56,21.59],[35.56,45.72],[33.02,45.72]]
         with self.assertRaisesRegex(AssertionError,'Lead R3 crosses body'):self.check()
+
+    def test_r1_cannot_move_back_underneath(self):
+        self.part('R1')['side'] = 'bottom'
+        with self.assertRaisesRegex(AssertionError,'Component not on top'):self.check()
+
+    def test_diagonal_component_lead_rejected(self):
+        self.part('C2')['lead_route'].insert(1,[28.5,20])
+        with self.assertRaisesRegex(AssertionError,'Diagonal'):self.check()
+
+    def test_drawn_transistor_lead_must_reach_its_actual_pad(self):
+        self.part('Q1')['lead_routes']['E'][-1] = [5.08,33.02]
+        with self.assertRaisesRegex(AssertionError,'Lead endpoint'):self.check()
 
     def test_mirrored_image_retains_physical_pad_ids(self):
         source = layout.draw(self.data)

@@ -87,39 +87,104 @@
       "part": "2N3904BU",
       "side": "top",
       "pins": {
-        "E": "A12",
+        "E": "B12",
         "B": "C13",
         "C": "D16"
       },
       "body": [
-        7.62,
-        40.64,
+        5.08,
+        43.18,
         5,
         5
       ],
-      "style": "transistor"
+      "style": "transistor",
+      "lead_routes": {
+        "E": [
+          [
+            3.81,
+            40.68
+          ],
+          [
+            3.81,
+            39.5
+          ],
+          [
+            6,
+            39.5
+          ],
+          [
+            6,
+            33.02
+          ],
+          [
+            7.62,
+            33.02
+          ]
+        ],
+        "B": [
+          [
+            6.35,
+            40.68
+          ],
+          [
+            7.62,
+            40.68
+          ],
+          [
+            7.62,
+            35.56
+          ],
+          [
+            10.16,
+            35.56
+          ]
+        ],
+        "C": [
+          [
+            7.58,
+            43.18
+          ],
+          [
+            12.7,
+            43.18
+          ]
+        ]
+      }
     },
     {
       "ref": "R1",
       "part": "330 ohm",
       "ohms": 330,
-      "side": "bottom",
+      "side": "top",
       "pins": {
         "1": "C15",
-        "2": "H13"
+        "2": "F13"
       },
       "body": [
-        15.24,
-        39.19,
-        7.5,
-        4.4
+        10.16,
+        40.64,
+        2.6,
+        2.6
       ],
-      "style": "axial",
-      "center": [
-        15.24,
-        39.19
-      ],
-      "angle": -15.945
+      "style": "upright",
+      "lead_route": [
+        [
+          10.16,
+          40.64
+        ],
+        [
+          10.16,
+          36.25
+        ],
+        [
+          22.86,
+          36.25
+        ],
+        [
+          22.86,
+          35.56
+        ]
+      ]
     },
     {
       "ref": "R2",
@@ -266,16 +331,30 @@
       "ohms": 47000,
       "side": "top",
       "pins": {
-        "1": "B13",
-        "2": "B12"
+        "1": "D13",
+        "2": "C12"
       },
       "body": [
-        7.62,
-        35.56,
+        10.16,
+        33.02,
         2.6,
         2.6
       ],
-      "style": "upright"
+      "style": "upright",
+      "lead_route": [
+        [
+          12.7,
+          35.56
+        ],
+        [
+          12.7,
+          33.02
+        ],
+        [
+          10.16,
+          33.02
+        ]
+      ]
     },
     {
       "ref": "C1",
@@ -316,6 +395,10 @@
         [
           27.94,
           20.32
+        ],
+        [
+          27.94,
+          22.86
         ],
         [
           25.4,
@@ -414,6 +497,14 @@
         ],
         [
           33.02,
+          22.86
+        ],
+        [
+          33.02,
+          27.94
+        ],
+        [
+          12.7,
           27.94
         ],
         [
@@ -421,7 +512,11 @@
           33.02
         ],
         [
-          10.16,
+          11.43,
+          33.02
+        ],
+        [
+          11.43,
           31.75
         ],
         [
@@ -454,7 +549,7 @@
         "G1",
         "I6",
         "G7",
-        "F13"
+        "H13"
       ],
       "route": [
         [
@@ -490,7 +585,7 @@
           35.56
         ],
         [
-          22.86,
+          27.94,
           35.56
         ]
       ],
@@ -597,5 +692,5 @@
       ]
     }
   ],
-  "revision_notes": "Same circuit and pigtail/component terminal pads. R2/R3 moved to top; six ground links consolidated into BG and three power links into BV. Wire pieces: 13 to 6; solder landings: 26 to 19. One resistor remains underneath."
+  "revision_notes": "All 14 component bodies now on top. R1 upright at C15; Q1 moved to lower left; R7 shifted; power bus ends H13 and R1 supply lands F13. All component leads and underside routes use only horizontal/vertical segments. Same circuit, six underside wire pieces and 19 wire solder landings."
 }

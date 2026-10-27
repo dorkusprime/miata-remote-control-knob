@@ -44,6 +44,19 @@ def segment_hits_box(a,b,box,margin=0.2):
     return True
 
 
+def orthogonal(points, owner):
+    assert len(points)>=2, f'Empty route: {owner}'
+    for a,b in zip(points,points[1:]):
+        assert abs(a[0]-b[0])<1e-6 or abs(a[1]-b[1])<1e-6, f'Diagonal route: {owner}'
+
+
+def component_routes(p):
+    if p.get('style')=='dip' or p['ref'] in ('U1','U2','K1'):return {}
+    if p.get('style')=='transistor':return p['lead_routes']
+    pins=list(p['pins'].values())
+    return {'leads':p.get('lead_route',[pad_xy(pins[0]),pad_xy(pins[1])])}
+
+
 def check(d):
     assert d['board']['rows']==17 and d['board']['strip_groups']==['ABCDE','FGHIJ']
     assert len(d['parts'])==len(PINS) and {p['ref'] for p in d['parts']}==set(PINS)
@@ -87,6 +100,17 @@ def check(d):
     for w in d['jumpers']:
         for pad in w['pads']:label(pad,w['net'])
     for net,roots in net_roots.items():assert len(roots)==1, f'Open net: {net}'
+    for w in d['jumpers']:orthogonal(w['route'],w['ref'])
+    for p in d['parts']:
+        assert p['side']=='top', f'Component not on top: {p["ref"]}'
+        for pin,route in component_routes(p).items():
+            orthogonal(route,p['ref']+'.'+pin)
+            assert all(0<=xy[0]<=38.1 and 0<=xy[1]<=50.8 for xy in route), f'Off-board lead: {p["ref"]}'
+            if p.get('style')=='transistor':
+                assert math.dist(route[-1],pad_xy(p['pins'][pin]))<1e-6, f'Lead endpoint: {p["ref"]}.{pin}'
+            else:
+                endpoints=list(p['pins'].values())
+                assert math.dist(route[0],pad_xy(endpoints[0]))<1e-6 and math.dist(route[-1],pad_xy(endpoints[1]))<1e-6, f'Lead endpoint: {p["ref"]}'
     # Nominal body rectangles are a layout check, not certified manufacturer/socket clearance.
     for i,p in enumerate(d['parts']):
         x,y,w,h=p['body'];assert x-w/2>=0 and x+w/2<=38.1 and y-h/2>=0 and y+h/2<=50.8,p['ref']
@@ -99,11 +123,11 @@ def check(d):
             if p['side']=='bottom':
                 assert not any(segment_hits_box(a,b,p['body']) for a,b in zip(w['route'],w['route'][1:])),f'Jumper {w["ref"]} crosses body {p["ref"]}'
     for p in d['parts']:
-        if p['ref'] not in ('R2','R3'):continue
-        for q in d['parts']:
-            if q['ref']==p['ref'] or q['side']!=p['side']:continue
-            assert not any(segment_hits_box(a,b,q['body']) for a,b in zip(p['lead_route'],p['lead_route'][1:])), f'Lead {p["ref"]} crosses body {q["ref"]}'
-    print('Current layout: all device nets connected; no shorts, pad reuse or nominal same-side body overlap; jumpers avoid underside resistor bodies.')
+        for route in component_routes(p).values():
+            for q in d['parts']:
+                if q['ref']==p['ref'] or q['side']!=p['side']:continue
+                assert not any(segment_hits_box(a,b,q['body']) for a,b in zip(route,route[1:])), f'Lead {p["ref"]} crosses body {q["ref"]}'
+    print('Current layout: connected nets; no shorts or pad reuse; all bodies on top; all routes orthogonal; nominal bodies and other-component lead clearances checked.')
 
 
 class Svg:
@@ -116,6 +140,7 @@ class Svg:
     def circle(self,x,y,r,fill,stroke='none'):
         self.s.append(f'<circle cx="{x}" cy="{y}" r="{r}" fill="{fill}" stroke="{stroke}"/>')
     def path(self,points,color,width=2,dash=False):
+        orthogonal(points,'SVG path')
         path='M'+' L'.join(f'{x:.2f},{y:.2f}' for x,y in points)
         self.s.append(f'<path d="{path}" fill="none" stroke="{color}" stroke-width="{width}" stroke-linejoin="round"'+(' stroke-dasharray="5 4"' if dash else '')+'/>')
     def finish(self):
@@ -128,7 +153,7 @@ def draw(d):
     s.text(35,74,'MCP41050 + HCT125 + LCC110 · proposed no-cut ElectroCookie Mini layout',18)
     s.rect(35,94,1690,66,'#fff3cd',radius=8)
     s.text(52,120,'ELECTRICAL PAD ALLOCATION CHECKED · PHYSICAL FIT / SOCKETS / MOUNTING STILL UNVERIFIED',18,'#92400e')
-    s.text(52,145,'One underside resistor + six wire pieces. BG/BV are continuous tapped buses; crossing sleeved sections do not connect.',16,'#92400e')
+    s.text(52,145,'All component bodies on TOP. Six underside wire pieces. All lead and wire routes use horizontal / vertical segments.',16,'#92400e')
     for side,bx in [('top',55),('bottom',705)]:
         by=220
         def pos(pt):return (bx+(38.1-pt[0] if side=='bottom' else pt[0])*scale,by+pt[1]*scale)
@@ -162,11 +187,7 @@ def draw(d):
                     s.text(xx+(-12 if location[0]=='E' else 12),yy+4,n,10,color,'middle')
                 continue
             if style=='transistor':
-                routes={
-                    'E':[(cx-2.5,cy),(5.08,cy),pad_xy(p['pins']['E'])],
-                    'B':[(cx,cy-2.5),(10.16,cy-2.5),pad_xy(p['pins']['B'])],
-                    'C':[(cx+2.5,cy),pad_xy(p['pins']['C'])],
-                }
+                routes=p['lead_routes']
                 for name,points in routes.items():
                     s.path([pos(pt) for pt in points],'#374151',2)
                     xx,yy=pad(p['pins'][name]);s.text(xx-5,yy-7,name,10)
@@ -194,9 +215,9 @@ def draw(d):
                 x,y=pad(c['pad']);s.circle(x,y,5,'#0e7490');s.text(x-4,y-10,c['ref'].replace('J',''),10,'#0e7490')
         s.text(bx,1010,'Bodies shown on this face only. Pads retain the same IDs after flipping.',14)
     x=1325;s.text(x,195,'TOP',20)
-    for i,t in enumerate(['U1   MCP41050-I/P','U2   SN74HCT125N','K1   LCC110','Q1   2N3904BU, formed leads','R4–R7   47 kΩ, upright','C1/C2   100 nF','C3   10 µF, + J7 / − J8','R2/R3   outer-edge axial resistors']):s.text(x,226+i*27,t,16)
+    for i,t in enumerate(['U1   MCP41050-I/P','U2   SN74HCT125N','K1   LCC110','Q1   2N3904BU, formed leads','R1 + R4–R7   upright resistors','C1/C2   100 nF','C3   10 µF, + J7 / − J8','R2/R3   outer-edge axial resistors']):s.text(x,226+i*27,t,16)
     s.text(x,450,'UNDERSIDE',20)
-    for i,t in enumerate(['R1   330 Ω · C15 ↔ H13','BG   one wire, 7 ground taps','BV   one wire, 4 power taps','W10–W13   four signal wires','Six pieces; 19 solder landings.','Sleeve buses between marked taps.']):s.text(x,481+i*27,t,16)
+    for i,t in enumerate(['No component bodies underneath.','BG   one wire, 7 ground taps','BV   one wire, 4 power taps','W10–W13   four signal wires','Six pieces; 19 solder landings.','Sleeve buses between marked taps.']):s.text(x,481+i*27,t,16)
     s.text(x,690,'J1 · six-wire controller pigtail',18)
     for i,t in enumerate(['1 GND → B4','2 +5 V → J6','3 SCK → A10','4 MOSI → I11','5 CS → A7','6 ENABLE → B5']):s.text(x,720+i*25,t,16)
     s.text(x,910,'J2 · Sony pigtail',18)
@@ -204,8 +225,8 @@ def draw(d):
     s.rect(35,1040,1690,216,'#e2e8f0',radius=10)
     notes=[
       'Gray bars are factory-connected strips: A–E and F–J for each row. No copper cuts. No shared component/jumper holes.',
-      'R4–R7 stand upright; Q1 leads are spread to A12 (E), C13 (B), D16 (C). Insulate formed leads and check actual transistor marking.',
-      'Only R1 remains underneath. R2/R3 lie on top along opposite edges; sleeve their extended leads.',
+      'R1/R4–R7 stand upright; Q1 leads land at B12 (E), C13 (B), D16 (C). Insulate formed leads and check actual transistor marking.',
+      'R1 returns to F13 through the gap between U2 and K1. BV now lands at H13. Check actual socket clearance.',
       'C1/C2 leads need careful forming. C3 positive goes to J7 and negative to J8. Do not reverse electrolytic polarity.',
       'BG/BV tack to the marked underside pads; they do not thread through every hole. Sleeve all sections between taps.',
       'Nominal body envelopes do not certify sockets, mounting holes or final height. Dry-fit the actual board before soldering.',
@@ -224,17 +245,17 @@ def tables(d):
     for w in d['jumpers']:s.append(f'| {w["ref"]} | {w["net"]} | '+ ' → '.join(w['pads'])+' |')
     s+=['', 'BG and BV are each one continuous conductor with multiple solder taps, not chains of separate jumpers. Expose only the listed tap pads; sleeve all intervening sections. Untapped pads along the drawn route stay insulated. Tack the middle taps to the underside pads rather than threading a wire repeatedly through holes. This reduces wire pieces from 13 to 6 and wire solder landings from 26 to 19; it does not remove electrical nets. Four signal wires remain separate.', '', 'If making continuous tapped buses is awkward, separate insulated segments following the same net connections remain electrically equivalent; they restore some of the original cut/strip work.', '', '## Assembly and physical conditions','',
         '- Fit sockets and top components first, without solder. The IC-only image is now a subset of this candidate.',
-        '- R4–R7 use upright mounting to span adjacent rows; the axial bodies do not lie flat between those pads.',
-        '- Q1 has a formed-lead footprint, not the default three adjacent TO-92 holes. E=A12, B=C13, C=D16. Check the actual part orientation and preform without force at the body.',
-        '- Only R1 remains on the underside. R2 moves onto the top left edge; R3 moves onto the top right edge and its body shifts down to avoid C3. Top R3 leads jog to x=37 mm past C3. Sleeve extended leads, retain solder-joint clearance and dry-fit before trimming.',
+        '- R1 and R4–R7 stand upright. R1 is at C15 and its sleeved return lead follows the gap between U2 and K1 to F13. The power bus now ends at H13. This is a formed-lead proposal, not a validated socket clearance or guaranteed supplied lead length.',
+        '- Q1 has a formed-lead footprint, not the default three adjacent TO-92 holes. E=B12, B=C13, C=D16. Q1 moves to the lower-left corner; R7 moves to C12/D13. Check the actual part orientation and preform without force at the body.',
+        '- All component bodies are now on top. R2 follows the top left edge; R3 follows the top right edge with a jog to x=37 mm past C3. Sleeve extended leads and dry-fit before trimming.',
         '- Check supplied lead lengths before trimming. If a lead cannot follow its proposed route safely, revise the model or use an insulated extension; do not force the component.',
         '- C1/C2 leads are spread to the listed pads, rather than matching the stock 2.5 mm lead pitch. Avoid stress at the ceramic coating. C3 is polarized.',
         '- Body envelopes are provisional. The resistor envelope allows 6.8 × 2.6 mm, based on Yageo MFR-25 maximum body dimensions. Socket outlines, capacitor lead availability, mounting-hole locations and assembled height still require actual measurements.',
-        '- This candidate uses both faces and distributed pigtails to preserve the no-cut board. It does not promise a single flat layer or accessible center mounting holes.',
+        '- All component bodies are on top; only the six wire pieces and solder joints are underneath. Distributed pigtails preserve the no-cut board. Mounted height and center mounting-hole access remain unverified.',
         '- On the actual board, verify A–E / F–J strip continuity and orientation first. Do not solder until the dry-fit and receiver-disconnected electrical checks pass.',
         '', '## Verification scope','',
-        '`python3 scripts/full-placement.py --check` verifies the 14 component references, terminal connectivity against an independent device-pin contract, all resistor values, factory strips, no accidental net joins, no reused holes, pigtail assignments, nominal same-face body separation, jumper avoidance of underside resistor bodies, and relocated top-resistor lead avoidance of other component bodies. It also verifies that the SVG/table match the model. This is not a timing, analog-current, power-sequencing or physical-fit simulation.',
-        '', 'Regenerate with `python3 scripts/full-placement.py`. Tests deliberately introduce a rail short, an open jumper, a transistor-pin swap, pad reuse, a resistor-value error, a body overlap and a wire crossing a resistor body.',
+        '`python3 scripts/full-placement.py --check` verifies the 14 component references, terminal connectivity against an independent device-pin contract, all resistor values, factory strips, no accidental net joins, no reused holes, pigtail assignments, nominal body separation, all-top component placement, orthogonal routes, and all component-lead routes avoiding other component bodies. It also verifies that the SVG/table match the model. This is not a timing, analog-current, power-sequencing or physical-fit simulation.',
+        '', 'Regenerate with `python3 scripts/full-placement.py`. Tests deliberately introduce a rail short, an open jumper, a transistor-pin swap, pad reuse, a resistor-value error, a body overlap a missing bus tap, a diagonal wire, and a component lead crossing another body.',
         '', 'Source for resistor envelope: [Yageo MFR datasheet, dimensions](https://yageogroup.com/content/datasheet/asset/file/YAGEO-MFR_DATASHEET). Other envelopes are conservative drawing assumptions, not new manufacturer guarantees.','']
     return '\n'.join(s)
 
