@@ -74,10 +74,14 @@ The user currently performs uploads. An agent must have an explicit instruction 
 - User reports the first upload succeeded after BOOT-mode UF2 copy. Button DOWN/UP events work; turning produces no reported TURN events. Root cause is unconfirmed.
 - User reports a subsequent automatic upload failed after the board drive unmounted; unplugging and entering BOOT mode before re-uploading succeeded. Upload failure cause is unconfirmed.
 - User-provided v2 serial output confirms +1/-1 TURN events, BUTTON DOWN/UP, and turns with button=DOWN. Count/difference change together; firmware=1.2. The original getDiff-based diagnostic failure is not fully explained.
-- Picotool-enabled build passed: 62,640 bytes flash, 9,316 bytes global RAM. Two missing-initializer warnings originate in the core USB.cpp reset-driver structure (name/deinit); no sketch warnings reported. User confirmed successful Picotool upload and repeat upload without physical board access; LED tests remain pending.
+- Picotool-enabled build passed: 62,640 bytes flash, 9,316 bytes global RAM. Two missing-initializer warnings originate in the core USB.cpp reset-driver structure (name/deinit); no sketch warnings reported. User confirmed successful Picotool upload and repeat upload without physical board access.
 
 References: [core installation and first upload](https://arduino-pico.readthedocs.io/en/latest/install.html), [SparkFun library](https://github.com/sparkfun/SparkFun_Qwiic_Twist_Arduino_Library).
 
 ## Historical default-UF2 upload results
 
 The original serial upload reported `No drive to deploy`. The user successfully flashed by unplugging USB, holding B/BOOT, reconnecting USB, releasing B, and copying the UF2 onto RPI-RP2. Automatic serial-reset uploads failed again after the first flash; manual BOOT mode worked again. The report that the drive unmounted does not establish why the upload failed. Picotool subsequently succeeded twice without physical intervention; retain these observations as the reason for replacing the default UF2 uploader.
+
+## Initial diagnostic complete — RGB confirmation
+
+On 2026-10-26 (client local date), the user reported that RGB worked after the r/g/b/o test instructions. Combined with the supplied rotation/button trace and two successful Picotool uploads, this completes the initial functional diagnostic. Gesture commands, installation checks, electrical fault/reset testing, and Sony/camera operation have not been validated by this milestone. Earlier entries used the execution host date; this entry uses the client local date.

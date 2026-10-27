@@ -7,7 +7,9 @@
 - [x] Confirm XIAO USB enumeration (Seeed XIAO RP2040, /dev/cu.usbmodem1412301; 2026-10-27).
 - [x] Compile serial-only diagnostic for XIAO; no compiler warnings (2026-10-27).
 
-## Encoder milestone: Sony disconnected
+## Encoder diagnostics and follow-up: Sony disconnected
+
+Initial functional diagnostic complete: USB/I2C, rotation, button, RGB, and repeated Picotool uploads are verified by user observations. Gesture implementation and installation checks remain separate.
 
 - [ ] Dry-fit headers, cable plugs, and enclosure clearances.
 - [ ] Verify wiring continuity and absence of shorts while unpowered.
@@ -16,10 +18,10 @@
 - [x] Build Picotool-enabled firmware and add build/upload helper (2026-10-27).
 - [x] User installed Picotool-enabled build; subsequent Picotool uploads succeeded (2026-10-27).
 - [x] User confirmed two successive USB uploads without button access or unplugging (2026-10-27).
-- [ ] Scan I2C and verify the Twist address.
+- [x] Verify Twist at 0x3F: working v2 snapshot reads require that address and expected device ID. A separate scan transcript was not supplied.
 - [x] Button DOWN/UP events observed by user (2026-10-27).
 - [x] V2 reads rotation in both directions and while pressed (user serial output; 2026-10-27). Original diagnostic failure cause remains unconfirmed.
-- [ ] Verify low-brightness RGB and LED-off behavior.
+- [x] User reports RGB diagnostic tests worked after r/g/b/o test instructions (2026-10-26, client local date).
 - [ ] Implement gestures with serial-only command output.
 
 ## Sony interface
