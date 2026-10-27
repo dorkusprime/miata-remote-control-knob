@@ -28,6 +28,24 @@ Positive/negative follow the Twist's counter direction; check the feel in the fi
 
 The pure C++ state machine is [gesture_engine.h](../firmware/controller/gesture_engine.h). The hardware polling/JSON output is [controller.ino](../firmware/controller/controller.ino).
 
+## LED feedback
+
+Controller v2 adds automatic RGB feedback for the opaque knob. Idle is full-intensity blue `(0, 0, 255)`, with no global dimmer. Palette and durations are in [led_feedback.h](../firmware/controller/led_feedback.h).
+
+| Observed input / recognized gesture | Color | Duration |
+| --- | --- | --- |
+| Idle | Blue `(0, 0, 255)` | Continuous |
+| Debounced button held | Purple `(255, 0, 255)` | While held |
+| Volume turn | White `(255, 255, 255)` | 120 ms from latest turn |
+| Single click recognized | Green `(0, 255, 0)` | 180 ms |
+| Camera gesture recognized, either toggle direction | Amber `(255, 96, 0)` | 200 ms |
+
+A pulse temporarily takes priority over held/idle color, then returns to the currently observed held/idle state. Track gestures retain the held-button purple; unassigned long holds add no pulse. Pulses are brief solid-color changes, without blocking delays. Repeated same-color input extends the pulse without repeatedly writing RGB registers. Feedback runs even with the serial monitor closed.
+
+There is no latched camera or mute LED state. Amber acknowledges the local gesture, not the Sony's actual camera view; green acknowledges click recognition, not a confirmed mute state. Neither color uses the local camera-preview toggle as persistent truth. Fault-triggered camera-preview cancellation produces no amber acknowledgement.
+
+On a read failure, software cancels LED pulses and attempts to switch the LED off once. If communication itself has failed, LED-off cannot be guaranteed and the Twist may retain its last color. LED-write failures suspend input and trigger reconnection too. Reconnect clears old pulses and writes the observed held/idle color again.
+
 ## Build, user upload, and monitor
 
 From the repository root:
@@ -66,7 +84,7 @@ python3 scripts/gesture-monitor.py --stdin < recorded-events.jsonl
 
 ## Keep using the original diagnostic
 
-The original `firmware/diagnostic/diagnostic.ino` remains unchanged. Build and explicitly upload it when hardware tests are needed:
+The original `firmware/diagnostic/diagnostic.ino` remains unchanged, including its low-brightness manual RGB tests. Build and explicitly upload it when hardware tests are needed:
 
 ```sh
 scripts/knob.sh build diagnostic
@@ -75,7 +93,7 @@ scripts/arduino.sh board list
 scripts/knob.sh raw-monitor /dev/cu.usbmodem1412301
 ```
 
-Use the current serial port. The diagnostic retains its `h`, `s`, `c`, `r`, `g`, `b`, `w`, `o` commands. The controller's commands are only `h`/`?` for help and `s` for state; RGB testing stays in the diagnostic.
+Use the current serial port. The diagnostic retains its `h`, `s`, `c`, `r`, `g`, `b`, `w`, `o` commands. The controller's commands are only `h`/`?` for help and `s` for state; manual RGB testing stays in the diagnostic while the controller supplies automatic gesture feedback.
 
 ## Protocol
 
@@ -102,3 +120,7 @@ Bench acceptance: check both volume directions; isolated click fires once after 
 The user reports all controller gestures functional in the live monitor. This verifies the serial simulation on the XIAO/Twist; it does not validate Sony electrical commands or camera switching. Repeat Picotool upload with this controller sketch remains a separate unchecked item.
 
 USB observation during a change of physical location: initially neither USB serial nor a normal application USB device appeared. Manual BOOT mode presented RPI-RP2; after the user pressed R to exit bootloader mode, the application and monitor worked. The user initially had not pressed R when the monitor remained waiting. No firmware changes were made for this incident, and its initial connection failure has no confirmed cause.
+
+## LED implementation verification — 2026-10-26
+
+19 gesture scenarios, 10 LED scenarios, and 19 Python monitor/memory tests passed. LED tests cover full-brightness idle, press/release restoration, pulse expiry/retrigger, both camera directions returning to idle, fault clearing, and timestamp rollover. Controller v2 compiles: Arduino summary 63,528 bytes flash / 9,376 bytes static RAM; full flash image 80,320 bytes (3.8%). The two existing USB.cpp core warnings remain; no controller warnings were reported. This LED build has not been uploaded by the agent or bench-verified by the user yet. Confirm colors under the opaque knob, return to blue after either camera gesture, standalone feedback with the monitor closed, and unchanged gesture behavior after user upload.

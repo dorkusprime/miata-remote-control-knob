@@ -26,6 +26,9 @@ Initial functional diagnostic complete: USB/I2C, rotation, button, RGB, and repe
 - [x] Add live translated monitor with port detection and reconnection.
 - [x] Pass 19 host gesture scenarios and 15 monitor tests, including virtual serial testing (2026-10-26 client local date).
 - [x] User uploaded controller and reports all gestures functional through the live monitor (2026-10-26 client local date).
+- [x] Implement full-brightness idle blue and nonblocking gesture LED feedback, including camera acknowledgement pulse only.
+- [x] Pass 10 LED scenarios and compile controller v2 (2026-10-26 client local date).
+- [ ] User uploads LED build and checks brightness/colors, pulse expiry, and standalone feedback.
 - [ ] Confirm repeat Picotool uploads with the controller sketch.
 
 ## Sony interface

@@ -35,6 +35,7 @@ class Gestures {
   }
 
   bool cameraRequested() const { return camera_; }
+  bool buttonHeld() const { return initialized_ && stableDown_; }
 
   void update(uint32_t now, uint16_t count, bool down) {
     if (!initialized_) { begin(now, count, down); return; }

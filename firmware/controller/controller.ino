@@ -1,6 +1,7 @@
 #include <Wire.h>
 #include <SparkFun_Qwiic_Twist_Arduino_Library.h>
 #include "gesture_engine.h"
+#include "led_feedback.h"
 
 #ifndef ENABLE_PICOTOOL_USB
 #error "Build controller with uploadmethod=picotool to retain USB maintenance."
@@ -11,6 +12,9 @@ TWIST twist;
 struct Sample { uint16_t count; bool down; uint8_t major, minor; };
 Sample lastSample = {};
 bool connected = false;
+knob::LedFeedback feedback;
+knob::Color lastLed = knob::kOff;
+bool ledKnown = false;
 uint32_t lastAttempt = 0, lastPoll = 0, lastHeartbeat = 0, sequence = 0;
 
 void startEvent(const char *type) {
@@ -35,6 +39,8 @@ const char *actionName(knob::Action action) {
 }
 
 void gestureEvent(const knob::Event &event, void *) {
+  // Feedback must work with no serial monitor; fault-cancel events are not gestures.
+  if (connected) feedback.onGesture(event, millis());
   if (!Serial) return;
   startEvent("gesture");
   Serial.print(",\"action\":\""); Serial.print(actionName(event.action));
@@ -59,10 +65,11 @@ void heartbeat() {
 }
 
 void help() {
-  status("Gesture controller v1; USB maintenance: Picotool enabled; Sony/camera outputs DISABLED");
+  status("Gesture controller v2; USB maintenance: Picotool enabled; Sony/camera outputs DISABLED");
   status("Turn=volume; click=mute/ATT; held turn=track; double click=camera preview; long hold=ignored");
   status("Debounce=30ms; double click=300ms from first release to second press; long hold=700ms");
   status("Serial: h=help, s=status; all actions are simulations");
+  status("LED: full blue idle; purple held; white volume pulse; green click; amber camera-gesture pulse only");
   heartbeat();
 }
 
@@ -93,16 +100,43 @@ void inputEvent(const Sample &sample) {
   Serial.println('}');
 }
 
+void loseTwist(const char *message, bool tryOff = true) {
+  connected = false;
+  feedback.clear();
+  ledKnown = false;
+  if (tryOff) (void)twist.setColor(0, 0, 0);  // Best effort; a failed bus cannot guarantee LED-off.
+  gestures.cancel();
+  lastAttempt = millis();
+  status(message);
+  heartbeat();
+}
+
+void applyFeedback(uint32_t now) {
+  if (!connected) return;
+  const knob::Color color = feedback.colorAt(now, gestures.buttonHeld(), true);
+  if (ledKnown && color == lastLed) return;  // Write only on actual color transitions.
+  if (!twist.setColor(color.red, color.green, color.blue)) {
+    loseTwist("Twist LED write failed; pending gestures cancelled; retrying in 2s", false);
+    return;
+  }
+  lastLed = color;
+  ledKnown = true;
+}
+
 void attachTwist() {
   lastAttempt = millis();
   bool ok = twist.begin(Wire);
   Wire.setClock(100000);
   if (ok) ok = readSample(lastSample);
-  if (ok) ok = twist.connectColor(0, 0, 0) && twist.setColor(0, 0, 0) && twist.setLimit(0);
+  if (ok) ok = twist.connectColor(0, 0, 0) && twist.setLimit(0);
   if (!ok) { status("Twist unavailable; retrying in 2s"); return; }
   gestures.begin(millis(), lastSample.count, lastSample.down);
+  feedback.clear();
+  ledKnown = false;
   connected = true;
-  status("Twist connected; gesture baseline established; LED off");
+  applyFeedback(millis());
+  if (!connected) return;
+  status("Twist connected; gesture baseline established; full-brightness LED feedback active");
   inputEvent(lastSample);
   heartbeat();
 }
@@ -129,17 +163,14 @@ void loop() {
     lastPoll = now;
     Sample sample;
     if (!readSample(sample)) {
-      connected = false;
-      gestures.cancel();
-      lastAttempt = now;
-      status("Twist read failed; pending gestures cancelled and camera preview released");
-      heartbeat();
+      loseTwist("Twist read failed; pending gestures cancelled and camera preview released");
     } else {
       if (sample.count != lastSample.count || sample.down != lastSample.down) inputEvent(sample);
       gestures.update(now, sample.count, sample.down);
       lastSample = sample;
     }
   }
+  applyFeedback(millis());
   if (now - lastHeartbeat >= 2000) { lastHeartbeat = now; heartbeat(); }
   delay(1);
 }

@@ -31,7 +31,8 @@ int main() {
     t.expect({Action::MuteAtt, Action::MuteAtt}); }
   { Test t; t.tap(100); t.press(480); t.release(560); t.tick(1000);
     t.expect({Action::CameraOn}); }  // second press at exact 300ms boundary
-  { Test t; t.press(100); t.tick(150, 2, true); t.tick(180, 1, true); t.release(200, 1); t.tick(1000, 1);
+  { Test t; t.press(100); assert(t.engine.buttonHeld()); t.tick(150, 2, true); t.tick(180, 1, true);
+    t.release(200, 1); assert(!t.engine.buttonHeld()); t.tick(1000, 1);
     t.expect({Action::NextTrack, Action::PreviousTrack}); assert(t.events[0].steps == 2); }
   { Test t; t.tick(100, 0, true); t.tick(110, 1, true); t.tick(130, 1, true); t.release(200, 1); t.tick(1000, 1);
     t.expect({Action::NextTrack}); }  // rotation during press debounce

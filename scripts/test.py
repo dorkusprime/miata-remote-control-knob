@@ -20,9 +20,10 @@ if platform.system() == "Darwin":
         command += ["-isysroot", sdk]
     elif compatible.is_dir():
         command += ["-isysroot", str(compatible)]
-command += ["-std=c++17", "-Wall", "-Wextra", "-Werror", "-fsanitize=address,undefined",
-            str(ROOT / "tests/gesture_engine_test.cpp"), "-o", str(BUILD / "gesture-engine")]
-subprocess.run(command, cwd=ROOT, check=True)
-subprocess.run([str(BUILD / "gesture-engine")], cwd=ROOT, check=True)
+command += ["-std=c++17", "-Wall", "-Wextra", "-Werror", "-fsanitize=address,undefined"]
+for name in ("gesture_engine", "led_feedback"):
+    binary = BUILD / name
+    subprocess.run(command + [str(ROOT / "tests" / (name + "_test.cpp")), "-o", str(binary)], cwd=ROOT, check=True)
+    subprocess.run([str(binary)], cwd=ROOT, check=True)
 subprocess.run([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-p", "test_*.py", "-v"],
                cwd=ROOT, check=True)

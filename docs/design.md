@@ -6,6 +6,7 @@
 - Knob at cigarette-lighter location; minimal footprint; no unnecessary PCB.
 - Use a small soldered protoboard near the Sony to support the remote-interface components and connections (user decision, 2026-10-27). Twist and XIAO remain independently mounted. Final board dimensions and layout depend on the validated circuit.
 - Unmarked cap, subtle RGB underglow, fixed detents; no haptic motor.
+- Opaque knob: use full-brightness idle blue. Gesture colors are temporary acknowledgements; do not treat a local toggle as authoritative Sony camera/mute state.
 - Hardware I2C preferred over software I2C.
 - Removable wiring and USB access.
 - Volume, mute/ATT, track control.
