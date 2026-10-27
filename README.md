@@ -6,7 +6,7 @@ The knob will occupy the cigarette-lighter location. Use removable connections. 
 
 ## Status
 
-The XIAO, Twist, Sony receiver, a camera, and the Sony's included steering-remote adapter are on hand. The adapter has leads labeled Input 1, Input 2, and ST Remote GND. The first serial-only diagnostic was flashed by the user and reports button events; rotation is under investigation. Diagnostic v2 compiles and awaits user upload. The electrical interface to the Sony is still a proposal, not a verified schematic.
+The XIAO, Twist, Sony receiver, a camera, and the Sony's included steering-remote adapter are on hand. The adapter has leads labeled Input 1, Input 2, and ST Remote GND. The first serial-only diagnostic was flashed by the user and reports button events; rotation is under investigation. Diagnostic v2 compiles and the user reports a successful upload via manual BOOT mode; rotation results are pending. The electrical interface to the Sony is still a proposal, not a verified schematic.
 
 First milestone: power the XIAO from computer USB, read the Twist using hardware I2C, test its lighting and button, and report gestures over USB serial. Radio and camera-control outputs remain disabled for this milestone.
 

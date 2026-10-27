@@ -1,6 +1,6 @@
 # Firmware environment
 
-The serial-only diagnostic builds for Seeed XIAO RP2040. The user flashed the first build and observed button events but no rotation events. Diagnostic v2 awaits user upload. Sony and camera outputs are not configured or driven.
+The serial-only diagnostic builds for Seeed XIAO RP2040. The user flashed the first build and observed button events but no rotation events. The user reports uploading diagnostic v2; its rotation results are pending. Sony and camera outputs are not configured or driven.
 
 ## Pinned dependencies
 
@@ -56,7 +56,8 @@ The first upload may require manually entering BOOT mode; report the upload resu
 - The selected core's XIAO variant defines SDA as GPIO6 and SCL as GPIO7.
 - Diagnostic v2 compilation with `--warnings all` passed: 61,784 bytes flash, 9,140 bytes global RAM; no warnings reported. Compile-time checks cover stationary counts and forward/reverse counter wrap.
 - User reports the first upload succeeded after BOOT-mode UF2 copy. Button DOWN/UP events work; turning produces no reported TURN events. Root cause is unconfirmed.
-- No diagnostic v2 hardware result or LED test has been reported.
+- User reports a subsequent automatic upload failed after the board drive unmounted; unplugging and entering BOOT mode before re-uploading succeeded. Upload failure cause is unconfirmed.
+- Diagnostic v2 rotation output and LED test results are pending.
 
 References: [core installation and first upload](https://arduino-pico.readthedocs.io/en/latest/install.html), [SparkFun library](https://github.com/sparkfun/SparkFun_Qwiic_Twist_Arduino_Library).
 
@@ -71,3 +72,5 @@ cp build/diagnostic/diagnostic.ino.uf2 /Volumes/RPI-RP2/
 Close the serial monitor before uploading. The drive disappears as the board restarts; check the serial port again before reopening the monitor. This is a user-performed hardware operation.
 
 The v2 banner includes `diagnostic v2 (absolute counter)`. Its raw counter report appears every five seconds and after rotation, or on `c`. Compare values before/after several slow clicks each way. A changing absolute count with a stationary difference points to the difference-reading path; both stationary requires further encoder/firmware investigation. These are diagnostic branches, not confirmed causes.
+
+Upload workflow observation (2026-10-27): automatic reset/upload has failed more than once in this setup, including after the first successful flash. Use the user-confirmed unplug/BOOT/reconnect procedure as the current reliable fallback. Do not promise automatic upload works or diagnose the unmount without the full uploader output.
