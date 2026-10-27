@@ -18,6 +18,8 @@ scripts/knob.sh monitor
 
 Close any running monitor before upload. The monitor detects the USB port automatically; actions are simulations. The original diagnostic is preserved: use `build diagnostic`, `upload diagnostic`, and `raw-monitor PORT` with the same helper. Run host tests with `python3 scripts/test.py`.
 
+Upload prints the selected build's flash-image and static RAM usage before flashing. Preview the report without uploading with `scripts/knob.sh size` or `scripts/knob.sh size diagnostic`.
+
 ## Documents
 
 - [Wiring and cable plan](docs/wiring.md)

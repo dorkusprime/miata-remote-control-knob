@@ -41,6 +41,8 @@ scripts/knob.sh monitor
 
 Build/upload default to `controller` if the target is omitted. Build artifacts are separate under `build/controller-picotool` and `build/diagnostic-picotool`. Upload does not rebuild; build after changing source. The controller requires the Picotool compile option, preserving the maintenance interface already verified with the diagnostic. Connect only the intended RP2040 when uploading. The user performs uploads; agents must follow AGENTS.md before touching attached firmware.
 
+Before invoking Picotool, upload prints flash image and static RAM usage for the selected build. Preview it without touching the board with `scripts/knob.sh size` (or `size diagnostic`). The report reads load segments and static RAM sections from the ELF, and capacity from that build's generated linker script. Flash includes boot metadata and the initialized-data load image, which the Arduino compiler's section summary omits. Remaining RAM is not a measurement of peak runtime heap/stack use. Missing report artifacts stop the upload and request a rebuild.
+
 The monitor detects the sole matching XIAO/RP2040 USB serial port, opens it at 115200, requests help, and prints translated actions immediately as events arrive. It reconnects after a USB disconnect; close it with Ctrl+C before uploading. It uses pyserial already bundled with the project toolchain; no pip installation is required. It never initiates an upload or sends a reboot command.
 
 Example display (illustrative, not a hardware test result):
@@ -90,5 +92,7 @@ Action names: `volume_up`, `volume_down`, `mute_att`, `next_track`, `previous_tr
 Run `python3 scripts/test.py`. It builds the exact gesture engine for the host with address/undefined-behavior sanitizers and runs Python monitor tests. Tests exercise timing, bounce, click/turn conflicts, startup-held behavior, counter/millis rollover, disconnect cancellation, malformed protocol data, framing, CLI stdin, and a virtual serial port. It never opens the physical XIAO.
 
 On 2026-10-26 (client local date): 19 gesture scenarios and 15 monitor tests passed. Both controller and diagnostic compile for XIAO with Picotool. The controller uses 62,968 bytes flash and 9,360 bytes global RAM. The core emits the two previously observed missing-initializer warnings in USB.cpp; no controller warnings were reported. The controller has not been flashed or physically tested by the agent. User testing of gesture timing and monitor behavior is pending.
+
+Memory-report verification: four additional tests passed, including ELF-versus-generated-binary comparison for both sketches. The full controller flash image is 79,760 bytes (3.8% of its configured flash partition); static RAM is 9,360 bytes (3.6%). The 62,968-byte figure above is the narrower Arduino compiler summary. No hardware upload was performed to test this reporting change.
 
 Bench acceptance: check both volume directions; isolated click fires once after the window; double click produces camera only; held turns produce tracks without mute/camera on release; long holds produce no mapped command. Confirm repeated Picotool updates still work with this sketch. Keep Sony disconnected throughout.

@@ -4,13 +4,13 @@ set -eu
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$ROOT"
 usage() {
-  echo 'Usage: scripts/knob.sh build|upload [controller|diagnostic]' >&2
+  echo 'Usage: scripts/knob.sh build|upload|size [controller|diagnostic]' >&2
   echo '       scripts/knob.sh monitor [--port PORT] [--raw]' >&2
   echo '       scripts/knob.sh raw-monitor PORT' >&2
   exit 1
 }
 case "${1:-}" in
-  build|upload)
+  build|upload|size)
     [ "$#" -le 2 ] || usage
     TARGET=${2:-controller}
     case "$TARGET" in controller|diagnostic) ;; *) usage ;; esac
@@ -19,6 +19,9 @@ case "${1:-}" in
     if [ "$1" = build ]; then
       exec "$ROOT/scripts/arduino.sh" compile --fqbn "$FQBN" --warnings all \
         --build-path "$BUILD" "$ROOT/firmware/$TARGET"
+    fi
+    if [ "$1" = size ]; then
+      exec python3 "$ROOT/scripts/memory-usage.py" "$BUILD/$TARGET.ino.elf"
     fi
     if [ ! -f "$BUILD/$TARGET.ino.uf2" ]; then
       echo "Run scripts/knob.sh build $TARGET first." >&2
@@ -30,6 +33,7 @@ case "${1:-}" in
       echo 'Picotool missing; run python3 scripts/setup-toolchain.py.' >&2
       exit 1
     fi
+    python3 "$ROOT/scripts/memory-usage.py" "$BUILD/$TARGET.ino.elf"
     exec "$PICOTOOL" load "$BUILD/$TARGET.ino.uf2" -v -f -x
     ;;
   monitor)
