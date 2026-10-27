@@ -3,8 +3,9 @@
 ## Workspace
 
 - [x] Verify local commits, GitHub push, remote branch, and clean working tree (2026-10-26).
-- [ ] Choose and pin a firmware toolchain/core and Twist library.
-- [ ] Confirm XIAO USB enumeration.
+- [x] Choose and pin a firmware toolchain/core and Twist library (see firmware/toolchain.json; 2026-10-27).
+- [x] Confirm XIAO USB enumeration (Seeed XIAO RP2040, /dev/cu.usbmodem1412301; 2026-10-27).
+- [x] Compile serial-only diagnostic for XIAO; no compiler warnings (2026-10-27).
 
 ## Encoder milestone: Sony disconnected
 

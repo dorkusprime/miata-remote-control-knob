@@ -1,5 +1,6 @@
 # Build products and development environments
 .pio/
+.tools/
 build/
 dist/
 .venv/
