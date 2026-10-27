@@ -62,6 +62,8 @@ Use these factory-labeled leads as the connection point; no additional audio-sty
 
 The remote input needs switched resistances, not a direct GPIO connection. One proposal places an analog multiplexer and fixed resistors near the Sony. IC choice, resistor values, and electrical defaults still need validation.
 
+Construction decision (2026-10-27): mount the interface on a small soldered protoboard near the Sony. It will support the switching component, resistors, bypass capacitor, and any required bias/protection components. Use removable cable connections, strain relief, and an insulating enclosure or cover. Secure the assembly independently of its wires. Choose board dimensions and the solder layout after validating the circuit; this is not a solderless breadboard installation. The Twist and XIAO do not need a shared carrier board.
+
 Reserve these pins provisionally:
 
 | Conductor | XIAO | GPIO | Proposed purpose |

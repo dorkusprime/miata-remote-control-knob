@@ -2,7 +2,7 @@
 
 A minimal multifunction knob for a Sony XAV-9000ES in a 2005 Mazdaspeed Miata, using a Seeed Studio XIAO RP2040 and SparkFun Qwiic Twist RGB encoder.
 
-The knob will occupy the cigarette-lighter location. Use removable connections and no carrier board unless necessary.
+The knob will occupy the cigarette-lighter location. Use removable connections. A small soldered protoboard near the Sony will support the remote-control interface; no carrier board is planned for the Twist and XIAO.
 
 ## Status
 

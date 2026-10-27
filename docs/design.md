@@ -4,6 +4,7 @@
 
 - Sony XAV-9000ES; XIAO RP2040; SparkFun Qwiic Twist RGB.
 - Knob at cigarette-lighter location; minimal footprint; no unnecessary PCB.
+- Use a small soldered protoboard near the Sony to support the remote-interface components and connections (user decision, 2026-10-27). Twist and XIAO remain independently mounted. Final board dimensions and layout depend on the validated circuit.
 - Unmarked cap, subtle RGB underglow, fixed detents; no haptic motor.
 - Hardware I2C preferred over software I2C.
 - Removable wiring and USB access.

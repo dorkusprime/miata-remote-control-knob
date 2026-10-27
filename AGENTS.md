@@ -1,7 +1,7 @@
 # Working agreements
 
 - Scope: this knob controller, Sony interface, camera controls, and associated power. Do not modify parent vehicle-maintenance files.
-- Preserve the minimal mechanical design. No extra carrier PCB unless necessary and justified.
+- Preserve the minimal mechanical design. A small soldered protoboard near the Sony is approved for the remote-control interface. No carrier PCB is planned for the Twist and XIAO; justify any further boards.
 - Use hardware I2C on XIAO D4/D5 for the Twist. Verify board labels versus actual RP2040 GPIO numbers.
 - Keep proposed wiring distinct from bench-validated wiring.
 - Start with USB serial diagnostics; Sony remote and camera outputs remain disabled until the interface is validated.

@@ -23,6 +23,8 @@
 - [ ] Confirm adapter model and which remote input to use; verify plug-contact mapping if needed.
 - [ ] Measure remote voltage and test passive resistor commands/learning.
 - [ ] Select circuit and resistor values.
+- [x] Choose a small soldered protoboard near the Sony for interface construction (user decision, 2026-10-27).
+- [ ] After circuit validation, lay out the protoboard and select its size, connectors, insulation, and mounting.
 - [ ] Validate reset defaults and powered-off behavior.
 - [ ] Finalize remote harness and connector pinout.
 - [ ] Enable hardware outputs only after interface validation.
