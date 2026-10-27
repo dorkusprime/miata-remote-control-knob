@@ -46,6 +46,20 @@ D pins support digital I/O and PWM. GPIO signals use 3.3 V logic.
 
 ## Proposed Sony control harness — NOT ready to assemble
 
+### Included steering-remote adapter
+
+User observation recorded 2026-10-27: the Sony includes a cable marked "Steering Remote," with an apparently 3.5 mm plug at one end and three labeled wires at the other. The exact adapter model and plug-contact mapping have not been verified.
+
+| Adapter lead label | Proposed connection |
+| --- | --- |
+| Input 1 | Switched-resistance command interface, pending bench verification |
+| Input 2 | Leave individually insulated and unconnected initially |
+| ST Remote GND | Remote-command return for the resistor interface |
+
+Use these factory-labeled leads as the connection point; no additional audio-style breakout cable is needed. The initial proposal switches resistance between Input 1 and ST Remote GND. Input selection, voltage, and command behavior still require validation. Do not connect Input 1 or Input 2 directly to XIAO GPIO or to vehicle 12 V.
+
+### Controller-to-interface cable
+
 The remote input needs switched resistances, not a direct GPIO connection. One proposal places an analog multiplexer and fixed resistors near the Sony. IC choice, resistor values, and electrical defaults still need validation.
 
 Reserve these pins provisionally:
@@ -65,7 +79,7 @@ D7–D10 remain unassigned. Power and signal cables are separate; this proposed 
 
 Before finalizing the Sony harness, verify:
 
-1. Remote input voltage, RC-SR1 lead/plug mapping, and resistance/learning behavior.
+1. Included adapter identity, remote input voltage, input selection, and resistance/learning behavior. Verify plug-contact mapping only if needed; use the labeled leads for assembly.
 2. Switch analog limits, control thresholds, on-resistance, and leakage.
 3. No back-powering when Sony is on and XIAO/interface is off, including USB programming scenarios.
 4. Hardware defaults that release all commands at startup/reset/disconnection.

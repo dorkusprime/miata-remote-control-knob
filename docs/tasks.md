@@ -19,7 +19,8 @@
 ## Sony interface
 
 - [ ] Record supply rating/limit and startup voltage/current. Earlier supplies dropped voltage; cause unknown.
-- [ ] Confirm RC-SR1 availability and pinout.
+- [x] Included steering-remote adapter is on hand: Input 1, Input 2, ST Remote GND (user observation recorded 2026-10-27).
+- [ ] Confirm adapter model and which remote input to use; verify plug-contact mapping if needed.
 - [ ] Measure remote voltage and test passive resistor commands/learning.
 - [ ] Select circuit and resistor values.
 - [ ] Validate reset defaults and powered-off behavior.
