@@ -11,9 +11,11 @@
 
 - [ ] Dry-fit headers, cable plugs, and enclosure clearances.
 - [ ] Verify wiring continuity and absence of shorts while unpowered.
-- [ ] Upload a serial diagnostic when explicitly instructed.
+- [x] User uploaded the first serial diagnostic via BOOT-mode UF2 copy (2026-10-27).
+- [ ] User upload and test diagnostic v2 with absolute count/raw register reporting.
 - [ ] Scan I2C and verify the Twist address.
-- [ ] Read rotation and button state.
+- [x] Button DOWN/UP events observed by user (2026-10-27).
+- [ ] Read rotation: first diagnostic produced no TURN events; cause unconfirmed.
 - [ ] Verify low-brightness RGB and LED-off behavior.
 - [ ] Implement gestures with serial-only command output.
 
