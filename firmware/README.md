@@ -6,7 +6,7 @@ The serial-only diagnostic builds for Seeed XIAO RP2040. It has not been flashed
 
 Versions are recorded in [toolchain.json](toolchain.json): Arduino CLI 1.5.1, Earle Philhower Arduino-Pico core 6.3.1, SparkFun Qwiic Twist Arduino Library 1.0.4. Board FQBN: `rp2040:rp2040:seeed_xiao_rp2040`.
 
-The SparkFun library's source header identifies GPL licensing; its bundled license is GPL-3.0. It is installed as a dependency, not copied into this repository. Firmware distribution must comply with dependency licenses. No code from the separate Sony-controller implementation has been incorporated.
+Dependency license review: the SparkFun library's bundled `LICENSE.md` specifies MIT for code, while its source headers contain GPL notices. Resolve that inconsistency before distributing linked firmware binaries. The library is installed as a dependency, not copied into this repository. No code from the separate Sony-controller implementation has been incorporated.
 
 ## Setup and build
 
