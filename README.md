@@ -10,7 +10,7 @@ The XIAO, Twist, Sony receiver, a camera, and the Sony's included steering-remot
 
 The separate gesture controller and live translation monitor are host-tested and user bench-verified: the user reports all gestures functional. Radio and camera-control outputs remain disabled until the Sony interface is validated.
 
-Controller v2 adds full-brightness blue idle lighting and brief gesture feedback. Camera gestures pulse amber, with no latched camera-state color. This LED update is compiled and host-tested, awaiting user upload and brightness checks.
+Controller v2 adds full-brightness blue idle lighting and brief gesture feedback. Camera gestures pulse amber, with no latched camera-state color. This LED update is compiled, host-tested, and user bench-verified.
 
 ```sh
 scripts/knob.sh build controller
