@@ -26,6 +26,7 @@ Upload prints the selected build's flash-image and static RAM usage before flash
 
 - [Wiring and cable plan](docs/wiring.md)
 - [Sony interface schematic, parts, placement, and bench procedure](docs/sony-interface.md)
+- [Amazon component sourcing](docs/parts-sourcing.md)
 - [Design decisions and evidence](docs/design.md)
 - [Development checklist](docs/tasks.md)
 - [Firmware environment](firmware/README.md)

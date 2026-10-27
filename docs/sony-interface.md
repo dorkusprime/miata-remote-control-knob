@@ -88,7 +88,7 @@ Input 2 stays insulated. The included Sony cable supplies the plug and labeled l
 
 DIP sockets are optional and add height. Parts marked **EHA/EHAX** have different lead forms; buy the exact through-hole **AQY212EH** for this plan. No part has been purchased or substituted by the agent.
 
-Amazon US preference retained: [search for AQY212EH DIP-4](https://www.amazon.com/s?k=AQY212EH+DIP-4). Search results did not establish a reliable US listing for the exact part; do not treat the search link as a verified offer. Commodity resistor kits are usable if they contain the exact values/tolerances.
+[Amazon US sourcing links and exact quantities](parts-sourcing.md): two ten-pack listings advertise AQY212EH DIP-4, and a verified-value-list resistor assortment covers the BOM. Live relay price/delivery could not be confirmed; the advertised part/package match is not independent verification of the shipped components. The user has four LCC110 devices but chose to retain this original design.
 
 ## Permanent-board placement, without cutting
 
