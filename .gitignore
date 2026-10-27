@@ -1,0 +1,24 @@
+# Build products and development environments
+.pio/
+build/
+dist/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Local editor and OS state
+.DS_Store
+.idea/
+.vscode/
+
+# Credentials, logs, and recordings
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.log
+*.mp4
+*.mov
+*.avi
