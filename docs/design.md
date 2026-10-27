@@ -11,14 +11,14 @@
 - Volume, mute/ATT, track control.
 - Manual rear view without guidelines, actual reverse with guidelines.
 
-## Implemented gesture defaults — awaiting user tuning
+## Implemented gesture defaults — user bench-verified
 
 - Turn: volume.
 - Short press: mute/ATT.
 - Press and turn: previous/next track.
 - Double press: toggle manual camera.
 
-These are serial-only simulated intentions in the separate controller sketch. Initial timing: 30 ms debounce, 300 ms double-click window, 700 ms long-hold threshold (unassigned). Held rotation suppresses clicks; a double click does not emit mute. See [gesture rules and monitor workflow](gestures.md). User testing of timing and exact Sony command behavior remains pending. Arbitrary CarPlay menu navigation is not promised.
+These are serial-only simulated intentions in the separate controller sketch. Initial timing: 30 ms debounce, 300 ms double-click window, 700 ms long-hold threshold (unassigned). Held rotation suppresses clicks; a double click does not emit mute. See [gesture rules and monitor workflow](gestures.md). The user reports all gestures functional in the serial simulation. Exact Sony command behavior remains untested. Arbitrary CarPlay menu navigation is not promised.
 
 ## Sony interface evidence
 

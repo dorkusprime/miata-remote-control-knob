@@ -4,7 +4,7 @@ The controller is a separate sketch from the preserved hardware diagnostic. It t
 
 ## Current mapping
 
-These are implemented defaults for user testing, not validated Sony behavior.
+These defaults are user bench-verified through the live monitor; Sony behavior remains untested.
 
 | Input | Intention |
 | --- | --- |
@@ -91,8 +91,14 @@ Action names: `volume_up`, `volume_down`, `mute_att`, `next_track`, `previous_tr
 
 Run `python3 scripts/test.py`. It builds the exact gesture engine for the host with address/undefined-behavior sanitizers and runs Python monitor tests. Tests exercise timing, bounce, click/turn conflicts, startup-held behavior, counter/millis rollover, disconnect cancellation, malformed protocol data, framing, CLI stdin, and a virtual serial port. It never opens the physical XIAO.
 
-On 2026-10-26 (client local date): 19 gesture scenarios and 15 monitor tests passed. Both controller and diagnostic compile for XIAO with Picotool. The controller uses 62,968 bytes flash and 9,360 bytes global RAM. The core emits the two previously observed missing-initializer warnings in USB.cpp; no controller warnings were reported. The controller has not been flashed or physically tested by the agent. User testing of gesture timing and monitor behavior is pending.
+On 2026-10-26 (client local date): 19 gesture scenarios and 15 monitor tests passed. Both controller and diagnostic compile for XIAO with Picotool. The controller uses 62,968 bytes flash and 9,360 bytes global RAM. The core emits the two previously observed missing-initializer warnings in USB.cpp; no controller warnings were reported. The controller has not been flashed or physically tested by the agent. The user subsequently reported all gestures functional through the live monitor.
 
 Memory-report verification: four additional tests passed, including ELF-versus-generated-binary comparison for both sketches. The full controller flash image is 79,760 bytes (3.8% of its configured flash partition); static RAM is 9,360 bytes (3.6%). The 62,968-byte figure above is the narrower Arduino compiler summary. No hardware upload was performed to test this reporting change.
 
 Bench acceptance: check both volume directions; isolated click fires once after the window; double click produces camera only; held turns produce tracks without mute/camera on release; long holds produce no mapped command. Confirm repeated Picotool updates still work with this sketch. Keep Sony disconnected throughout.
+
+## User bench acceptance — 2026-10-26
+
+The user reports all controller gestures functional in the live monitor. This verifies the serial simulation on the XIAO/Twist; it does not validate Sony electrical commands or camera switching. Repeat Picotool upload with this controller sketch remains a separate unchecked item.
+
+USB observation during a change of physical location: initially neither USB serial nor a normal application USB device appeared. Manual BOOT mode presented RPI-RP2; after the user pressed R to exit bootloader mode, the application and monitor worked. The user initially had not pressed R when the monitor remained waiting. No firmware changes were made for this incident, and its initial connection failure has no confirmed cause.
