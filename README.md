@@ -16,5 +16,6 @@ First milestone: power the XIAO from computer USB, read the Twist using hardware
 - [Design decisions and evidence](docs/design.md)
 - [Development checklist](docs/tasks.md)
 - [Firmware environment](firmware/README.md)
+- [Workspace and access](docs/workspace.md)
 
 Hardware tests must be recorded as observations, with date and configuration. Do not treat a proposed pin reservation or external example as confirmation of compatibility.

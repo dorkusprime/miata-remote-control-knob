@@ -2,7 +2,7 @@
 
 ## Workspace
 
-- [ ] Verify local commits, GitHub push, remote branch, and clean working tree.
+- [x] Verify local commits, GitHub push, remote branch, and clean working tree (2026-10-26).
 - [ ] Choose and pin a firmware toolchain/core and Twist library.
 - [ ] Confirm XIAO USB enumeration.
 
