@@ -33,10 +33,12 @@ Initial functional diagnostic complete: USB/I2C, rotation, button, RGB, and repe
 
 ## Sony interface
 
-- [ ] Record supply rating/limit and startup voltage/current. Earlier supplies dropped voltage; cause unknown.
+- [x] User powered Sony successfully from bench supply at nominal 12 V (2026-10-28).
+- [ ] Record supply model/rating, current limit, startup current and loaded voltage; previous supply-collapse cause unknown.
 - [x] Included steering-remote adapter is on hand: Input 1, Input 2, ST Remote GND (user observation recorded 2026-10-27).
 - [ ] Confirm adapter model and which remote input to use; verify plug-contact mapping if needed.
-- [ ] Measure remote voltage and test passive resistor commands/learning.
+- [x] Measure remote input unloaded and with known load: approximately +3.3 V, 9.86 kohm load, 2.939 V loaded (2026-10-28).
+- [ ] Test passive resistor commands/learning; a loaded voltage measurement is not command recognition.
 - [x] Archive five-relay ladder; select one LCC110 plus digital pot (user direction, 2026-10-27).
 - [x] Select MCP41050-I/P + SN74HCT125N + existing LCC110 and NPN driver; all through-hole.
 - [x] Document pin-level circuit, current limits, harness, calibration and acceptance procedure.
@@ -48,21 +50,36 @@ Initial functional diagnostic complete: USB/I2C, rotation, button, RGB, and repe
 - [x] Place every component and pigtail in a complete proposed pad map; document top / underside views and check all nets, holes and nominal body separation.
 - [x] Simplify placement: all component bodies on top, with two tapped buses and four signal wires underneath; all drawn lead and wire routes orthogonal.
 - [ ] Dry-fit actual components, sockets, mounting holes, formed leads and bus construction; verify insulation, clearances and overall height.
-- [ ] Assemble the receiver-disconnected solderless prototype; verify rails and relay LED current.
+- [ ] Assemble the receiver-disconnected permanent board in stages (solderless duplicate optional); verify rails and relay LED current.
 - [ ] Implement a separate calibration/driver diagnostic with relay-off defaults; user performs flashing.
 - [ ] Measure and record the five calibrated output resistances.
 - [ ] Validate simulated-input current, reset/fault behavior and both supply-loss orders.
-- [ ] Measure Sony voltage/source impedance; determine whether the pot's limits are met with margin.
+- [x] Estimate Sony source impedance from user measurements: about 1.1–1.2 kohm; see bench report.
+- [ ] Resolve ATT current estimate about 0.59 mA versus previous <=0.5 mA design target; verify actual limits/margins before activation.
 - [ ] Validate Sony recognition, learning and pulse timing at low volume.
 - [ ] Validate final cable length, connector orientation, mounting and strain relief.
-- [ ] Solder the validated prototype; repeat electrical acceptance after assembly.
+- [ ] Repeat electrical acceptance after permanent assembly.
 - [ ] Add a nonblocking bounded backend and watchdog; enable controller outputs only after validation.
 
 ## Camera and installation
 
+Required scope: [Camera 1 hardware/firmware plan](camera-control.md).
+
+- [x] Integrate spare HCT125 camera channel, R8/R9 pull-downs and inline R10 into checked layout/BOM/docs; hardware untested.
+- [ ] Allocate harness contact 8 to D2/GPIO28; verify eight-wire connector orientation.
+- [ ] Implement camera-request backend, reset/fault release and tests after trigger validation.
+- [x] Verify external-source EXT IN 1 assertion and release to previous screen (2026-10-28).
+- [ ] Test touchscreen Back/retrigger and repeat release with actual buffer.
+- [ ] Provide camera power during manual preview, independent of reverse-lamp-only power.
+
 - [ ] Identify actual camera/DVR model and supply requirements.
-- [ ] Test guideline behavior on rear versus Camera 1 input.
-- [ ] Test direct versus passive-split picture.
-- [ ] Validate camera trigger and reverse priority.
+- [x] User confirmed Camera 1 without camera-generated lines, rear input with Sony guidelines, and reverse priority in sequential-input bench test (2026-10-28).
+- [ ] Test direct versus passive-split picture; no RCA splitter on hand.
+- [x] User verified external 5 V/resistor Camera 1 trigger assertion/release, live picture, and reverse priority (2026-10-28); proposed buffer remains untested.
+- [ ] Validate buffer trigger electrical limits and reverse exit behavior.
 - [ ] Measure lighter opening and rear clearance.
 - [ ] Finalize mechanical support, power protection, and strain relief.
+
+## Bench evidence and next session
+
+[2026-10-28 results](bench-results-2026-10-28.md) separate observations from estimates. Head unit may be packed away pending components and RCA splitter. Next work is staged permanent assembly and a disabled-by-default calibration/backend diagnostic. No firmware was flashed or live outputs enabled during documentation work.

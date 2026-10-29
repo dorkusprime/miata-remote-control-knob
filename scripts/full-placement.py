@@ -12,15 +12,16 @@ FOLDER = ROOT / 'hardware/sony-remote'
 # Device-terminal contract from docs/sony-interface.md, independent of pad allocation.
 PINS = {
  'U1':dict(zip(map(str,range(1,9)),['CS_OUT','SCK_OUT','MOSI_OUT','GND','GND','PW','NC_U1_7','+5V'])),
- 'U2':dict(zip(map(str,range(1,15)),['GND','CS_IN','CS_OUT','GND','SCK_IN','SCK_OUT','GND','MOSI_OUT','MOSI_IN','GND','NC_U2_11','GND','+5V','+5V'])),
+ 'U2':dict(zip(map(str,range(1,15)),['GND','CS_IN','CS_OUT','GND','SCK_IN','SCK_OUT','GND','MOSI_OUT','MOSI_IN','GND','CAMERA_BUFFER','CAMERA_REQUEST','GND','+5V'])),
  'K1':dict(zip(map(str,range(1,9)),['NC_K1_1','LED_A','LED_K','NC_K1_4','SONY_R','PW','NC_K1_7','NC_K1_8'])),
  'Q1':{'E':'GND','B':'BASE','C':'LED_K'},
  'R1':{'1':'LED_A','2':'+5V'},'R2':{'1':'RELAY_EN','2':'BASE'},'R3':{'1':'SONY_IN','2':'SONY_R'},
  'R4':{'1':'CS_IN','2':'GND'},'R5':{'1':'SCK_IN','2':'GND'},'R6':{'1':'MOSI_IN','2':'GND'},'R7':{'1':'BASE','2':'GND'},
+ 'R8':{'1':'CAMERA_REQUEST','2':'GND'},'R9':{'1':'CAMERA_BUFFER','2':'GND'},
  'C1':{'1':'+5V','2':'GND'},'C2':{'1':'+5V','2':'GND'},'C3':{'+':'+5V','-':'GND'},
 }
-CONTACTS={'J1.1':'GND','J1.2':'+5V','J1.3':'SCK_IN','J1.4':'MOSI_IN','J1.5':'CS_IN','J1.6':'RELAY_EN','J2.1':'SONY_IN','J2.2':'GND'}
-RESISTORS={'R1':330,'R2':1000,'R3':2700,'R4':47000,'R5':47000,'R6':47000,'R7':47000}
+CONTACTS={'J1.1':'GND','J1.2':'+5V','J1.3':'SCK_IN','J1.4':'MOSI_IN','J1.5':'CS_IN','J1.6':'RELAY_EN','J2.1':'SONY_IN','J2.2':'GND','J1.7':'GND','J1.8':'CAMERA_REQUEST','J2.3':'CAMERA_BUFFER'}
+RESISTORS={'R1':330,'R2':1000,'R3':2700,'R4':47000,'R5':47000,'R6':47000,'R7':47000,'R8':47000,'R9':47000}
 COLORS={'GND':'#64748b','+5V':'#dc2626','CS_OUT':'#059669','SCK_OUT':'#2563eb','MOSI_OUT':'#9333ea','PW':'#d97706'}
 
 
@@ -149,7 +150,7 @@ class Svg:
 
 def draw(d):
     s=Svg();scale=15
-    s.text(35,43,'Sony remote interface · ALL COMPONENTS',29)
+    s.text(35,43,'Sony remote + Camera 1 · BOARD COMPONENTS',29)
     s.text(35,74,'MCP41050 + HCT125 + LCC110 · proposed no-cut ElectroCookie Mini layout',18)
     s.rect(35,94,1690,66,'#fff3cd',radius=8)
     s.text(52,120,'ELECTRICAL PAD ALLOCATION CHECKED · PHYSICAL FIT / SOCKETS / MOUNTING STILL UNVERIFIED',18,'#92400e')
@@ -215,19 +216,19 @@ def draw(d):
                 x,y=pad(c['pad']);s.circle(x,y,5,'#0e7490');s.text(x-4,y-10,c['ref'].replace('J',''),10,'#0e7490')
         s.text(bx,1010,'Bodies shown on this face only. Pads retain the same IDs after flipping.',14)
     x=1325;s.text(x,195,'TOP',20)
-    for i,t in enumerate(['U1   MCP41050-I/P','U2   SN74HCT125N','K1   LCC110','Q1   2N3904BU, formed leads','R1 + R4–R7   upright resistors','C1/C2   100 nF','C3   10 µF, + J7 / − J8','R2/R3   outer-edge axial resistors']):s.text(x,226+i*27,t,16)
+    for i,t in enumerate(['U1   MCP41050-I/P','U2   SN74HCT125N','K1   LCC110','Q1   2N3904BU, formed leads','R1 + R4–R9   upright resistors','C1/C2   100 nF','C3   10 µF, + J6 / − J10','R2/R3   outer-edge axial resistors']):s.text(x,226+i*27,t,16)
     s.text(x,450,'UNDERSIDE',20)
-    for i,t in enumerate(['No component bodies underneath.','BG   one wire, 7 ground taps','BV   one wire, 4 power taps','W10–W13   four signal wires','Six pieces; 19 solder landings.','Sleeve buses between marked taps.']):s.text(x,481+i*27,t,16)
-    s.text(x,690,'J1 · six-wire controller pigtail',18)
-    for i,t in enumerate(['1 GND → B4','2 +5 V → J6','3 SCK → A10','4 MOSI → I11','5 CS → A7','6 ENABLE → B5']):s.text(x,720+i*25,t,16)
+    for i,t in enumerate(['No component bodies underneath.','BG   one wire, 7 ground taps','BV   one wire, 3 power taps','W10–W13   four signal wires','Six pieces; 18 solder landings.','Sleeve buses between marked taps.']):s.text(x,481+i*27,t,16)
+    s.text(x,690,'J1 · eight-wire controller pigtail',18)
+    for i,t in enumerate(['1 GND → B4','2 +5 V → H1','3 SCK → A10','4 MOSI → I11','5 CS → A7','6 ENABLE → B5','7 GND → B9','8 CAMERA → I8']):s.text(x,710+i*23,t,16)
     s.text(x,910,'J2 · Sony pigtail',18)
-    s.text(x,939,'1 Input 1 → I5',16);s.text(x,966,'2 ST Remote GND → H4',16)
+    s.text(x,939,'1 Input 1 → I5',16);s.text(x,966,'2 ST Remote GND → H4',16);s.text(x,993,'3 J9 → inline R10 1k → EXT IN 1',14)
     s.rect(35,1040,1690,216,'#e2e8f0',radius=10)
     notes=[
       'Gray bars are factory-connected strips: A–E and F–J for each row. No copper cuts. No shared component/jumper holes.',
-      'R1/R4–R7 stand upright; Q1 leads land at B12 (E), C13 (B), D16 (C). Insulate formed leads and check actual transistor marking.',
+      'R1/R4–R9 stand upright; Q1 leads land at B12 (E), C13 (B), D16 (C). Insulate formed leads and check actual transistor marking.',
       'R1 returns to F13 through the gap between U2 and K1. BV now lands at H13. Check actual socket clearance.',
-      'C1/C2 leads need careful forming. C3 positive goes to J7 and negative to J8. Do not reverse electrolytic polarity.',
+      'C1/C2 leads need careful forming. C3: + J6, - J10. R10 1k is sleeved inline in the camera cable; it is not a board component.',
       'BG/BV tack to the marked underside pads; they do not thread through every hole. Sleeve all sections between taps.',
       'Nominal body envelopes do not certify sockets, mounting holes or final height. Dry-fit the actual board before soldering.',
       'See pad-map.md and layout.json for every pin, terminal and jumper. Electrical mapping is checked; hardware remains untested.',
@@ -239,13 +240,13 @@ def draw(d):
 def tables(d):
     s=['# Complete proposed pad allocation','', '**Electrically checked design, not a physically verified build.** Use the [circuit guide](../../docs/sony-interface.md) for device limits and acceptance. [All-component image](placement-full.svg) separates top and horizontally mirrored underside views. No firmware outputs were enabled.','', '## Component terminals','', '| Ref | Part / side | Terminal → pad |','| --- | --- | --- |']
     for p in d['parts']:s.append(f'| {p["ref"]} | {p["part"]} / {p["side"]} | '+', '.join(f'{n} → {pad}' for n,pad in p['pins'].items())+' |')
-    s+=['','## Distributed pigtails','', 'These are wire landing pads, not two in-line headers. Fit the existing removable connectors off-board. J1 numbering matches the current harness. Sony Input 2 stays insulated.','', '| Contact | Net | Pad |','| --- | --- | --- |']
+    s+=['','## Distributed pigtails','', 'These are wire landing pads, not in-line headers. Fit the existing removable connectors off-board. J1 numbering matches the current harness. Sony Input 2 stays insulated.','', '| Contact | Net | Pad |','| --- | --- | --- |']
     for c in d['contacts']:s.append(f'| {c["ref"]} | {c["net"]} | {c["pad"]} |')
-    s+=['','## Underside wire pieces and bus taps','', 'Crossings are not junctions. Use insulated wire; route clear of resistor bodies and keep leads sleeved over unrelated pads. Coordinates are endpoint and routing references, not validated three-dimensional wire bends.','', '| Wire | Net | Solder pads in order |','| --- | --- | --- |']
+    s+=['','## Camera output cable','', 'J2.3 at J9 is the buffer output. Insert R10 (1 kohm) in series in this pigtail, sleeve both joints and the resistor, then connect to EXT IN 1. R10 is outside the board geometry model. Never connect this lead to vehicle 12 V.','', '## Underside wire pieces and bus taps','', 'Crossings are not junctions. Use insulated wire; route clear of resistor bodies and keep leads sleeved over unrelated pads. Coordinates are endpoint and routing references, not validated three-dimensional wire bends.','', '| Wire | Net | Solder pads in order |','| --- | --- | --- |']
     for w in d['jumpers']:s.append(f'| {w["ref"]} | {w["net"]} | '+ ' → '.join(w['pads'])+' |')
-    s+=['', 'BG and BV are each one continuous conductor with multiple solder taps, not chains of separate jumpers. Expose only the listed tap pads; sleeve all intervening sections. Untapped pads along the drawn route stay insulated. Tack the middle taps to the underside pads rather than threading a wire repeatedly through holes. This reduces wire pieces from 13 to 6 and wire solder landings from 26 to 19; it does not remove electrical nets. Four signal wires remain separate.', '', 'If making continuous tapped buses is awkward, separate insulated segments following the same net connections remain electrically equivalent; they restore some of the original cut/strip work.', '', '## Assembly and physical conditions','',
+    s+=['', 'BG and BV are each one continuous conductor with multiple solder taps, not chains of separate jumpers. Expose only the listed tap pads; sleeve all intervening sections. Untapped pads along the drawn route stay insulated. Tack the middle taps to the underside pads rather than threading a wire repeatedly through holes. This reduces wire pieces from 13 to 6 and wire solder landings from 26 to 18; it does not remove electrical nets. Four signal wires remain separate.', '', 'If making continuous tapped buses is awkward, separate insulated segments following the same net connections remain electrically equivalent; they restore some of the original cut/strip work.', '', '## Assembly and physical conditions','',
         '- Fit sockets and top components first, without solder. The IC-only image is now a subset of this candidate.',
-        '- R1 and R4–R7 stand upright. R1 is at C15 and its sleeved return lead follows the gap between U2 and K1 to F13. The power bus now ends at H13. This is a formed-lead proposal, not a validated socket clearance or guaranteed supplied lead length.',
+        '- R1 and R4–R9 stand upright. R1 is at C15 and its sleeved return lead follows the gap between U2 and K1 to F13. The power bus now ends at H13. This is a formed-lead proposal, not a validated socket clearance or guaranteed supplied lead length.',
         '- Q1 has a formed-lead footprint, not the default three adjacent TO-92 holes. E=B12, B=C13, C=D16. Q1 moves to the lower-left corner; R7 moves to C12/D13. Check the actual part orientation and preform without force at the body.',
         '- All component bodies are now on top. R2 follows the top left edge; R3 follows the top right edge with a jog to x=37 mm past C3. Sleeve extended leads and dry-fit before trimming.',
         '- Check supplied lead lengths before trimming. If a lead cannot follow its proposed route safely, revise the model or use an insulated extension; do not force the component.',
@@ -254,7 +255,7 @@ def tables(d):
         '- All component bodies are on top; only the six wire pieces and solder joints are underneath. Distributed pigtails preserve the no-cut board. Mounted height and center mounting-hole access remain unverified.',
         '- On the actual board, verify A–E / F–J strip continuity and orientation first. Do not solder until the dry-fit and receiver-disconnected electrical checks pass.',
         '', '## Verification scope','',
-        '`python3 scripts/full-placement.py --check` verifies the 14 component references, terminal connectivity against an independent device-pin contract, all resistor values, factory strips, no accidental net joins, no reused holes, pigtail assignments, nominal body separation, all-top component placement, orthogonal routes, and all component-lead routes avoiding other component bodies. It also verifies that the SVG/table match the model. This is not a timing, analog-current, power-sequencing or physical-fit simulation.',
+        '`python3 scripts/full-placement.py --check` verifies the 16 board component references, terminal connectivity against an independent device-pin contract, all resistor values, factory strips, no accidental net joins, no reused holes, pigtail assignments, nominal body separation, all-top component placement, orthogonal routes, and all component-lead routes avoiding other component bodies. It also verifies that the SVG/table match the model. This is not a timing, analog-current, power-sequencing or physical-fit simulation.',
         '', 'Regenerate with `python3 scripts/full-placement.py`. Tests deliberately introduce a rail short, an open jumper, a transistor-pin swap, pad reuse, a resistor-value error, a body overlap a missing bus tap, a diagonal wire, and a component lead crossing another body.',
         '', 'Source for resistor envelope: [Yageo MFR datasheet, dimensions](https://yageogroup.com/content/datasheet/asset/file/YAGEO-MFR_DATASHEET). Other envelopes are conservative drawing assumptions, not new manufacturer guarantees.','']
     return '\n'.join(s)

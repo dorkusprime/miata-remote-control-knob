@@ -6,18 +6,20 @@ A multifunction knob for a Sony XAV-9000ES in a 2005 Mazdaspeed Miata: Seeed Stu
 
 The user has bench-verified rotation, button events, gestures and RGB feedback over USB. Idle lighting is full-brightness blue for the opaque cap; gesture colors are brief acknowledgements, not confirmed radio state. The original diagnostic is preserved. Picotool updates were user-verified without physical button access.
 
-The selected Sony interface is **MCP41050-I/P + SN74HCT125N + one existing LCC110**, with a 2N3904 optical-input driver. All parts are through-hole. Supporting components were ordered from DigiKey on 2026-10-27, with intentional spares. The circuit is not assembled, calibrated or receiver-validated. Firmware currently simulates commands; Sony and camera outputs remain disabled.
+The selected Sony interface is **MCP41050-I/P + SN74HCT125N + one existing LCC110**, with a 2N3904 optical-input driver. All parts are through-hole. Supporting components were ordered from DigiKey on 2026-10-27, with intentional spares. The circuit is not assembled or calibrated. Sony-side measurements and camera behavior were user-verified independently of this circuit; [bench results and remaining gates](docs/bench-results-2026-10-28.md). Firmware currently simulates commands; Sony and camera outputs remain disabled.
 
-A small protoboard near the Sony is approved. Twist and XIAO need no carrier board. Final enclosure, no-cut permanent board placement, cable length, vehicle power protection and camera switching remain unfinished.
+A small protoboard near the Sony is approved. Twist and XIAO need no carrier board. Final enclosure, no-cut permanent board placement, cable length, vehicle power protection and assembled camera interface remain unfinished. Camera 1 trigger/release, live video, guideline separation and reverse priority passed separate-input bench tests; no RCA splitter was available.
 
 ## Start here
 
 | Document | Purpose |
 | --- | --- |
+| [Sony bench results](docs/bench-results-2026-10-28.md) | Measured values, observed camera behavior, calculations and remaining tests |
+| [Camera control](docs/camera-control.md) | Required preview circuit, trigger contract and acceptance |
 | [Design and evidence](docs/design.md) | Requirements, choices, what is and is not verified |
 | [Sony circuit](docs/sony-interface.md) | Current schematic overview, complete pin map, limits and backend contract |
-| [Assembly and test](docs/assembly-and-test.md) | Breadboard order, calibration and acceptance gates |
-| [Wiring](docs/wiring.md) | Twist/XIAO pins, six-wire harness, power and camera plan |
+| [Assembly and test](docs/assembly-and-test.md) | Staged permanent assembly, calibration and acceptance gates |
+| [Wiring](docs/wiring.md) | Twist/XIAO pins, eight-wire harness, power and camera plan |
 | [Parts and order](docs/parts-sourcing.md) | Exact ordered parts, quantities, existing supplies |
 | [Hardware index](hardware/sony-remote/README.md) | BOM, all-component placement and checked pad map |
 | [Development checklist](docs/tasks.md) | Completed work and next milestones |

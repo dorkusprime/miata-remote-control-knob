@@ -4,7 +4,7 @@ This procedure applies only to the [MCP41050/HCT125/LCC110 circuit](sony-interfa
 
 ## Preparation and orientation
 
-Use the existing solderless protoboard, multimeter, jumpers and regulated 5 V USB supply first. A 10 kohm test resistor is useful for the simulated Sony source; it is a bench aid, not an installed BOM component. A scope is needed to characterize brief supply-loss excursions; a steady multimeter reading cannot prove their absence.
+Build the permanent board in stages, using the multimeter and regulated 5 V USB supply; a duplicate solderless build is optional. A 10 kohm test resistor is useful for the simulated Sony source; it is a bench aid, not an installed BOM component. A scope is needed to characterize brief supply-loss excursions; a steady multimeter reading cannot prove their absence.
 
 Disconnect Sony, vehicle wiring and USB before changing connections. Label the two DIP-8 devices: the MCP41050 and LCC110 have different pinouts. Viewed from above with notch at the top, DIP pin 1 is upper left; numbering runs down the left and up the right. Confirm the actual marking against each datasheet. The HCT125 is DIP-14. For the ordered onsemi 2N3904BU, the manufacturer identifies lead 1 emitter, 2 base, 3 collector; identify the drawing's viewing orientation rather than assuming a left/right rule.
 
@@ -14,10 +14,10 @@ Check the solderless board's rail continuity: long rails may be split. Place eac
 
 1. **Ground and power, unpowered.** Establish common GND and regulated +5 V. Add C3 10 uF with positive to +5 V, negative to GND. Verify rail polarity and no short. Do not connect raw 12 V. For initial tests use one USB supply path; do not parallel an external 5 V supply with laptop USB VBUS.
 2. **U1 pot.** Connect pins 8 +5 V, 4 GND, 5 PB GND, C1 100 nF across 8/4. Leave PA pin 7 unconnected. PW pin 6 is the signal output toward K1. Complete CS/SCK/SI only through U2.
-3. **U2 buffer.** Pins 14 +5 V, 7 GND, C2 100 nF across 14/7. Ground active-low enables 1, 4 and 10. Disable unused channel with pin 13 +5 V, pin 12 GND and pin 11 unconnected. Wire input/output pairs 2→3 for CS, 5→6 for clock, 9→8 for MOSI. Outputs 3/6/8 go to U1 pins 1/2/3 respectively. Put R4/R5/R6 47 kohm from each buffer input to GND.
+3. **U2 buffer.** Pins 14 +5 V, 7 GND, C2 100 nF across 14/7. Ground active-low enables 1, 4 and 10. Use channel 4 for camera: pin 13 GND, pin 12 D2/GPIO28 with R8 47 kohm to GND, pin 11 with R9 47 kohm to GND and inline R10 1 kohm to EXT IN 1. Keep Sony disconnected. Wire input/output pairs 2→3 for CS, 5→6 for clock, 9→8 for MOSI. Outputs 3/6/8 go to U1 pins 1/2/3 respectively. Put R4/R5/R6 47 kohm from each buffer input to GND.
 4. **Q1 and optical input.** Q1 emitter GND; collector K1 pin 3; R2 1 kohm from relay-enable cable lead to Q1 base; R7 47 kohm base to GND. +5 V through R1 330 ohm to K1 pin 2. Do not connect this load to a buffer output. No flyback diode is required for the optical LED.
 5. **Sony-side path, still disconnected from Sony.** A labeled test point INPUT1 goes through R3 2.7 kohm to K1 pin 5; K1 pin 6 to U1 PW pin 6. K1 pins 7/8 (normally closed) and package NC pins 1/4 stay unconnected. A second test point REMOTE_GND joins shared GND.
-6. **Harness.** Verify each conductor against the [six-wire allocation](wiring.md). Leave the optional camera conductor disconnected. With power off, check continuity from each XIAO label to its destination and check that no U2 output goes back to GPIO. Recheck +5 V versus 3V3: Twist uses 3V3; interface uses +5 V.
+6. **Harness.** Verify each conductor against the [eight-wire allocation](wiring.md). Wire the required camera conductor and keep its Sony end disconnected until camera acceptance passes. With power off, check continuity from each XIAO label to its destination and check that no U2 output goes back to GPIO. Recheck +5 V versus 3V3: Twist uses 3V3; interface uses +5 V.
 7. **First power.** Start without Sony or simulated input attached. Check +5 V at both ICs and 3V3 at the Twist. Keep relay-enable low. Stop if current, temperature or rail voltage is unexpected. The approximately 20 mA interface budget is a design allowance, not an observed baseline.
 
 ## Staged electrical checks
@@ -54,7 +54,7 @@ Capture both power-loss orders and restoration orders, including simulated Sony 
 
 ## Sony measurements and recognition
 
-Wait for an adequate receiver supply; the earlier supply voltage collapse has no confirmed cause. Follow the Sony installation manual for bench wiring and fuse requirements. Do not power the head unit from the knob converter.
+Sony has now powered successfully at nominal 12 V from the new bench supply; rating/current/loaded voltage remain to be recorded. The earlier supply voltage collapse has no confirmed cause. Follow the Sony installation manual for bench wiring and fuse requirements. Do not power the head unit from the knob converter.
 
 Leave the interface unplugged. In the Sony's Custom steering-wheel mode, measure Input 1 relative to ST Remote GND using DC voltage mode. Record open-circuit voltage, then voltage with a known 10 kohm resistor to ground. Under a steady pull-up model, estimate `Rsource = 10000 × (Vopen / Vloaded − 1)`. For each calibrated command estimate `I = Vopen / (Rsource + Rcommand)`, then verify actual loaded measurements. Unstable signals or a poor fit require further investigation; the model is not a Sony specification. Do not short the input with the meter's current range.
 
@@ -62,7 +62,7 @@ Proceed only when voltage/current are compatible with the pot and power-transiti
 
 ## Permanent assembly and fit
 
-The proposed ElectroCookie Mini is 38.1 × 50.8 mm with 17 rows, each side connected in five-pad strips and a center gap. Three DIP packages use 4 + 7 + 4 pin rows before clearance. This arithmetic is not a finished fit check. Dry-fit sockets, transistor, passives, connectors, mounting screws and insulation on the actual board. Check underside access, cable bend radius and enclosure clearance before soldering. The [all-component placement](../hardware/sony-remote/placement-full.svg) and [pad map](../hardware/sony-remote/pad-map.md) now specify a complete proposed allocation: ICs, Q1, all passives, distributed pigtails and insulated underside jumpers. The checker confirms logical connectivity and nominal body separation. All component bodies are now on top. R1 stands upright at C15 with a sleeved return through the U2/K1 gap to F13; the power bus now lands at H13. Q1 and R7 move to clear that route, and the Q1 emitter lands at B12. R2/R3 remain on the outer edges, and the four 47 kohm resistors stand upright. All drawn routes use horizontal/vertical segments. The underside wiring is two continuous tapped buses plus four signal wires. See the pad map for exposed tap locations and sleeve all intervening wire sections. This remains a physical dry-fit task: sockets, mounting-hole keepouts, lead availability, forming and overall height are not yet measured. No physically verified permanent map exists yet.
+The proposed ElectroCookie Mini is 38.1 × 50.8 mm with 17 rows, each side connected in five-pad strips and a center gap. Three DIP packages use 4 + 7 + 4 pin rows before clearance. This arithmetic is not a finished fit check. Dry-fit sockets, transistor, passives, connectors, mounting screws and insulation on the actual board. Check underside access, cable bend radius and enclosure clearance before soldering. The [all-component placement](../hardware/sony-remote/placement-full.svg) and [pad map](../hardware/sony-remote/pad-map.md) now specify a complete proposed allocation: ICs, Q1, all passives, distributed pigtails and insulated underside jumpers. The checker confirms logical connectivity and nominal body separation. All component bodies are now on top. R1 stands upright at C15 with a sleeved return through the U2/K1 gap to F13; the power bus now lands at H13. Q1 and R7 move to clear that route, and the Q1 emitter lands at B12. R2/R3 remain on the outer edges, and the six 47 kohm resistors stand upright. All drawn routes use horizontal/vertical segments. The underside wiring is two continuous tapped buses plus four signal wires. See the pad map for exposed tap locations and sleeve all intervening wire sections. This remains a physical dry-fit task: sockets, mounting-hole keepouts, lead availability, forming and overall height are not yet measured. No physically verified permanent map exists yet.
 
 Keep all placement claims provisional until that dry-fit. Check the proposed top and mirrored underside views against the actual board, confirm every labeled net and verify the connected strips. Revise the model and regenerate the image if any physical change is needed. Use insulated jumpers, strain relief and mechanical support independent of the cable. Repeat acceptance after soldering. Never copy the archived isolated-ground layout into this shared-ground circuit.
 
@@ -82,3 +82,11 @@ Copy this table for each physical test session. Empty fields mean untested; date
 | Recognition/learning/pulse timing | Not yet tested |
 | Reset, fault, restoration and supply-loss results | Not yet tested |
 | Permanent fit and mounting | Not yet validated |
+
+## Camera acceptance
+
+Follow [camera-control.md](camera-control.md): receiver-disconnected low/high/reset checks, then Sony bias/loading, >=3.5 V active trigger, <=0.25 mA load and both power-off orders. Verify trigger-release behavior before enabling a toggle. Updated C2/C3 pins and bus taps are in pad-map.md. R10 is sleeved inline in the camera pigtail.
+
+## Existing receiver evidence
+
+Consult [bench report](bench-results-2026-10-28.md) before repeating Sony-only tests. Camera assertion/release, live picture, guideline separation and reverse priority passed with external supplies. Repeat through the assembled interface; do not mark electrical gates passed from external-source results. ATT current is estimated about 0.59 mA and exceeds the old 0.5 mA prototype target; resolve before enabling commands. No splitter or assembled-buffer acceptance has occurred.

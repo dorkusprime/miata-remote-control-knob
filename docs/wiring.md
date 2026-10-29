@@ -58,23 +58,25 @@ The selected prototype uses one LCC110, MCP41050-I/P, SN74HCT125N SPI buffer, an
 | 4 | D10/MOSI | 3 | Buffer data input |
 | 5 | D0 | 26 | Buffer CS input |
 | 6 | D1 | 27 | Relay enable via base resistor |
-| 7, optional | GND | — | Second ground |
-| 8, optional | Unconnected | — | Future camera-control reserve |
+| 7 | GND | — | Second ground |
+| 8 | D2 | 28 | Camera request to U2 channel 4 |
 
-Six conductors suffice; an eight-conductor cable leaves space for another ground and future camera control. D9/MISO remains free. The separate Twist cable is unchanged.
+Six conductors serve the steering interface alone; use eight for the required Camera 1 control and second ground. D9/MISO remains free. The separate Twist cable is unchanged.
 
 Sony Input 1 goes through 2.7 kohm, the LCC110 normally-open contact, and the pot W-to-B resistance to ST Remote GND. **ST Remote GND and logic GND are joined** in this design. Input 2 stays insulated. The included Sony adapter already supplies labeled leads; no audio breakout is required. No Sony signal or raw vehicle 12 V connects to GPIO.
 
-All outputs remain disabled. Verify a Sony-disconnected breadboard, commanded resistances, voltage/current limits, reset and supply transitions before receiver connection. A [complete proposed pad map](../hardware/sony-remote/pad-map.md) now includes the pigtail landing pads; actual fit, soldered assembly and connector orientation remain unvalidated. The [hardware index](../hardware/sony-remote/README.md) links the current BOM; [old generated layouts](../hardware/archive/sony-remote-photomos/README.md) are archived and must not be used.
+All outputs remain disabled. Verify the Sony-disconnected staged assembly, commanded resistances, voltage/current limits, reset and supply transitions before receiver connection. A [complete proposed pad map](../hardware/sony-remote/pad-map.md) now includes the pigtail landing pads; actual fit, soldered assembly and connector orientation remain unvalidated. The [hardware index](../hardware/sony-remote/README.md) links the current BOM; [old generated layouts](../hardware/archive/sony-remote-photomos/README.md) are archived and must not be used.
 
-## Camera routing — pending bench test
+## Camera routing — Sony behavior verified; interface and split video pending
+
+See [camera-control circuit and behavior plan](camera-control.md). The revised placement uses U2 channel 4, two on-board pull-downs and one inline camera-cable resistor; no second relay.
 
 | Mode | Sony input | Trigger | Desired overlay |
 | --- | --- | --- | --- |
 | Actual reverse | REAR CAMERA IN | Reverse-light signal to REVERSE IN | Sony parking lines |
 | Manual view | CAMERA IN 1 | Interface to EXT IN 1 | No lines |
 
-First verify that the overlays differ as desired. Then compare a direct video connection against one source feeding both inputs through an RCA Y. Check whether connecting the inactive branch changes brightness, color, sharpness, or sync. Sony's inactive-input termination is unknown. Add buffering or switching only if evidence warrants it.
+User verified the desired overlay separation and reverse priority using one camera input at a time; see [bench report](bench-results-2026-10-28.md). Next compare a direct video connection against one source feeding both inputs through an RCA Y. Check whether connecting the inactive branch changes brightness, color, sharpness, or sync. Sony's inactive-input termination is unknown. Add buffering or switching only if evidence warrants it.
 
 Disable camera-generated guidelines for these tests. Verify the actual camera's supply voltage. Do not substitute an audio breakout cable for an RCA Y.
 

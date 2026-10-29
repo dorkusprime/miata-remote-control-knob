@@ -11,4 +11,4 @@ The [current through-hole interface](../sony-interface.md) is the build referenc
 | [Sourcing history](parts-sourcing-history.md) | Earlier marketplace searches and superseded BOMs |
 | [Five-PhotoMOS artifacts](../../hardware/archive/sony-remote-photomos/README.md) | Historical schematic, netlist, placement and generator |
 
-Pin allocations, package pinouts, current ratings and pot codes are not interchangeable between versions. In particular, the current six-wire harness carries +5 V on contact 2.
+Pin allocations, package pinouts, current ratings and pot codes are not interchangeable between versions. In particular, the current eight-wire harness carries +5 V on contact 2.

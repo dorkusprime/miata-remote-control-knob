@@ -10,7 +10,7 @@
 - Flashing attached hardware or energizing the Sony requires an explicit instruction to perform that hardware action.
 - Never wire vehicle 12 V or the Sony remote input directly to XIAO GPIO.
 - Design hardware and firmware defaults to release remote commands and manual camera requests on startup/reset/error.
-- Actual reverse must take priority over manual view. Guidelines should appear only in reverse; actual Sony behavior remains to be tested.
+- Actual reverse must take priority over manual view. Guidelines should appear only in reverse; Sony-side priority and separate-input guideline behavior were user-verified on 2026-10-28; assembled interface and simultaneous split-video behavior remain untested. See docs/bench-results-2026-10-28.md.
 - Do not commit credentials, unrelated personal/vehicle files, or recordings. This repository is public.
 - Never mark hardware tests complete without actual observations.
 - Review upstream licenses before incorporating third-party firmware.

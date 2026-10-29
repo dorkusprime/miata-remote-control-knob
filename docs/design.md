@@ -10,7 +10,7 @@
 - Hardware I2C preferred over software I2C.
 - Removable wiring and USB access.
 - Volume, mute/ATT, track control.
-- Manual rear view without guidelines, actual reverse with guidelines.
+- Manual rear view without guidelines, actual reverse with guidelines. Camera 1 control is required: [circuit, harness and firmware plan](camera-control.md).
 
 ## Implemented gesture defaults — user bench-verified
 
@@ -39,7 +39,7 @@ It uses 50 ms command and release intervals. These are external implementation v
 
 The selected through-hole prototype uses one LCC110, one MCP41050-I/P digital pot, one SN74HCT125N SPI buffer and a 2N3904 relay-input driver. The pot runs at 5 V; HCT input thresholds allow 3.3 V XIAO control while delivering 5 V logic to the pot. This buffer is required for the selected pot and does not drive the relay LED. Logic and Sony grounds are shared. See [the complete circuit](sony-interface.md) and [assembly procedure](assembly-and-test.md).
 
-The user ordered the supporting parts on 2026-10-27, intentionally including spares. No circuit assembly or Sony electrical validation has been reported. Exact sensing voltage/current, safe power transitions and command recognition remain acceptance gates. The [archive](archive/README.md) preserves the superseded five-switch, SMD AD8400 and earlier MCP research; none supplies current pin assignments.
+The user ordered the supporting parts on 2026-10-27, intentionally including spares. No circuit assembly has been reported. Sony Input 1 was measured around +3.3 V and characterized with a 9.86 kohm load. Camera trigger/release, video, separate-input guidelines and reverse priority were user-verified. See [bench report](bench-results-2026-10-28.md). Assembled-interface power transitions, ATT current margin and command learning remain acceptance gates. The [archive](archive/README.md) preserves the superseded five-switch, SMD AD8400 and earlier MCP research; none supplies current pin assignments.
 
 No upstream firmware is included here. Review the upstream GPL-3.0 license before code reuse.
 
@@ -57,3 +57,7 @@ No upstream firmware is included here. Review the upstream GPL-3.0 license befor
 - [Current component datasheets](sony-interface.md#sources)
 
 References recorded 2026-10-26. Record hardware test results separately with dates and observed configuration.
+
+## Integrated camera output
+
+The current placement includes Camera 1 control using U2 channel 4, R8/R9 on the existing board and R10 inline in the Sony camera pigtail. This supersedes the second-LCC110 camera proposal. No camera output firmware has been enabled. See camera-control.md for electrical budgets and release/priority acceptance.

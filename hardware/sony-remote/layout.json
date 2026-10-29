@@ -378,11 +378,11 @@
       "side": "top",
       "pins": {
         "1": "H6",
-        "2": "G8"
+        "2": "G10"
       },
       "body": [
-        27.94,
-        20.32,
+        28.3,
+        19.5,
         2.6,
         4
       ],
@@ -394,15 +394,15 @@
         ],
         [
           27.94,
-          20.32
-        ],
-        [
-          27.94,
-          22.86
+          25.4
         ],
         [
           25.4,
-          22.86
+          25.4
+        ],
+        [
+          25.4,
+          27.94
         ]
       ]
     },
@@ -411,16 +411,70 @@
       "part": "10 uF",
       "side": "top",
       "pins": {
-        "+": "J7",
-        "-": "J8"
+        "+": "J6",
+        "-": "J10"
       },
       "body": [
-        33.02,
-        21.59,
+        33.5,
+        18,
         5,
         5
       ],
-      "style": "electrolytic"
+      "style": "electrolytic",
+      "lead_route": [
+        [
+          33.02,
+          17.78
+        ],
+        [
+          33.02,
+          27.94
+        ]
+      ]
+    },
+    {
+      "ref": "R8",
+      "part": "47 kohm",
+      "ohms": 47000,
+      "side": "top",
+      "pins": {
+        "1": "G8",
+        "2": "G7"
+      },
+      "body": [
+        25.4,
+        22.86,
+        2.6,
+        2.6
+      ],
+      "style": "upright"
+    },
+    {
+      "ref": "R9",
+      "part": "47 kohm",
+      "ohms": 47000,
+      "side": "top",
+      "pins": {
+        "1": "I9",
+        "2": "I7"
+      },
+      "body": [
+        30.48,
+        25.4,
+        2.6,
+        2.6
+      ],
+      "style": "upright",
+      "lead_route": [
+        [
+          30.48,
+          25.4
+        ],
+        [
+          30.48,
+          20.32
+        ]
+      ]
     }
   ],
   "contacts": [
@@ -432,7 +486,7 @@
     {
       "ref": "J1.2",
       "net": "+5V",
-      "pad": "J6"
+      "pad": "H1"
     },
     {
       "ref": "J1.3",
@@ -463,6 +517,21 @@
       "ref": "J2.2",
       "net": "GND",
       "pad": "H4"
+    },
+    {
+      "ref": "J1.7",
+      "net": "GND",
+      "pad": "B9"
+    },
+    {
+      "ref": "J1.8",
+      "net": "CAMERA_REQUEST",
+      "pad": "I8"
+    },
+    {
+      "ref": "J2.3",
+      "net": "CAMERA_BUFFER",
+      "pad": "J9"
     }
   ],
   "jumpers": [
@@ -472,11 +541,11 @@
       "pads": [
         "C4",
         "G4",
-        "I8",
-        "J10",
+        "I10",
         "D12",
         "A9",
-        "B6"
+        "B6",
+        "J7"
       ],
       "route": [
         [
@@ -501,6 +570,10 @@
         ],
         [
           33.02,
+          27.94
+        ],
+        [
+          30.48,
           27.94
         ],
         [
@@ -538,9 +611,17 @@
         [
           7.62,
           17.78
+        ],
+        [
+          33.02,
+          17.78
+        ],
+        [
+          33.02,
+          20.32
         ]
       ],
-      "assembly": "One continuous sleeved/tapped wire, exposed and soldered only at the seven listed pads."
+      "assembly": "One continuous sleeved ground bus; expose only listed pads."
     },
     {
       "ref": "BV",
@@ -548,7 +629,6 @@
       "pads": [
         "G1",
         "I6",
-        "G7",
         "H13"
       ],
       "route": [
@@ -589,7 +669,7 @@
           35.56
         ]
       ],
-      "assembly": "One continuous sleeved/tapped wire, exposed and soldered only at the four listed pads."
+      "assembly": "One continuous sleeved power bus; three taps only. G7 is now GND; do not expose power wire there."
     },
     {
       "ref": "W10",
@@ -692,5 +772,5 @@
       ]
     }
   ],
-  "revision_notes": "All 14 component bodies now on top. R1 upright at C15; Q1 moved to lower left; R7 shifted; power bus ends H13 and R1 supply lands F13. All component leads and underside routes use only horizontal/vertical segments. Same circuit, six underside wire pieces and 19 wire solder landings."
+  "revision_notes": "Camera uses U2 channel 4: pin13 GND, pin12 CAMERA_REQUEST, pin11 CAMERA_BUFFER. R8/R9 are on-board 47k pulldowns. R10 1k is sleeved inline in J2.3 output cable, not a board component. C2 ground G10; C3 +J6/-J10; J1.2 +5V H1; ground bus I10/J7; power tap at G7 removed. 16 board components, same board and six underside wires."
 }

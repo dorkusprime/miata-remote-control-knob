@@ -26,8 +26,8 @@ class CurrentLayoutTests(unittest.TestCase):
         self.check()
 
     def test_power_ground_short(self):
-        self.data['jumpers'].append({'ref':'FAULT','pads':['H1','I10'], 'net':'+5V',
-                                    'route':[layout.pad_xy('H1'),layout.pad_xy('I10')]})
+        self.data['jumpers'].append({'ref':'FAULT','pads':['I1','H2'], 'net':'+5V',
+                                    'route':[layout.pad_xy('I1'),layout.pad_xy('H2')]})
         with self.assertRaisesRegex(AssertionError,'Short'):self.check()
 
     def test_missing_clock_jumper(self):
@@ -63,12 +63,12 @@ class CurrentLayoutTests(unittest.TestCase):
 
     def test_missing_middle_ground_bus_tap(self):
         bus = next(w for w in self.data['jumpers'] if w['ref'] == 'BG')
-        bus['pads'].remove('J10')
+        bus['pads'].remove('I10')
         with self.assertRaisesRegex(AssertionError,'Open net'):self.check()
 
     def test_bus_tap_must_be_explicit_on_route(self):
         bus = next(w for w in self.data['jumpers'] if w['ref'] == 'BG')
-        tap = layout.pad_xy('I8')
+        tap = layout.pad_xy('I10')
         bus['route'] = [xy for xy in bus['route'] if abs(xy[0]-tap[0])+abs(xy[1]-tap[1]) > 1e-6]
         with self.assertRaisesRegex(AssertionError,'Missing tap'):self.check()
 
@@ -88,10 +88,20 @@ class CurrentLayoutTests(unittest.TestCase):
         self.part('Q1')['lead_routes']['E'][-1] = [5.08,33.02]
         with self.assertRaisesRegex(AssertionError,'Lead endpoint'):self.check()
 
+    def test_camera_input_cannot_keep_old_ground_tie(self):
+        self.data['jumpers'].append({'ref':'FAULT','pads':['H8','H7'],'net':'GND',
+                                    'route':[layout.pad_xy('H8'),layout.pad_xy('H7')]})
+        with self.assertRaisesRegex(AssertionError,'Short'):self.check()
+
+    def test_camera_enable_cannot_keep_old_power_tie(self):
+        self.data['jumpers'].append({'ref':'FAULT','pads':['H7','I1'],'net':'+5V',
+                                    'route':[layout.pad_xy('H7'),layout.pad_xy('I1')]})
+        with self.assertRaisesRegex(AssertionError,'Short'):self.check()
+
     def test_mirrored_image_retains_physical_pad_ids(self):
         source = layout.draw(self.data)
         self.assertIn('board flipped left-to-right',source)
-        self.assertIn('J7',source)
+        self.assertIn('J10',source)
         self.check()
 
 
