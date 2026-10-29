@@ -38,6 +38,7 @@ Initial functional diagnostic complete: USB/I2C, rotation, button, RGB, and repe
 - [x] Included steering-remote adapter is on hand: Input 1, Input 2, ST Remote GND (user observation recorded 2026-10-27).
 - [ ] Confirm adapter model and which remote input to use; verify plug-contact mapping if needed.
 - [x] Measure remote input unloaded and with known load: approximately +3.3 V, 9.86 kohm load, 2.939 V loaded (2026-10-28).
+- [x] Record actual steering-learning menu: ten functions including Mute, no camera assignment; see bench report.
 - [ ] Test passive resistor commands/learning; a loaded voltage measurement is not command recognition.
 - [x] Archive five-relay ladder; select one LCC110 plus digital pot (user direction, 2026-10-27).
 - [x] Select MCP41050-I/P + SN74HCT125N + existing LCC110 and NPN driver; all through-hole.

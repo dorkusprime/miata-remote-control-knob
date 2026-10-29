@@ -134,3 +134,7 @@ See [camera circuit and acceptance](camera-control.md). R8/R9 add two 47 kohm bo
 ## Receiver measurements
 
 See [2026-10-28 bench report](bench-results-2026-10-28.md) for raw readings, assumptions, derived command currents and remaining tests. Sony powered successfully; resistor sensing was characterized at one load point. No steering command has been learned or validated yet.
+
+## Observed learning functions
+
+The actual receiver offers Prev Track, Play/Pause, Next Track, Source, Mute, Volume -, Volume +, Voice, Answer Call and Hang Up; see [user observation](bench-results-2026-10-28.md#user-observed-steering-remote-learning-options). Initial calibration targets remain the five selected functions. Treat the external implementation's Mute/ATT resistance as an unverified candidate for Sony's Mute assignment. Camera control remains a separate EXT IN 1 output. No resistance values for the additional functions are established by this menu observation.

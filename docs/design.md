@@ -15,7 +15,7 @@
 ## Implemented gesture defaults — user bench-verified
 
 - Turn: volume.
-- Short press: mute/ATT.
+- Short press: Sony Mute (observed learning-screen label).
 - Press and turn: previous/next track.
 - Double press: toggle manual camera.
 
@@ -61,3 +61,7 @@ References recorded 2026-10-26. Record hardware test results separately with dat
 ## Integrated camera output
 
 The current placement includes Camera 1 control using U2 channel 4, R8/R9 on the existing board and R10 inline in the Sony camera pigtail. This supersedes the second-LCC110 camera proposal. No camera output firmware has been enabled. See camera-control.md for electrical budgets and release/priority acceptance.
+
+## Observed steering-remote learning menu
+
+User confirmed: Prev Track, Play/Pause, Next Track, Source, Mute, Volume -, Volume +, Voice, Answer Call, Hang Up. See [bench record](bench-results-2026-10-28.md#user-observed-steering-remote-learning-options). No camera assignment is listed; retain separate EXT IN 1 camera output. Initial five-command mapping is unchanged. Additional menu functions have no assigned gestures or validated resistance values yet. Menu availability does not establish successful command learning. Earlier Mute/ATT resistance remains a candidate for the menu's Mute function, pending calibration and recognition.

@@ -93,3 +93,20 @@ If source voltage was exactly 5.00 V and series resistance exactly 1000 ohm, tri
 - Component datasheets linked in [circuit guide](sony-interface.md#sources).
 
 The camera's AHD-select loop was discussed. Crutchfield describes composite inputs; Sony manuals reviewed did not explicitly establish AHD capability or exclusion. Leave format selection as in the working bench configuration and do not report an AHD test as passed.
+
+## User-observed steering-remote learning options
+
+The user subsequently supplied the exact available function list from this receiver's learning screen (observation date not separately recorded):
+
+- Prev Track
+- Play/Pause
+- Next Track
+- Source
+- Mute
+- Volume -
+- Volume +
+- Voice
+- Answer Call
+- Hang Up
+
+These are observed assignable functions, not successfully learned commands. Camera 1 is absent, supporting the separate EXT IN 1 trigger plan. The selected initial gesture mapping remains turn = Volume -/+, short press = Mute, held turn = Prev/Next Track, double press = separate camera request. Use Sony's observed label Mute; earlier ATT terminology came from the external resistor implementation, not this menu. Actual mute behavior, resistance recognition and timing still require testing. Play/Pause, Source, Voice and call functions are available for future mappings; no gestures or resistor values are assigned to them by this observation.
