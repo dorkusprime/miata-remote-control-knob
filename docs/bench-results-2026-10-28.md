@@ -78,9 +78,9 @@ If source voltage was exactly 5.00 V and series resistance exactly 1000 ohm, tri
 
 ### RCA splitter and installation
 
-1. Compare direct connection with both Sony camera inputs connected simultaneously; check brightness, color, sharpness and sync in both modes, including inactive-input loading.
-2. Repeat live-video reverse/manual transitions and guideline separation with both branches attached.
-3. Add video switching/buffering only if observed loading requires it.
+1. Passed by user observation on 2026-10-31: passive RCA splitter worked with no reported image-quality degradation. No instrument measurements were supplied.
+2. Passed on 2026-10-31: switching between reverse with lines and Camera 1 without lines worked with the splitter.
+3. Retain the passive splitter; no video switch or amplifier is needed for the tested setup.
 4. Confirm camera model, supply requirements and accessory-switched power available during manual preview; reverse-only camera power will not suffice.
 5. Final vehicle mounting, fusing, converter/transient behavior and cable checks remain separate from bench acceptance.
 
@@ -110,3 +110,9 @@ The user subsequently supplied the exact available function list from this recei
 - Hang Up
 
 These are observed assignable functions, not successfully learned commands. Camera 1 is absent, supporting the separate EXT IN 1 trigger plan. The selected initial gesture mapping remains turn = Volume -/+, short press = Mute, held turn = Prev/Next Track, double press = separate camera request. Use Sony's observed label Mute; earlier ATT terminology came from the external resistor implementation, not this menu. Actual mute behavior, resistance recognition and timing still require testing. Play/Pause, Source, Voice and call functions are available for future mappings; no gestures or resistor values are assigned to them by this observation.
+
+## Passive RCA splitter follow-up — 2026-10-31
+
+User report: “I tried an RCA splitter and it works great! I can switch between reverse (with lines) and Camera 1 (without lines) with no degradation in image quality.”
+
+This closes the passive split-video quality and live reverse/manual switching checks for the tested camera/head-unit combination. The earlier no-splitter statements describe the original October 28 configuration. Splitter model, cable lengths and instrument measurements were not recorded. Reverse exit with a continuously asserted manual request was not separately described; that specific interaction and assembled HCT125 acceptance remain open. No additional video amplifier or switch is planned.

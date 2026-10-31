@@ -89,4 +89,4 @@ Follow [camera-control.md](camera-control.md): receiver-disconnected low/high/re
 
 ## Existing receiver evidence
 
-Consult [bench report](bench-results-2026-10-28.md) before repeating Sony-only tests. Camera assertion/release, live picture, guideline separation and reverse priority passed with external supplies. Repeat through the assembled interface; do not mark electrical gates passed from external-source results. ATT current is estimated about 0.59 mA and exceeds the old 0.5 mA prototype target; resolve before enabling commands. No splitter or assembled-buffer acceptance has occurred.
+Consult [bench report](bench-results-2026-10-28.md) before repeating Sony-only tests. Camera assertion/release, live picture, guideline separation and reverse priority passed with external supplies. Repeat through the assembled interface; do not mark electrical gates passed from external-source results. ATT current is estimated about 0.59 mA and exceeds the old 0.5 mA prototype target; resolve before enabling commands. Passive RCA splitter image quality and reverse/manual switching passed user testing on 2026-10-31; assembled-buffer acceptance remains outstanding.

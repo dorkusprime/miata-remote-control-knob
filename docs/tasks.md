@@ -75,7 +75,7 @@ Required scope: [Camera 1 hardware/firmware plan](camera-control.md).
 
 - [ ] Identify actual camera/DVR model and supply requirements.
 - [x] User confirmed Camera 1 without camera-generated lines, rear input with Sony guidelines, and reverse priority in sequential-input bench test (2026-10-28).
-- [ ] Test direct versus passive-split picture; no RCA splitter on hand.
+- [x] User tested passive RCA split: reverse with lines and Camera 1 without lines, switching successfully with no reported image-quality degradation (2026-10-31).
 - [x] User verified external 5 V/resistor Camera 1 trigger assertion/release, live picture, and reverse priority (2026-10-28); proposed buffer remains untested.
 - [ ] Validate buffer trigger electrical limits and reverse exit behavior.
 - [ ] Measure lighter opening and rear clearance.
@@ -83,4 +83,4 @@ Required scope: [Camera 1 hardware/firmware plan](camera-control.md).
 
 ## Bench evidence and next session
 
-[2026-10-28 results](bench-results-2026-10-28.md) separate observations from estimates. Head unit may be packed away pending components and RCA splitter. Next work is staged permanent assembly and a disabled-by-default calibration/backend diagnostic. No firmware was flashed or live outputs enabled during documentation work.
+[2026-10-28 results](bench-results-2026-10-28.md) separate observations from estimates. Head unit may be packed away pending interface components. Passive RCA split-video and reverse/manual switching passed on 2026-10-31. Next work is staged permanent assembly and a disabled-by-default calibration/backend diagnostic. No firmware was flashed or live outputs enabled during documentation work.

@@ -8,7 +8,7 @@ The user has bench-verified rotation, button events, gestures and RGB feedback o
 
 The selected Sony interface is **MCP41050-I/P + SN74HCT125N + one existing LCC110**, with a 2N3904 optical-input driver. All parts are through-hole. Supporting components were ordered from DigiKey on 2026-10-27, with intentional spares. The circuit is not assembled or calibrated. Sony-side measurements and camera behavior were user-verified independently of this circuit; [bench results and remaining gates](docs/bench-results-2026-10-28.md). Firmware currently simulates commands; Sony and camera outputs remain disabled.
 
-A small protoboard near the Sony is approved. Twist and XIAO need no carrier board. Final enclosure, no-cut permanent board placement, cable length, vehicle power protection and assembled camera interface remain unfinished. Camera 1 trigger/release, live video, guideline separation and reverse priority passed separate-input bench tests; no RCA splitter was available.
+A small protoboard near the Sony is approved. Twist and XIAO need no carrier board. Final enclosure, no-cut permanent board placement, cable length, vehicle power protection and assembled camera interface remain unfinished. Camera 1 trigger/release, live video, guideline separation and reverse priority passed separate-input bench tests; a passive RCA splitter subsequently passed reverse/Camera 1 switching with the intended guideline separation and no visible image degradation (2026-10-31).
 
 ## Start here
 

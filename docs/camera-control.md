@@ -50,7 +50,7 @@ The current placement and pad map replace the remote-only layout. They include R
 
 ## Video and camera power
 
-Camera video feeds REAR CAMERA IN for actual reversing and CAMERA IN 1 for manual preview. Test a passive RCA Y against direct connection; add a video switch/buffer only if loading degrades the picture. Camera-generated lines were disabled and Sony guideline separation was user-verified with separate input connections; repeat with the splitter. Camera must have power during manual preview, so reverse-lamp-only camera power will not satisfy the requirement. Identify camera/DVR and voltage before selecting its switched accessory supply.
+Camera video feeds REAR CAMERA IN for actual reversing and CAMERA IN 1 for manual preview. A passive RCA splitter was user-tested on 2026-10-31: switching between reverse with Sony guidelines and Camera 1 without guidelines worked with no reported image-quality degradation. Keep this passive split; no video amplifier or switch is needed for the tested setup. Camera-generated lines remain disabled. Camera must have power during manual preview, so reverse-lamp-only camera power will not satisfy the requirement. Identify camera/DVR and voltage before selecting its switched accessory supply.
 
 ## Acceptance and next work
 
@@ -58,7 +58,7 @@ Camera video feeds REAR CAMERA IN for actual reversing and CAMERA IN 1 for manua
 2. With Sony disconnected, verify a controlled 0/5 V output and pull-down behavior; test reset, fault and both supply-loss orders.
 3. External-source Sony trigger recognition passed. Repeat loading and recognition with the assembled HCT125 output.
 4. External-source release returned to prior content. Repeat with buffer; test touchscreen Back and reassertion; keep local request distinct from actual screen state.
-5. Reverse priority and separate-input guidelines passed. Test reverse exit with a standing manual request, installed camera power, and split-video quality.
+5. Reverse priority and separate-input guidelines passed. Test reverse exit with a standing manual request, and installed camera power. Split-video quality and reverse/manual switching passed user testing on 2026-10-31.
 6. Implement/test nonblocking camera backend and release-on-fault; user performs flashing and energizing.
 
 The buffer circuit has not been assembled or connected to Sony. The updated board netlist and nominal geometry pass software checks. Sony-side tests below used independent bench supplies, not the proposed buffer.
@@ -68,3 +68,7 @@ The buffer circuit has not been assembled or connected to Sony. The updated boar
 The [bench report](bench-results-2026-10-28.md) is the authoritative measurement and observation record. External 5 V/resistor triggering, release to previous screen, Camera 1 live picture, guideline separation and reverse priority passed user testing. EXT IN 1 was 0.019 V disconnected and 4.87 V asserted. Trigger load about 0.13 mA is an estimate assuming exact 5 V/1 kohm, not a measured current. No buffer or RCA splitter was involved.
 
 R9 is retained in the current checked candidate, not asserted essential. Its pull-down is redundant while U2 actively drives low and is not a validated power-off safeguard. Removal can be evaluated during assembly without changing the required camera function.
+
+## Passive RCA splitter follow-up — 2026-10-31
+
+The user connected an RCA splitter and reported successful switching between reverse (with lines) and Camera 1 (without lines), with no degradation in image quality. This validates the passive video split in the tested setup; it does not establish assembled HCT125 electrical acceptance or the specific reverse-exit behavior with a continuously asserted manual request. Splitter model and cable lengths were not recorded.
