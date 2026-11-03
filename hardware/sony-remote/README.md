@@ -29,4 +29,4 @@ Generate with `python3 scripts/full-placement.py`; verify with `python3 scripts/
 
 ## Camera included
 
-The updated map uses HCT125 channel 4 for Camera 1. R8/R9 are on-board; R10 1 kohm is sleeved inline in the J2.3 camera cable. No second LCC110, Q2 or larger board. J1.2 now H1; C2 ground G10; C3 +J6/-J10; BV no longer taps G7. Consult [camera electrical acceptance](../../docs/camera-control.md) before Sony connection. The geometry checker excludes off-board R10 and actual socket/lead height.
+The updated map uses HCT125 channel 4 for Camera 1. R8/R9 are on-board; R10 1 kohm is sleeved inline in the J2.3 camera cable. No second LCC110, Q2 or larger board. J1.2 now H1; C2 ground H10; C3 +J6/-J10; BV no longer taps G7. Consult [camera electrical acceptance](../../docs/camera-control.md) before Sony connection. The geometry checker excludes off-board R10 and actual socket/lead height.

@@ -88,8 +88,8 @@
       "side": "top",
       "pins": {
         "E": "B12",
-        "B": "C13",
-        "C": "D16"
+        "B": "B13",
+        "C": "B16"
       },
       "body": [
         5.08,
@@ -133,10 +133,6 @@
           [
             7.62,
             35.56
-          ],
-          [
-            10.16,
-            35.56
           ]
         ],
         "C": [
@@ -145,7 +141,7 @@
             43.18
           ],
           [
-            12.7,
+            7.62,
             43.18
           ]
         ]
@@ -314,11 +310,11 @@
       "ohms": 47000,
       "side": "top",
       "pins": {
-        "1": "H11",
-        "2": "H10"
+        "1": "G11",
+        "2": "G10"
       },
       "body": [
-        27.94,
+        25.4,
         30.48,
         2.6,
         2.6
@@ -378,33 +374,15 @@
       "side": "top",
       "pins": {
         "1": "H6",
-        "2": "G10"
+        "2": "H10"
       },
       "body": [
-        28.3,
+        27.94,
         19.5,
         2.6,
         4
       ],
-      "style": "ceramic",
-      "lead_route": [
-        [
-          27.94,
-          17.78
-        ],
-        [
-          27.94,
-          25.4
-        ],
-        [
-          25.4,
-          25.4
-        ],
-        [
-          25.4,
-          27.94
-        ]
-      ]
+      "style": "ceramic"
     },
     {
       "ref": "C3",
@@ -772,5 +750,5 @@
       ]
     }
   ],
-  "revision_notes": "Camera uses U2 channel 4: pin13 GND, pin12 CAMERA_REQUEST, pin11 CAMERA_BUFFER. R8/R9 are on-board 47k pulldowns. R10 1k is sleeved inline in J2.3 output cable, not a board component. C2 ground G10; C3 +J6/-J10; J1.2 +5V H1; ground bus I10/J7; power tap at G7 removed. 16 board components, same board and six underside wires."
+  "revision_notes": "Camera uses U2 channel 4: pin13 GND, pin12 CAMERA_REQUEST, pin11 CAMERA_BUFFER. R8/R9 are on-board 47k pulldowns. R10 1k is sleeved inline in J2.3 output cable, not a board component. C2 ground H10; C3 +J6/-J10; J1.2 +5V H1; ground bus I10/J7; power tap at G7 removed. 16 board components, same board and six underside wires."
 }

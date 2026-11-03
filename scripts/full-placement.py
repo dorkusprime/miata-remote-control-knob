@@ -238,7 +238,7 @@ def draw(d):
     s.rect(35,1040,1690,216,'#e2e8f0',radius=10)
     notes=[
       'Gray bars are factory-connected strips: A–E and F–J for each row. No copper cuts. No shared component/jumper holes.',
-      'R1/R4–R9 stand upright; Q1 leads land at B12 (E), C13 (B), D16 (C). Insulate formed leads and check actual transistor marking.',
+      'R1/R4–R9 stand upright; Q1 leads land at B12 (E), B13 (B), B16 (C). Insulate formed leads and check actual transistor marking.',
       'R1 returns to F13 through the gap between U2 and K1. BV now lands at H13. Check actual socket clearance.',
       'C1/C2 leads need careful forming. C3 negative stripe goes to J10 (GND). R10 1 kΩ is sleeved inline in the camera cable; it is not a board component.',
       'BG/BV tack to the marked underside pads; they do not thread through every hole. Sleeve all sections between taps.',
@@ -259,7 +259,7 @@ def tables(d):
     s+=['', 'BG and BV are each one continuous conductor with multiple solder taps, not chains of separate jumpers. Expose only the listed tap pads; sleeve all intervening sections. Untapped pads along the drawn route stay insulated. Tack the middle taps to the underside pads rather than threading a wire repeatedly through holes. This reduces wire pieces from 13 to 6 and wire solder landings from 26 to 18; it does not remove electrical nets. Four signal wires remain separate.', '', 'If making continuous tapped buses is awkward, separate insulated segments following the same net connections remain electrically equivalent; they restore some of the original cut/strip work.', '', '## Assembly and physical conditions','',
         '- Fit sockets and top components first, without solder. The IC-only image is now a subset of this candidate.',
         '- R1 and R4–R9 stand upright. R1 is at C15 and its sleeved return lead follows the gap between U2 and K1 to F13. The power bus now ends at H13. This is a formed-lead proposal, not a validated socket clearance or guaranteed supplied lead length.',
-        '- Q1 has a formed-lead footprint, not the default three adjacent TO-92 holes. E=B12, B=C13, C=D16. Q1 moves to the lower-left corner; R7 moves to C12/D13. Check the actual part orientation and preform without force at the body.',
+        '- Q1 has a formed-lead footprint, not the default three adjacent TO-92 holes. E=B12, B=B13, C=B16. Q1 moves to the lower-left corner; R7 moves to C12/D13. Check the actual part orientation and preform without force at the body.',
         '- All component bodies are now on top. R2 follows the top left edge; R3 follows the top right edge with a jog to x=37 mm past C3. Sleeve extended leads and dry-fit before trimming.',
         '- Check supplied lead lengths before trimming. If a lead cannot follow its proposed route safely, revise the model or use an insulated extension; do not force the component.',
         '- C1/C2 leads are spread to the listed pads, rather than matching the stock 2.5 mm lead pitch. Avoid stress at the ceramic coating. C3 is polarized.',
