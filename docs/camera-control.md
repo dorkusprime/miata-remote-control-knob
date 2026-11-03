@@ -24,7 +24,7 @@ Reuse U2 SN74HCT125N channel 4. No K2 or Q2 is added. The earlier second-LCC110 
 | R9, 47 kohm | U2 pin 11 to GND; holds buffer-side output down if high impedance |
 | R10, 1 kohm | Sleeved inline in camera output pigtail, off-board; strain-relieve both wire ends |
 
-R8/R9 fit on top of the same 38.1 × 50.8 mm ElectroCookie Mini. R10 lives in the cable, with insulated joints, rather than adding a chip or another board. No component bodies are added underneath. Current layout JSON/SVG/pad map include the camera nets and two board resistors. All 16 board bodies and all modeled lead routes pass the checker; actual socket/lead fit still requires dry-fitting. C2/C3 and power/ground bus taps changed; do not build from the previous diagram. J1.2 +5 V now lands H1; C3 positive J6 and negative J10.
+R8/R9 fit on top of the same 38.1 × 50.8 mm ElectroCookie Mini. R10 lives in the cable, with insulated joints, rather than adding a chip or another board. No component bodies are added underneath. Current layout JSON/SVG/pad map include the camera nets and two board resistors. All 16 board bodies and all modeled lead routes pass the checker; actual socket/lead fit still requires dry-fitting. C2/C3 and power/ground bus taps changed; do not build from the previous diagram. J1.2 +5 V now lands I1; C3 positive J6 and negative J10.
 
 TI specifies 2 V minimum high input and 0.8 V maximum low input for this 5 V HCT buffer, so 3.3 V GPIO is suitable. At 4.5 V supply, output high is guaranteed at least 3.84 V at 6 mA over SN74 temperature range. With R10 at its 1% maximum of 1010 ohm, a measured Sony trigger load <=0.25 mA leaves a conservative output >=3.58 V after the series drop (total buffer load includes R9). Require >=3.5 V at EXT IN 1 under actual load and <=0.25 mA through R10 before acceptance. If input load exceeds this budget, this version fails acceptance and needs a different driver; do not bypass R10 blindly.
 
@@ -34,7 +34,7 @@ TI source: https://www.ti.com/lit/ds/symlink/sn74hct125.pdf (pinout, recommended
 
 ## Harness and placement
 
-J1 contacts 1–6 keep their electrical functions; contact 7 is second GND; contact 8 CAMERA_REQUEST from D2/GPIO28. Physical J1.2 board landing changes to H1. J2 gains contact 3: CAMERA_BUFFER from J9 through inline R10 to Sony EXT IN 1. Do not confuse EXT IN 1 with steering Input 1. Sony Input 2 and EXT IN 2 remain insulated.
+J1 contacts 1–6 keep their electrical functions; contact 7 is second GND; contact 8 CAMERA_REQUEST from D2/GPIO28. Physical J1.2 board landing changes to I1. J2 gains contact 3: CAMERA_BUFFER from G9 through inline R10 to Sony EXT IN 1. Do not confuse EXT IN 1 with steering Input 1. Sony Input 2 and EXT IN 2 remain insulated.
 
 The current placement and pad map replace the remote-only layout. They include R8/R9; R10 is explicitly an off-board cable component. There are still six underside wire pieces, now 18 wire solder landings. BG has seven taps, BV three. Insulate the power bus as it passes the former G7 power tap: row 7 right is now ground.
 

@@ -25,25 +25,25 @@
 
 ## Distributed pigtails
 
-These are wire landing pads, not in-line headers. Fit the existing removable connectors off-board. J1 numbering matches the current harness. Sony Input 2 stays insulated.
+J1 lands in columns B and I; J2 lands in column G. These pads take individual wires. Fit the existing removable connectors off-board. J1 numbering matches the current harness. Sony Input 2 stays insulated.
 
 | Contact | Net | Pad |
 | --- | --- | --- |
 | J1.1 | GND | B4 |
-| J1.2 | +5V | H1 |
-| J1.3 | SCK_IN | A10 |
+| J1.2 | +5V | I1 |
+| J1.3 | SCK_IN | B10 |
 | J1.4 | MOSI_IN | I11 |
-| J1.5 | CS_IN | A7 |
+| J1.5 | CS_IN | B7 |
 | J1.6 | RELAY_EN | B5 |
-| J2.1 | SONY_IN | I5 |
-| J2.2 | GND | H4 |
+| J2.1 | SONY_IN | G5 |
+| J2.2 | GND | G4 |
 | J1.7 | GND | B9 |
 | J1.8 | CAMERA_REQUEST | I8 |
-| J2.3 | CAMERA_BUFFER | J9 |
+| J2.3 | CAMERA_BUFFER | G9 |
 
 ## Camera output cable
 
-J2.3 at J9 is the buffer output. Insert R10 (1 kohm) in series in this pigtail, sleeve both joints and the resistor, then connect to EXT IN 1. R10 is outside the board geometry model. Never connect this lead to vehicle 12 V.
+J2.3 at G9 is the buffer output. Insert R10 (1 kohm) in series in this pigtail, sleeve both joints and the resistor, then connect to EXT IN 1. R10 is outside the board geometry model. Never connect this lead to vehicle 12 V.
 
 ## Underside wire pieces and bus taps
 
@@ -51,7 +51,7 @@ Crossings are not junctions. Use insulated wire; route clear of resistor bodies 
 
 | Wire | Net | Solder pads in order |
 | --- | --- | --- |
-| BG | GND | C4 → G4 → I10 → D12 → A9 → B6 → J7 |
+| BG | GND | C4 → H4 → I10 → D12 → A9 → B6 → J7 |
 | BV | +5V | G1 → I6 → H13 |
 | W10 | CS_OUT | A1 → A8 |
 | W11 | SCK_OUT | B2 → B11 |

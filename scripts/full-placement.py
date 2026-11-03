@@ -232,9 +232,14 @@ def draw(d):
     s.text(x,450,'UNDERSIDE',20)
     for i,t in enumerate(['No component bodies underneath.','BG   one wire, 7 ground taps','BV   one wire, 3 power taps','W10–W13   four signal wires','Six pieces; 18 solder landings.','Sleeve buses between marked taps.']):s.text(x,481+i*27,t,16)
     s.text(x,690,'J1 · eight-wire controller pigtail',18)
-    for i,t in enumerate(['1 GND → B4','2 +5 V → H1','3 SCK → A10','4 MOSI → I11','5 CS → A7','6 ENABLE → B5','7 GND → B9','8 CAMERA → I8']):s.text(x,710+i*23,t,16)
+    contacts = {c['ref']: c['pad'] for c in d['contacts']}
+    j1_signals = ['GND', '+5 V', 'SCK', 'MOSI', 'CS', 'ENABLE', 'GND', 'CAMERA']
+    for pin, signal in enumerate(j1_signals, start=1):
+        s.text(x,687+pin*23,f'{pin} {signal} → {contacts[f"J1.{pin}"]}',16)
     s.text(x,910,'J2 · Sony pigtail',18)
-    s.text(x,939,'1 Input 1 → I5',16);s.text(x,966,'2 ST Remote GND → H4',16);s.text(x,993,'3 J9 → inline R10 1 kΩ → EXT IN 1',14)
+    s.text(x,939,f'1 Input 1 → {contacts["J2.1"]}',16)
+    s.text(x,966,f'2 ST Remote GND → {contacts["J2.2"]}',16)
+    s.text(x,993,f'3 {contacts["J2.3"]} → inline R10 1 kΩ → EXT IN 1',14)
     s.rect(35,1040,1690,216,'#e2e8f0',radius=10)
     notes=[
       'Gray bars are factory-connected strips: A–E and F–J for each row. No copper cuts. No shared component/jumper holes.',
@@ -252,9 +257,9 @@ def draw(d):
 def tables(d):
     s=['# Complete proposed pad allocation','', '**Electrically checked design, not a physically verified build.** Use the [circuit guide](../../docs/sony-interface.md) for device limits and acceptance. [All-component image](placement-full.svg) separates top and horizontally mirrored underside views. No firmware outputs were enabled.','', '## Component terminals','', '| Ref | Part / side | Terminal → pad |','| --- | --- | --- |']
     for p in d['parts']:s.append(f'| {p["ref"]} | {p["part"]} / {p["side"]} | '+', '.join(f'{n} → {pad}' for n,pad in p['pins'].items())+' |')
-    s+=['','## Distributed pigtails','', 'These are wire landing pads, not in-line headers. Fit the existing removable connectors off-board. J1 numbering matches the current harness. Sony Input 2 stays insulated.','', '| Contact | Net | Pad |','| --- | --- | --- |']
+    s+=['','## Distributed pigtails','', 'J1 lands in columns B and I; J2 lands in column G. These pads take individual wires. Fit the existing removable connectors off-board. J1 numbering matches the current harness. Sony Input 2 stays insulated.','', '| Contact | Net | Pad |','| --- | --- | --- |']
     for c in d['contacts']:s.append(f'| {c["ref"]} | {c["net"]} | {c["pad"]} |')
-    s+=['','## Camera output cable','', 'J2.3 at J9 is the buffer output. Insert R10 (1 kohm) in series in this pigtail, sleeve both joints and the resistor, then connect to EXT IN 1. R10 is outside the board geometry model. Never connect this lead to vehicle 12 V.','', '## Underside wire pieces and bus taps','', 'Crossings are not junctions. Use insulated wire; route clear of resistor bodies and keep leads sleeved over unrelated pads. Coordinates are endpoint and routing references, not validated three-dimensional wire bends.','', '| Wire | Net | Solder pads in order |','| --- | --- | --- |']
+    s+=['','## Camera output cable','', f'J2.3 at {next(c["pad"] for c in d["contacts"] if c["ref"] == "J2.3")} is the buffer output. Insert R10 (1 kohm) in series in this pigtail, sleeve both joints and the resistor, then connect to EXT IN 1. R10 is outside the board geometry model. Never connect this lead to vehicle 12 V.','', '## Underside wire pieces and bus taps','', 'Crossings are not junctions. Use insulated wire; route clear of resistor bodies and keep leads sleeved over unrelated pads. Coordinates are endpoint and routing references, not validated three-dimensional wire bends.','', '| Wire | Net | Solder pads in order |','| --- | --- | --- |']
     for w in d['jumpers']:s.append(f'| {w["ref"]} | {w["net"]} | '+ ' → '.join(w['pads'])+' |')
     s+=['', 'BG and BV are each one continuous conductor with multiple solder taps, not chains of separate jumpers. Expose only the listed tap pads; sleeve all intervening sections. Untapped pads along the drawn route stay insulated. Tack the middle taps to the underside pads rather than threading a wire repeatedly through holes. This reduces wire pieces from 13 to 6 and wire solder landings from 26 to 18; it does not remove electrical nets. Four signal wires remain separate.', '', 'If making continuous tapped buses is awkward, separate insulated segments following the same net connections remain electrically equivalent; they restore some of the original cut/strip work.', '', '## Assembly and physical conditions','',
         '- Fit sockets and top components first, without solder. The IC-only image is now a subset of this candidate.',
