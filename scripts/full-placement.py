@@ -154,7 +154,7 @@ def draw(d):
     s.text(35,74,'MCP41050 + HCT125 + LCC110 · proposed no-cut ElectroCookie Mini layout',18)
     s.rect(35,94,1690,66,'#fff3cd',radius=8)
     s.text(52,120,'ELECTRICAL PAD ALLOCATION CHECKED · PHYSICAL FIT / SOCKETS / MOUNTING STILL UNVERIFIED',18,'#92400e')
-    s.text(52,145,'Components on top. Headers and six wire pieces underneath. Circles mark solder joints on the face shown.',16,'#92400e')
+    s.text(52,145,'Components on top. Headers and six wire pieces underneath. Circles also show where opposite-face leads and wires land.',16,'#92400e')
     for side,bx in [('top',55),('bottom',705)]:
         by=220
         def pos(pt):return (bx+(38.1-pt[0] if side=='bottom' else pt[0])*scale,by+pt[1]*scale)
@@ -215,6 +215,10 @@ def draw(d):
             for part in d['parts']:
                 for location in part['pins'].values():
                     s.circle(*pad(location),5,'#a21caf')
+        if side=='top':
+            for wire in d['jumpers']:
+                for location in wire['pads']:
+                    s.circle(*pad(location),5,COLORS[wire['net']])
         for c in d['contacts']:
             x,y=pad(c['pad'])
             if side=='top':
@@ -223,7 +227,7 @@ def draw(d):
                 s.rect(x-8,y-8,16,16,'#0e7490',radius=2)
             s.text(x+9,y-8,c['ref'].replace('J',''),10,'#0e7490')
         if side=='top':
-            s.text(bx,1010,'Cyan circles: solder tails of underside headers from this face.',14,'#0e7490')
+            s.text(bx,1010,'Cyan circles: header tails. Other colored circles: underside wire pads.',14,'#0e7490')
         else:
             s.text(bx,1008,'Purple circles: top component joints. Colored wire dots: underside joints.',14,'#a21caf')
             s.text(bx,1028,'Cyan squares: underside header pins. Pad IDs stay the same after flipping.',14,'#0e7490')
