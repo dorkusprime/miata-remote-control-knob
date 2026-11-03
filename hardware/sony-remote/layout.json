@@ -310,11 +310,11 @@
       "ohms": 47000,
       "side": "top",
       "pins": {
-        "1": "G11",
-        "2": "G10"
+        "1": "H11",
+        "2": "H10"
       },
       "body": [
-        25.4,
+        27.94,
         30.48,
         2.6,
         2.6
@@ -359,12 +359,12 @@
       "part": "100 nF",
       "side": "top",
       "pins": {
-        "1": "H6",
-        "2": "H10"
+        "1": "I6",
+        "2": "I10"
       },
       "body": [
-        27.94,
-        19.5,
+        30.48,
+        26.3,
         2.6,
         4
       ],
@@ -402,11 +402,11 @@
       "ohms": 47000,
       "side": "top",
       "pins": {
-        "1": "G8",
-        "2": "G7"
+        "1": "H8",
+        "2": "H7"
       },
       "body": [
-        25.4,
+        28.1,
         22.86,
         2.6,
         2.6
@@ -419,26 +419,17 @@
       "ohms": 47000,
       "side": "top",
       "pins": {
-        "1": "I9",
-        "2": "I7"
+        "1": "G9",
+        "2": "G7"
       },
       "body": [
-        30.48,
         25.4,
+        22.86,
         2.6,
-        2.6
+        6.8
       ],
-      "style": "upright",
-      "lead_route": [
-        [
-          30.48,
-          25.4
-        ],
-        [
-          30.48,
-          20.32
-        ]
-      ]
+      "style": "axial",
+      "angle": 90
     }
   ],
   "contacts": [
@@ -495,7 +486,7 @@
     {
       "ref": "J2.3",
       "net": "CAMERA_BUFFER",
-      "pad": "G9"
+      "pad": "H9"
     }
   ],
   "jumpers": [
@@ -505,7 +496,7 @@
       "pads": [
         "C4",
         "H4",
-        "I10",
+        "G10",
         "D12",
         "A9",
         "B6",
@@ -537,7 +528,7 @@
           27.94
         ],
         [
-          30.48,
+          25.4,
           27.94
         ],
         [
@@ -592,7 +583,7 @@
       "net": "+5V",
       "pads": [
         "G1",
-        "I6",
+        "H6",
         "H13"
       ],
       "route": [
@@ -609,7 +600,7 @@
           17.78
         ],
         [
-          30.48,
+          27.94,
           17.78
         ],
         [
@@ -736,5 +727,5 @@
       ]
     }
   ],
-  "revision_notes": "Camera uses U2 channel 4: pin13 GND, pin12 CAMERA_REQUEST, pin11 CAMERA_BUFFER. R8/R9 are on-board 47k pulldowns. R10 1k is sleeved inline in J2.3 output cable, not a board component. C2 ground H10; C3 +J6/-J10; J1.2 +5V H1; ground bus I10/J7; power tap at G7 removed. 16 board components, same board and six underside wires."
+  "revision_notes": "Camera uses U2 channel 4: pin13 GND, pin12 CAMERA_REQUEST, pin11 CAMERA_BUFFER. R8/R9 are on-board 47k pulldowns. R10 1k is sleeved inline in J2.3 output cable, not a board component. C2 ground I10; C3 +J6/-J10; J1.2 +5V H1; ground bus G10/J7; power tap at G7 removed. 16 board components, same board and six underside wires."
 }

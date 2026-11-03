@@ -15,17 +15,17 @@
 | R3 | 2.7 kohm / top | 1 → J5, 2 → J17 |
 | R4 | 47 kohm / top | 1 → C7, 2 → C6 |
 | R5 | 47 kohm / top | 1 → C10, 2 → C9 |
-| R6 | 47 kohm / top | 1 → G11, 2 → G10 |
+| R6 | 47 kohm / top | 1 → H11, 2 → H10 |
 | R7 | 47 kohm / top | 1 → C13, 2 → C12 |
 | C1 | 100 nF / top | 1 → J1, 2 → J4 |
-| C2 | 100 nF / top | 1 → H6, 2 → H10 |
+| C2 | 100 nF / top | 1 → I6, 2 → I10 |
 | C3 | 10 uF / top | + → J6, - → J10 |
-| R8 | 47 kohm / top | 1 → G8, 2 → G7 |
-| R9 | 47 kohm / top | 1 → I9, 2 → I7 |
+| R8 | 47 kohm / top | 1 → H8, 2 → H7 |
+| R9 | 47 kohm / top | 1 → G9, 2 → G7 |
 
 ## Distributed pigtails
 
-J1 lands in columns B and I; J2 lands in column G. These pads take individual wires. Fit the existing removable connectors off-board. J1 numbering matches the current harness. Sony Input 2 stays insulated.
+J1 lands in columns B and I; J2 lands at G4, G5 and H9. These pads take individual wires. Fit the existing removable connectors off-board. J1 numbering matches the current harness. Sony Input 2 stays insulated.
 
 | Contact | Net | Pad |
 | --- | --- | --- |
@@ -39,11 +39,11 @@ J1 lands in columns B and I; J2 lands in column G. These pads take individual wi
 | J2.2 | GND | G4 |
 | J1.7 | GND | B9 |
 | J1.8 | CAMERA_REQUEST | I8 |
-| J2.3 | CAMERA_BUFFER | G9 |
+| J2.3 | CAMERA_BUFFER | H9 |
 
 ## Camera output cable
 
-J2.3 at G9 is the buffer output. Insert R10 (1 kohm) in series in this pigtail, sleeve both joints and the resistor, then connect to EXT IN 1. R10 is outside the board geometry model. Never connect this lead to vehicle 12 V.
+J2.3 at H9 is the buffer output. Insert R10 (1 kohm) in series in this pigtail, sleeve both joints and the resistor, then connect to EXT IN 1. R10 is outside the board geometry model. Never connect this lead to vehicle 12 V.
 
 ## Underside wire pieces and bus taps
 
@@ -51,8 +51,8 @@ Crossings are not junctions. Use insulated wire; route clear of resistor bodies 
 
 | Wire | Net | Solder pads in order |
 | --- | --- | --- |
-| BG | GND | C4 → H4 → I10 → D12 → A9 → B6 → J7 |
-| BV | +5V | G1 → I6 → H13 |
+| BG | GND | C4 → H4 → G10 → D12 → A9 → B6 → J7 |
+| BV | +5V | G1 → H6 → H13 |
 | W10 | CS_OUT | A1 → A8 |
 | W11 | SCK_OUT | B2 → B11 |
 | W12 | MOSI_OUT | C3 → J12 |
@@ -65,7 +65,7 @@ If making continuous tapped buses is awkward, separate insulated segments follow
 ## Assembly and physical conditions
 
 - Fit sockets and top components first, without solder. The IC-only image is now a subset of this candidate.
-- R1 and R4–R9 stand upright. R1 is at C15 and its sleeved return lead follows the gap between U2 and K1 to F13. The power bus now ends at H13. This is a formed-lead proposal, not a validated socket clearance or guaranteed supplied lead length.
+- R1 and R4–R8 stand upright. R1 is at C15 and its sleeved return lead follows the gap between U2 and K1 to F13. The power bus now ends at H13. This is a formed-lead proposal, not a validated socket clearance or guaranteed supplied lead length.
 - Q1 has a formed-lead footprint, not the default three adjacent TO-92 holes. E=B12, B=B13, C=B16. Q1 moves to the lower-left corner; R7 runs straight along C12–C13. Check the actual part orientation and preform without force at the body.
 - All component bodies are now on top. R2 follows the top left edge; R3 follows the top right edge with a jog to x=37 mm past C3. Sleeve extended leads and dry-fit before trimming.
 - Check supplied lead lengths before trimming. If a lead cannot follow its proposed route safely, revise the model or use an insulated extension; do not force the component.
