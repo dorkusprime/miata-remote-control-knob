@@ -216,19 +216,29 @@ def draw(d):
                 x,y=pad(c['pad']);s.circle(x,y,5,'#0e7490');s.text(x-4,y-10,c['ref'].replace('J',''),10,'#0e7490')
         s.text(bx,1010,'Bodies shown on this face only. Pads retain the same IDs after flipping.',14)
     x=1325;s.text(x,195,'TOP',20)
-    for i,t in enumerate(['U1   MCP41050-I/P','U2   SN74HCT125N','K1   LCC110','Q1   2N3904BU, formed leads','R1 + R4–R9   upright resistors','C1/C2   100 nF','C3   10 µF, + J6 / − J10','R2/R3   outer-edge axial resistors']):s.text(x,226+i*27,t,16)
+    top_legend = [
+        'U1   MCP41050-I/P',
+        'U2   SN74HCT125N',
+        'K1   LCC110',
+        'Q1   2N3904BU, formed leads',
+        f'R1   {RESISTORS["R1"]} Ω, upright',
+        f'R2   {RESISTORS["R2"]/1000:g} kΩ   /   R3   {RESISTORS["R3"]/1000:g} kΩ, outer edges',
+        f'R4–R9   {RESISTORS["R4"]/1000:g} kΩ each, upright',
+        'C1/C2   100 nF   /   C3   10 µF',
+    ]
+    for i,t in enumerate(top_legend):s.text(x,226+i*27,t,16)
     s.text(x,450,'UNDERSIDE',20)
     for i,t in enumerate(['No component bodies underneath.','BG   one wire, 7 ground taps','BV   one wire, 3 power taps','W10–W13   four signal wires','Six pieces; 18 solder landings.','Sleeve buses between marked taps.']):s.text(x,481+i*27,t,16)
     s.text(x,690,'J1 · eight-wire controller pigtail',18)
     for i,t in enumerate(['1 GND → B4','2 +5 V → H1','3 SCK → A10','4 MOSI → I11','5 CS → A7','6 ENABLE → B5','7 GND → B9','8 CAMERA → I8']):s.text(x,710+i*23,t,16)
     s.text(x,910,'J2 · Sony pigtail',18)
-    s.text(x,939,'1 Input 1 → I5',16);s.text(x,966,'2 ST Remote GND → H4',16);s.text(x,993,'3 J9 → inline R10 1k → EXT IN 1',14)
+    s.text(x,939,'1 Input 1 → I5',16);s.text(x,966,'2 ST Remote GND → H4',16);s.text(x,993,'3 J9 → inline R10 1 kΩ → EXT IN 1',14)
     s.rect(35,1040,1690,216,'#e2e8f0',radius=10)
     notes=[
       'Gray bars are factory-connected strips: A–E and F–J for each row. No copper cuts. No shared component/jumper holes.',
       'R1/R4–R9 stand upright; Q1 leads land at B12 (E), C13 (B), D16 (C). Insulate formed leads and check actual transistor marking.',
       'R1 returns to F13 through the gap between U2 and K1. BV now lands at H13. Check actual socket clearance.',
-      'C1/C2 leads need careful forming. C3: + J6, - J10. R10 1k is sleeved inline in the camera cable; it is not a board component.',
+      'C1/C2 leads need careful forming. C3: + J6, - J10. R10 1 kΩ is sleeved inline in the camera cable; it is not a board component.',
       'BG/BV tack to the marked underside pads; they do not thread through every hole. Sleeve all sections between taps.',
       'Nominal body envelopes do not certify sockets, mounting holes or final height. Dry-fit the actual board before soldering.',
       'See pad-map.md and layout.json for every pin, terminal and jumper. Electrical mapping is checked; hardware remains untested.',

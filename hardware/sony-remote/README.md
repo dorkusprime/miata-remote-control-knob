@@ -7,7 +7,7 @@ Selected: **MCP41050-I/P + SN74HCT125N + LCC110 + 2N3904**, all through-hole, sh
 - [Harness and controller pins](../../docs/wiring.md)
 - [Exact purchased parts and spare quantities](../../docs/parts-sourcing.md)
 - [Per-controller BOM](bom.csv)
-- [All-component placement SVG](placement-full.svg) / [PNG preview](placement-full.png) — top and mirrored underside
+- [All-component placement SVG](placement-full.svg) — top and mirrored underside
 - [Complete pad / jumper table](pad-map.md) and [checked layout model](layout.json)
 - [Earlier IC-only fit study](placement.svg) — subset reference
 
@@ -17,7 +17,7 @@ The former five-PhotoMOS JSON/SVG/BOM files are in [hardware/archive](../archive
 
 ## Complete proposed placement
 
-![All-component top and underside placement](placement-full.png)
+![All-component top and underside placement](placement-full.svg)
 
 All 16 board component bodies are now on top: R1 and the six 47 kohm resistors stand upright; R2/R3 lie along the outer edges. The underside contains only two tapped buses, four signal wires and solder joints. All component-lead and wire routes use horizontal/vertical segments. The drawing renderer and model checker reject diagonal segments. Wire pieces remain six and wire solder landings remain 18. The backside view is mirrored horizontally while retaining physical pad IDs.
 

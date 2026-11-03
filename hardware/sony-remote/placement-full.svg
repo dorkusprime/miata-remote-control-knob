@@ -652,10 +652,10 @@
 <text x="1325" y="253" font-size="16" text-anchor="start" style="fill:#172033">U2   SN74HCT125N</text>
 <text x="1325" y="280" font-size="16" text-anchor="start" style="fill:#172033">K1   LCC110</text>
 <text x="1325" y="307" font-size="16" text-anchor="start" style="fill:#172033">Q1   2N3904BU, formed leads</text>
-<text x="1325" y="334" font-size="16" text-anchor="start" style="fill:#172033">R1 + R4–R9   upright resistors</text>
-<text x="1325" y="361" font-size="16" text-anchor="start" style="fill:#172033">C1/C2   100 nF</text>
-<text x="1325" y="388" font-size="16" text-anchor="start" style="fill:#172033">C3   10 µF, + J6 / − J10</text>
-<text x="1325" y="415" font-size="16" text-anchor="start" style="fill:#172033">R2/R3   outer-edge axial resistors</text>
+<text x="1325" y="334" font-size="16" text-anchor="start" style="fill:#172033">R1   330 Ω, upright</text>
+<text x="1325" y="361" font-size="16" text-anchor="start" style="fill:#172033">R2   1 kΩ   /   R3   2.7 kΩ, outer edges</text>
+<text x="1325" y="388" font-size="16" text-anchor="start" style="fill:#172033">R4–R9   47 kΩ each, upright</text>
+<text x="1325" y="415" font-size="16" text-anchor="start" style="fill:#172033">C1/C2   100 nF   /   C3   10 µF</text>
 <text x="1325" y="450" font-size="20" text-anchor="start" style="fill:#172033">UNDERSIDE</text>
 <text x="1325" y="481" font-size="16" text-anchor="start" style="fill:#172033">No component bodies underneath.</text>
 <text x="1325" y="508" font-size="16" text-anchor="start" style="fill:#172033">BG   one wire, 7 ground taps</text>
@@ -675,12 +675,12 @@
 <text x="1325" y="910" font-size="18" text-anchor="start" style="fill:#172033">J2 · Sony pigtail</text>
 <text x="1325" y="939" font-size="16" text-anchor="start" style="fill:#172033">1 Input 1 → I5</text>
 <text x="1325" y="966" font-size="16" text-anchor="start" style="fill:#172033">2 ST Remote GND → H4</text>
-<text x="1325" y="993" font-size="14" text-anchor="start" style="fill:#172033">3 J9 → inline R10 1k → EXT IN 1</text>
+<text x="1325" y="993" font-size="14" text-anchor="start" style="fill:#172033">3 J9 → inline R10 1 kΩ → EXT IN 1</text>
 <rect x="35" y="1040" width="1690" height="216" rx="10" fill="#e2e8f0" stroke="none"/>
 <text x="52" y="1070" font-size="16" text-anchor="start" style="fill:#172033">Gray bars are factory-connected strips: A–E and F–J for each row. No copper cuts. No shared component/jumper holes.</text>
 <text x="52" y="1096" font-size="16" text-anchor="start" style="fill:#172033">R1/R4–R9 stand upright; Q1 leads land at B12 (E), C13 (B), D16 (C). Insulate formed leads and check actual transistor marking.</text>
 <text x="52" y="1122" font-size="16" text-anchor="start" style="fill:#172033">R1 returns to F13 through the gap between U2 and K1. BV now lands at H13. Check actual socket clearance.</text>
-<text x="52" y="1148" font-size="16" text-anchor="start" style="fill:#172033">C1/C2 leads need careful forming. C3: + J6, - J10. R10 1k is sleeved inline in the camera cable; it is not a board component.</text>
+<text x="52" y="1148" font-size="16" text-anchor="start" style="fill:#172033">C1/C2 leads need careful forming. C3: + J6, - J10. R10 1 kΩ is sleeved inline in the camera cable; it is not a board component.</text>
 <text x="52" y="1174" font-size="16" text-anchor="start" style="fill:#172033">BG/BV tack to the marked underside pads; they do not thread through every hole. Sleeve all sections between taps.</text>
 <text x="52" y="1200" font-size="16" text-anchor="start" style="fill:#172033">Nominal body envelopes do not certify sockets, mounting holes or final height. Dry-fit the actual board before soldering.</text>
 <text x="52" y="1226" font-size="16" text-anchor="start" style="fill:#172033">See pad-map.md and layout.json for every pin, terminal and jumper. Electrical mapping is checked; hardware remains untested.</text>
