@@ -210,6 +210,7 @@ def draw(d):
             elif style=='electrolytic':
                 s.circle(x,y,2.5*scale,'#1e293b');s.text(x,y+5,ref,15,'#fff','middle')
                 xx,yy=pad(p['pins']['+']);s.text(xx+12,yy+8,'+',18,'#dc2626')
+                xx,yy=pad(p['pins']['-']);s.text(xx+12,yy+8,'−',18,'#172033')
         # Termination markers: distributed pigtails, not contiguous headers.
         if side=='top':
             for c in d['contacts']:
@@ -224,9 +225,10 @@ def draw(d):
         f'R1   {RESISTORS["R1"]} Ω, upright',
         f'R2   {RESISTORS["R2"]/1000:g} kΩ   /   R3   {RESISTORS["R3"]/1000:g} kΩ, outer edges',
         f'R4–R9   {RESISTORS["R4"]/1000:g} kΩ each, upright',
-        'C1/C2   100 nF   /   C3   10 µF',
+        'C1/C2   100 nF ceramic, either orientation',
+        'C3   10 µF electrolytic, + J6 / − J10',
     ]
-    for i,t in enumerate(top_legend):s.text(x,226+i*27,t,16)
+    for i,t in enumerate(top_legend):s.text(x,226+i*25,t,16)
     s.text(x,450,'UNDERSIDE',20)
     for i,t in enumerate(['No component bodies underneath.','BG   one wire, 7 ground taps','BV   one wire, 3 power taps','W10–W13   four signal wires','Six pieces; 18 solder landings.','Sleeve buses between marked taps.']):s.text(x,481+i*27,t,16)
     s.text(x,690,'J1 · eight-wire controller pigtail',18)
@@ -238,7 +240,7 @@ def draw(d):
       'Gray bars are factory-connected strips: A–E and F–J for each row. No copper cuts. No shared component/jumper holes.',
       'R1/R4–R9 stand upright; Q1 leads land at B12 (E), C13 (B), D16 (C). Insulate formed leads and check actual transistor marking.',
       'R1 returns to F13 through the gap between U2 and K1. BV now lands at H13. Check actual socket clearance.',
-      'C1/C2 leads need careful forming. C3: + J6, - J10. R10 1 kΩ is sleeved inline in the camera cable; it is not a board component.',
+      'C1/C2 leads need careful forming. C3 negative stripe goes to J10 (GND). R10 1 kΩ is sleeved inline in the camera cable; it is not a board component.',
       'BG/BV tack to the marked underside pads; they do not thread through every hole. Sleeve all sections between taps.',
       'Nominal body envelopes do not certify sockets, mounting holes or final height. Dry-fit the actual board before soldering.',
       'See pad-map.md and layout.json for every pin, terminal and jumper. Electrical mapping is checked; hardware remains untested.',
