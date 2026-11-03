@@ -335,7 +335,7 @@
 <path d="M436.00,677.20 L436.00,639.10" fill="none" stroke="#926329" stroke-width="2.5" stroke-linejoin="round"/>
 <circle cx="436.0" cy="677.2" r="19.5" fill="#f1cf85" stroke="#815a21"/>
 <text x="410.0" y="683.2" font-size="15" text-anchor="start" style="fill:#815a21">R6</text>
-<path d="M245.50,753.40 L245.50,715.30 L207.40,715.30" fill="none" stroke="#926329" stroke-width="2.5" stroke-linejoin="round"/>
+<path d="M207.40,753.40 L207.40,715.30" fill="none" stroke="#926329" stroke-width="2.5" stroke-linejoin="round"/>
 <circle cx="207.4" cy="715.3000000000001" r="19.5" fill="#f1cf85" stroke="#815a21"/>
 <text x="181.4" y="721.3000000000001" font-size="15" text-anchor="start" style="fill:#815a21">R7</text>
 <path d="M550.30,296.20 L550.30,410.50" fill="none" stroke="#926329" stroke-width="2.5" stroke-linejoin="round"/>
