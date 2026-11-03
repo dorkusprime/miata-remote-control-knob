@@ -154,7 +154,7 @@ def draw(d):
     s.text(35,74,'MCP41050 + HCT125 + LCC110 · proposed no-cut ElectroCookie Mini layout',18)
     s.rect(35,94,1690,66,'#fff3cd',radius=8)
     s.text(52,120,'ELECTRICAL PAD ALLOCATION CHECKED · PHYSICAL FIT / SOCKETS / MOUNTING STILL UNVERIFIED',18,'#92400e')
-    s.text(52,145,'All component bodies on TOP. Six underside wire pieces. All lead and wire routes use horizontal / vertical segments.',16,'#92400e')
+    s.text(52,145,'Components on top. Headers and six wire pieces underneath. Circles mark solder joints on the face shown.',16,'#92400e')
     for side,bx in [('top',55),('bottom',705)]:
         by=220
         def pos(pt):return (bx+(38.1-pt[0] if side=='bottom' else pt[0])*scale,by+pt[1]*scale)
@@ -211,11 +211,22 @@ def draw(d):
                 s.circle(x,y,2.5*scale,'#1e293b');s.text(x,y+5,ref,15,'#fff','middle')
                 xx,yy=pad(p['pins']['+']);s.text(xx+12,yy+8,'+',18,'#dc2626')
                 xx,yy=pad(p['pins']['-']);s.text(xx+12,yy+8,'−',18,'#172033')
-        # Termination markers: distributed pigtails, not contiguous headers.
+        if side=='bottom':
+            for part in d['parts']:
+                for location in part['pins'].values():
+                    s.circle(*pad(location),5,'#a21caf')
+        for c in d['contacts']:
+            x,y=pad(c['pad'])
+            if side=='top':
+                s.circle(x,y,5,'#0e7490')
+            else:
+                s.rect(x-8,y-8,16,16,'#0e7490',radius=2)
+            s.text(x+9,y-8,c['ref'].replace('J',''),10,'#0e7490')
         if side=='top':
-            for c in d['contacts']:
-                x,y=pad(c['pad']);s.circle(x,y,5,'#0e7490');s.text(x-4,y-10,c['ref'].replace('J',''),10,'#0e7490')
-        s.text(bx,1010,'Bodies shown on this face only. Pads retain the same IDs after flipping.',14)
+            s.text(bx,1010,'Cyan circles: solder tails of underside headers from this face.',14,'#0e7490')
+        else:
+            s.text(bx,1008,'Purple circles: top component joints. Colored wire dots: underside joints.',14,'#a21caf')
+            s.text(bx,1028,'Cyan squares: underside header pins. Pad IDs stay the same after flipping.',14,'#0e7490')
     x=1325;s.text(x,195,'TOP',20)
     top_legend = [
         'U1   MCP41050-I/P',
@@ -257,7 +268,7 @@ def draw(d):
 def tables(d):
     s=['# Complete proposed pad allocation','', '**Electrically checked design, not a physically verified build.** Use the [circuit guide](../../docs/sony-interface.md) for device limits and acceptance. [All-component image](placement-full.svg) separates top and horizontally mirrored underside views. No firmware outputs were enabled.','', '## Component terminals','', '| Ref | Part / side | Terminal → pad |','| --- | --- | --- |']
     for p in d['parts']:s.append(f'| {p["ref"]} | {p["part"]} / {p["side"]} | '+', '.join(f'{n} → {pad}' for n,pad in p['pins'].items())+' |')
-    s+=['','## Distributed pigtails','', 'J1 lands in columns B and I; J2 lands in column H. These pads take individual wires. Fit the existing removable connectors off-board. J1 numbering matches the current harness. Sony Input 2 stays insulated.','', '| Contact | Net | Pad |','| --- | --- | --- |']
+    s+=['','## Underside header pins','', 'J1 lands in columns B and I; J2 lands in column H. Insert header pins from underneath and solder their tails from the top. Use individual pins at spaced pads and a two-pin header at H4–H5. J1 numbering matches the current harness. Sony Input 2 stays insulated.','', '| Contact | Net | Pad |','| --- | --- | --- |']
     for c in d['contacts']:s.append(f'| {c["ref"]} | {c["net"]} | {c["pad"]} |')
     s+=['','## Camera output cable','', f'J2.3 at {next(c["pad"] for c in d["contacts"] if c["ref"] == "J2.3")} is the buffer output. Insert R10 (1 kohm) in series in this pigtail, sleeve both joints and the resistor, then connect to EXT IN 1. R10 is outside the board geometry model. Never connect this lead to vehicle 12 V.','', '## Underside wire pieces and bus taps','', 'Crossings are not junctions. Use insulated wire; route clear of resistor bodies and keep leads sleeved over unrelated pads. Coordinates are endpoint and routing references, not validated three-dimensional wire bends.','', '| Wire | Net | Solder pads in order |','| --- | --- | --- |']
     for w in d['jumpers']:s.append(f'| {w["ref"]} | {w["net"]} | '+ ' → '.join(w['pads'])+' |')

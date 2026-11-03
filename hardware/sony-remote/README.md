@@ -11,7 +11,7 @@ Selected: **MCP41050-I/P + SN74HCT125N + LCC110 + 2N3904**, all through-hole, sh
 - [Complete pad / jumper table](pad-map.md) and [checked layout model](layout.json)
 - [Earlier IC-only fit study](placement.svg) — subset reference
 
-The current all-component candidate places all 16 board component references, all eleven pigtail landings and six underside wire pieces (two tapped buses and four signal wires) without copper cuts or shared holes. The checker verifies connectivity against the current circuit and nominal same-face body separation. Physical fit, actual sockets, mounting holes, lead forming and height remain unverified. This is a complete proposed electrical pad map, not a physically accepted assembly.
+The current all-component candidate places all 16 board component references, all eleven header pin locations and six underside wire pieces (two tapped buses and four signal wires) without copper cuts or shared holes. The checker verifies connectivity against the current circuit and nominal same-face body separation. Physical fit, actual sockets, mounting holes, lead forming and height remain unverified. This is a complete proposed electrical pad map, not a physically accepted assembly.
 
 The former five-PhotoMOS JSON/SVG/BOM files are in [hardware/archive](../archive/sony-remote-photomos/README.md). Their generator and tests are retained for history and do not validate this circuit. Never build the current circuit using those drawings or connector allocations.
 
@@ -23,7 +23,7 @@ All 16 board component bodies are now on top: R1 and the six 47 kohm resistors s
 
 BG is one seven-tap ground bus; BV is one three-tap 5 V bus. Sleeve the wire between marked solder taps; intermediate taps tack onto underside pads. This is fewer cut/strip pieces, not fewer logical nets. If continuous tapped wires prove awkward, equivalent separate segments are still an option. R1 now stands at C15, with its sleeved return routed through the U2/K1 gap to F13. The power-bus tap moves to H13. Q1 moves toward the lower-left corner, its emitter lands at B12, and R7 shifts to C12/C13. These are changed physical pad assignments: use the current table, not a previous image. Check socket clearance and untrimmed lead lengths before soldering; use an insulated extension if an actual lead cannot reach safely. Extended resistor leads must be sleeved.
 
-The pigtail wires land on separate pads. Connector housings stay off-board; no in-line header footprint is implied. Q1 requires formed leads and the ceramic capacitors require lead spreading. Socket/mounting interference and actual lead lengths must be dry-fitted before soldering. See [the pad map](pad-map.md) for every endpoint and assembly conditions.
+Install the header pins from underneath and solder their tails from the top. The SVG marks the topside header joints in cyan and the underside component joints in purple. Use separate pins at spaced pads and a two-pin header at H4–H5. Q1 requires formed leads and the ceramic capacitors require lead spreading. Socket/mounting interference and actual lead lengths must be dry-fitted before soldering. See [the pad map](pad-map.md) for every endpoint and assembly conditions.
 
 Generate with `python3 scripts/full-placement.py`; verify with `python3 scripts/full-placement.py --check`. The full host suite includes current-layout fault injection. The older `scripts/placement-study.py` still reproduces the IC-only image, but the all-component image above is the current placement proposal.
 

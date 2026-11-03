@@ -23,9 +23,9 @@
 | R8 | 47 kohm / top | 1 → H8, 2 → H7 |
 | R9 | 47 kohm / top | 1 → G9, 2 → G7 |
 
-## Distributed pigtails
+## Underside header pins
 
-J1 lands in columns B and I; J2 lands in column H. These pads take individual wires. Fit the existing removable connectors off-board. J1 numbering matches the current harness. Sony Input 2 stays insulated.
+J1 lands in columns B and I; J2 lands in column H. Insert header pins from underneath and solder their tails from the top. Use individual pins at spaced pads and a two-pin header at H4–H5. J1 numbering matches the current harness. Sony Input 2 stays insulated.
 
 | Contact | Net | Pad |
 | --- | --- | --- |
