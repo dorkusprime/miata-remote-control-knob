@@ -168,6 +168,14 @@ def draw(d):
             s.text(bx+8,pad('A'+str(row))[1]+4,row,11)
         for col in 'ABCDEFGHIJ':s.text(pad(col+'1')[0],by+28,col,12,anchor='middle')
         if side=='bottom':
+            for part in d['parts']:
+                for location in part['pins'].values():
+                    s.circle(*pad(location),5,'#d8b5df')
+        if side=='top':
+            for wire in d['jumpers']:
+                for location in wire['pads']:
+                    s.s.append(f'<circle cx="{pad(location)[0]}" cy="{pad(location)[1]}" r="5" fill="{COLORS[wire['net']]}" opacity="0.35"/>')
+        if side=='bottom':
             for w in d['jumpers']:
                 points=[pos(pt) for pt in w['route']];color=COLORS[w['net']]
                 # White edging keeps insulated crossing wires visually separate.
@@ -175,6 +183,9 @@ def draw(d):
                 for p in w['pads']:
                     x,y=pad(p);s.circle(x,y,4,color)
                 x,y=points[0];s.text(x+5,y-7,w['ref'],10,color)
+        if side=='top':
+            for c in d['contacts']:
+                s.circle(*pad(c['pad']),5,'#8cbec7')
         for p in d['parts']:
             if p['side']!=side:continue
             ref=p['ref'];style=p.get('style','dip');cx,cy,bw,bh=p['body'];x,y=pos((cx,cy))
@@ -211,19 +222,9 @@ def draw(d):
                 s.circle(x,y,2.5*scale,'#1e293b');s.text(x,y+5,ref,15,'#fff','middle')
                 xx,yy=pad(p['pins']['+']);s.text(xx+12,yy+8,'+',18,'#dc2626')
                 xx,yy=pad(p['pins']['-']);s.text(xx+12,yy+8,'−',18,'#172033')
-        if side=='bottom':
-            for part in d['parts']:
-                for location in part['pins'].values():
-                    s.circle(*pad(location),5,'#a21caf')
-        if side=='top':
-            for wire in d['jumpers']:
-                for location in wire['pads']:
-                    s.circle(*pad(location),5,COLORS[wire['net']])
         for c in d['contacts']:
             x,y=pad(c['pad'])
-            if side=='top':
-                s.circle(x,y,5,'#0e7490')
-            else:
+            if side=='bottom':
                 s.rect(x-8,y-8,16,16,'#0e7490',radius=2)
             s.text(x+9,y-8,c['ref'].replace('J',''),10,'#0e7490')
         if side=='top':
