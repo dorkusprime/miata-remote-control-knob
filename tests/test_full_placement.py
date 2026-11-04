@@ -26,8 +26,8 @@ class CurrentLayoutTests(unittest.TestCase):
         self.check()
 
     def test_power_ground_short(self):
-        self.data['jumpers'].append({'ref':'FAULT','pads':['I1','H2'], 'net':'+5V',
-                                    'route':[layout.pad_xy('I1'),layout.pad_xy('H2')]})
+        self.data['jumpers'].append({'ref':'FAULT','pads':['H1','H2'], 'net':'+5V',
+                                    'route':[layout.pad_xy('H1'),layout.pad_xy('H2')]})
         with self.assertRaisesRegex(AssertionError,'Short'):self.check()
 
     def test_missing_clock_jumper(self):
@@ -57,20 +57,29 @@ class CurrentLayoutTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError,'Diagonal'):self.check()
 
     def test_unused_relay_contact_cannot_become_ground(self):
-        self.data['jumpers'].append({'ref':'FAULT','pads':['G14','D4'],'net':'GND',
-                                    'route':[layout.pad_xy('G14'),layout.pad_xy('D4')]})
+        self.data['jumpers'].append({'ref':'FAULT','pads':['G14','A4'],'net':'GND',
+                                    'route':[layout.pad_xy('G14'),layout.pad_xy('A4')]})
         with self.assertRaisesRegex(AssertionError,'Short'):self.check()
 
-    def test_missing_middle_ground_bus_tap(self):
-        bus = next(w for w in self.data['jumpers'] if w['ref'] == 'BG')
-        bus['pads'].remove('I10')
+    def test_missing_ground_jumper(self):
+        self.data['jumpers'] = [w for w in self.data['jumpers'] if w['ref'] != 'BG5']
         with self.assertRaisesRegex(AssertionError,'Open net'):self.check()
 
-    def test_bus_tap_must_be_explicit_on_route(self):
-        bus = next(w for w in self.data['jumpers'] if w['ref'] == 'BG')
-        tap = layout.pad_xy('I10')
-        bus['route'] = [xy for xy in bus['route'] if abs(xy[0]-tap[0])+abs(xy[1]-tap[1]) > 1e-6]
+    def test_jumper_route_must_reach_endpoint(self):
+        wire = next(w for w in self.data['jumpers'] if w['ref'] == 'BG5')
+        wire['route'].pop()
         with self.assertRaisesRegex(AssertionError,'Missing tap'):self.check()
+
+    def test_jumper_cannot_pass_over_occupied_pad(self):
+        wire = next(w for w in self.data['jumpers'] if w['ref'] == 'W10')
+        wire['route'] = [layout.pad_xy(pad) for pad in wire['pads']]
+        with self.assertRaisesRegex(AssertionError,'passes over'):self.check()
+
+    def test_parallel_jumpers_cannot_share_lane(self):
+        wire = next(w for w in self.data['jumpers'] if w['ref'] == 'W11')
+        for point in wire['route'][1:-1]:
+            point[0] = 5.715
+        with self.assertRaisesRegex(AssertionError,'Crowded parallel routes'):self.check()
 
     def test_top_resistor_lead_cannot_cross_capacitor(self):
         self.part('R3')['lead_route'] = [[33.02,15.24],[33.02,21.59],[35.56,21.59],[35.56,45.72],[33.02,45.72]]
@@ -81,7 +90,8 @@ class CurrentLayoutTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError,'Component not on top'):self.check()
 
     def test_diagonal_component_lead_rejected(self):
-        self.part('C2')['lead_route'].insert(1,[28.5,20])
+        part = self.part('C2')
+        part['lead_route'] = [layout.pad_xy('I6'), [28.5,20], layout.pad_xy('I10')]
         with self.assertRaisesRegex(AssertionError,'Diagonal'):self.check()
 
     def test_drawn_transistor_lead_must_reach_its_actual_pad(self):
@@ -89,13 +99,13 @@ class CurrentLayoutTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError,'Lead endpoint'):self.check()
 
     def test_camera_input_cannot_keep_old_ground_tie(self):
-        self.data['jumpers'].append({'ref':'FAULT','pads':['H8','H7'],'net':'GND',
-                                    'route':[layout.pad_xy('H8'),layout.pad_xy('H7')]})
+        self.data['jumpers'].append({'ref':'FAULT','pads':['G8','J7'],'net':'GND',
+                                    'route':[layout.pad_xy('G8'),layout.pad_xy('J7')]})
         with self.assertRaisesRegex(AssertionError,'Short'):self.check()
 
     def test_camera_enable_cannot_keep_old_power_tie(self):
-        self.data['jumpers'].append({'ref':'FAULT','pads':['H7','I1'],'net':'+5V',
-                                    'route':[layout.pad_xy('H7'),layout.pad_xy('I1')]})
+        self.data['jumpers'].append({'ref':'FAULT','pads':['J7','H1'],'net':'+5V',
+                                    'route':[layout.pad_xy('J7'),layout.pad_xy('H1')]})
         with self.assertRaisesRegex(AssertionError,'Short'):self.check()
 
     def test_mirrored_image_retains_physical_pad_ids(self):

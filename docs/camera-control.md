@@ -36,7 +36,7 @@ TI source: https://www.ti.com/lit/ds/symlink/sn74hct125.pdf (pinout, recommended
 
 J1 contacts 1–6 keep their electrical functions; contact 7 is second GND; contact 8 CAMERA_REQUEST from D2/GPIO28. Physical J1.2 board landing changes to I1. J2 gains contact 3: CAMERA_BUFFER from H9 through inline R10 to Sony EXT IN 1. Do not confuse EXT IN 1 with steering Input 1. Sony Input 2 and EXT IN 2 remain insulated.
 
-The current placement and pad map replace the remote-only layout. They include R8/R9; R10 is explicitly an off-board cable component. There are still six underside wire pieces, now 18 wire solder landings. BG has seven taps, BV three. Insulate the power bus as it passes the former G7 power tap: row 7 right is now ground.
+The current placement and pad map replace the remote-only layout. They include R8/R9; R10 is explicitly an off-board cable component. The underside uses 12 insulated through-hole jumpers with 24 distinct solder landings. Use the current pad map for endpoints.
 
 ## Firmware contract
 

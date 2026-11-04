@@ -503,90 +503,144 @@
           12.7
         ],
         [
+          10.16,
+          12.065
+        ],
+        [
+          25.4,
+          12.065
+        ],
+        [
           25.4,
           12.7
         ]
-      ],
-      "assembly": "Separate through-hole ground jumper."
+      ]
     },
     {
       "ref": "BG2",
       "net": "GND",
       "pads": [
-        "I4",
-        "G10",
-        "D12",
-        "A9",
-        "B6",
-        "J7"
+        "D4",
+        "D6"
       ],
       "route": [
         [
-          30.48,
+          12.7,
           12.7
-        ],
-        [
-          30.48,
-          22.86
-        ],
-        [
-          33.02,
-          22.86
-        ],
-        [
-          33.02,
-          27.94
-        ],
-        [
-          25.4,
-          27.94
-        ],
-        [
-          12.7,
-          27.94
-        ],
-        [
-          12.7,
-          33.02
-        ],
-        [
-          11.43,
-          33.02
-        ],
-        [
-          11.43,
-          31.75
-        ],
-        [
-          5.08,
-          31.75
-        ],
-        [
-          5.08,
-          25.4
-        ],
-        [
-          12.7,
-          25.4
         ],
         [
           12.7,
           17.78
+        ]
+      ]
+    },
+    {
+      "ref": "BG3",
+      "net": "GND",
+      "pads": [
+        "A6",
+        "A9"
+      ],
+      "route": [
+        [
+          5.08,
+          17.78
         ],
+        [
+          4.445,
+          17.78
+        ],
+        [
+          4.445,
+          25.4
+        ],
+        [
+          5.08,
+          25.4
+        ]
+      ]
+    },
+    {
+      "ref": "BG4",
+      "net": "GND",
+      "pads": [
+        "D9",
+        "A12"
+      ],
+      "route": [
+        [
+          12.7,
+          25.4
+        ],
+        [
+          11.43,
+          25.4
+        ],
+        [
+          11.43,
+          31.75
+        ],
+        [
+          5.08,
+          31.75
+        ],
+        [
+          5.08,
+          33.02
+        ]
+      ]
+    },
+    {
+      "ref": "BG5",
+      "net": "GND",
+      "pads": [
+        "D12",
+        "G10"
+      ],
+      "route": [
+        [
+          12.7,
+          33.02
+        ],
+        [
+          12.7,
+          29.21
+        ],
+        [
+          25.4,
+          29.21
+        ],
+        [
+          25.4,
+          27.94
+        ]
+      ]
+    },
+    {
+      "ref": "BG6",
+      "net": "GND",
+      "pads": [
+        "B6",
+        "I7"
+      ],
+      "route": [
         [
           7.62,
           17.78
         ],
         [
-          33.02,
-          17.78
+          7.62,
+          19.05
         ],
         [
-          33.02,
+          30.48,
+          19.05
+        ],
+        [
+          30.48,
           20.32
         ]
-      ],
-      "assembly": "One continuous sleeved ground bus; expose only listed pads."
+      ]
     },
     {
       "ref": "BV1",
@@ -601,19 +655,11 @@
           5.08
         ],
         [
-          31.75,
+          26.035,
           5.08
         ],
         [
-          31.75,
-          16.51
-        ],
-        [
-          28.575,
-          16.51
-        ],
-        [
-          28.575,
+          26.035,
           17.78
         ],
         [
@@ -637,14 +683,14 @@
         ],
         [
           25.4,
-          20.32
+          18.415
         ],
         [
-          19.05,
-          20.32
+          26.035,
+          18.415
         ],
         [
-          19.05,
+          26.035,
           35.56
         ],
         [
@@ -667,6 +713,14 @@
           5.08
         ],
         [
+          5.715,
+          5.08
+        ],
+        [
+          5.715,
+          22.86
+        ],
+        [
           5.08,
           22.86
         ]
@@ -685,11 +739,11 @@
           7.62
         ],
         [
-          8.89,
+          6.985,
           7.62
         ],
         [
-          8.89,
+          6.985,
           30.48
         ],
         [
@@ -712,14 +766,14 @@
         ],
         [
           10.16,
-          16.51
+          4.445
         ],
         [
-          26.67,
-          16.51
+          31.75,
+          4.445
         ],
         [
-          26.67,
+          31.75,
           33.02
         ],
         [
@@ -741,11 +795,11 @@
           10.16
         ],
         [
-          29.21,
+          31.115,
           10.16
         ],
         [
-          29.21,
+          31.115,
           43.18
         ],
         [
@@ -755,5 +809,5 @@
       ]
     }
   ],
-  "revision_notes": "Camera uses U2 channel 4: pin13 GND, pin12 CAMERA_REQUEST, pin11 CAMERA_BUFFER. R8/R9 are on-board 47k pulldowns. R10 1k is sleeved inline in J2.3 output cable, not a board component. C2 ground I10; C3 +J6/-J10; J1.2 +5V H1; ground bus G10/J7; power tap at G7 removed. 16 board components, same board and eight underside wires."
+  "revision_notes": "Camera uses U2 channel 4: pin13 GND, pin12 CAMERA_REQUEST, pin11 CAMERA_BUFFER. R8/R9 are on-board 47k pulldowns. R10 1k is sleeved inline in J2.3 output cable, not a board component. C2 ground I10; C3 +J6/-J10; J1.2 +5V H1; ground jumpers G10/I7; power tap at G7 removed. 16 board components, same board and 12 underside wires."
 }
