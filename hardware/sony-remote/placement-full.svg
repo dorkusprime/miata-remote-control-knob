@@ -6,7 +6,7 @@
 <text x="35" y="74" font-size="18" text-anchor="start" style="fill:#172033">MCP41050 + HCT125 + LCC110 · proposed no-cut ElectroCookie Mini layout</text>
 <rect x="35" y="94" width="1690" height="66" rx="8" fill="#fff3cd" stroke="none"/>
 <text x="52" y="120" font-size="18" text-anchor="start" style="fill:#92400e">ELECTRICAL PAD ALLOCATION CHECKED · PHYSICAL FIT / SOCKETS / MOUNTING STILL UNVERIFIED</text>
-<text x="52" y="145" font-size="16" text-anchor="start" style="fill:#92400e">Components on top. Headers and seven wire pieces underneath. Circles also show where opposite-face leads and wires land.</text>
+<text x="52" y="145" font-size="16" text-anchor="start" style="fill:#92400e">Components on top. Headers and eight wire pieces underneath. Circles also show where opposite-face leads and wires land.</text>
 <text x="55" y="191" font-size="21" text-anchor="start" style="fill:#172033">TOP · component view</text>
 <rect x="55" y="220" width="571.5" height="762.0" rx="14" fill="#e6edf3" stroke="#94a3b8"/>
 <circle cx="131.2" cy="296.2" r="4" fill="#fff" stroke="#8a9aaa"/>
@@ -216,6 +216,7 @@
 <circle cx="550.3000000000001" cy="524.8" r="5" fill="#64748b" opacity="0.35"/>
 <circle cx="436.0" cy="296.2" r="5" fill="#dc2626" opacity="0.35"/>
 <circle cx="474.09999999999997" cy="486.70000000000005" r="5" fill="#dc2626" opacity="0.35"/>
+<circle cx="436.0" cy="486.70000000000005" r="5" fill="#dc2626" opacity="0.35"/>
 <circle cx="474.09999999999997" cy="753.4000000000001" r="5" fill="#dc2626" opacity="0.35"/>
 <circle cx="131.2" cy="296.2" r="5" fill="#059669" opacity="0.35"/>
 <circle cx="131.2" cy="562.9" r="5" fill="#059669" opacity="0.35"/>
@@ -633,12 +634,16 @@
 <circle cx="1162.2" cy="486.70000000000005" r="4" fill="#64748b" stroke="none"/>
 <circle cx="781.1999999999999" cy="524.8" r="4" fill="#64748b" stroke="none"/>
 <text x="824.3" y="403.5" font-size="10" text-anchor="start" style="fill:#64748b">BG2</text>
-<path d="M895.50,296.20 L800.25,296.20 L800.25,467.65 L847.88,467.65 L847.88,486.70 L857.40,486.70 L895.50,486.70 L895.50,524.80 L990.75,524.80 L990.75,753.40 L857.40,753.40" fill="none" stroke="#f8fafc" stroke-width="5" stroke-linejoin="round"/>
-<path d="M895.50,296.20 L800.25,296.20 L800.25,467.65 L847.88,467.65 L847.88,486.70 L857.40,486.70 L895.50,486.70 L895.50,524.80 L990.75,524.80 L990.75,753.40 L857.40,753.40" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linejoin="round"/>
+<path d="M895.50,296.20 L800.25,296.20 L800.25,467.65 L847.88,467.65 L847.88,486.70 L857.40,486.70" fill="none" stroke="#f8fafc" stroke-width="5" stroke-linejoin="round"/>
+<path d="M895.50,296.20 L800.25,296.20 L800.25,467.65 L847.88,467.65 L847.88,486.70 L857.40,486.70" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linejoin="round"/>
 <circle cx="895.5" cy="296.2" r="4" fill="#dc2626" stroke="none"/>
 <circle cx="857.4000000000001" cy="486.70000000000005" r="4" fill="#dc2626" stroke="none"/>
+<text x="900.5" y="289.2" font-size="10" text-anchor="start" style="fill:#dc2626">BV1</text>
+<path d="M895.50,486.70 L895.50,524.80 L990.75,524.80 L990.75,753.40 L857.40,753.40" fill="none" stroke="#f8fafc" stroke-width="5" stroke-linejoin="round"/>
+<path d="M895.50,486.70 L895.50,524.80 L990.75,524.80 L990.75,753.40 L857.40,753.40" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linejoin="round"/>
+<circle cx="895.5" cy="486.70000000000005" r="4" fill="#dc2626" stroke="none"/>
 <circle cx="857.4000000000001" cy="753.4000000000001" r="4" fill="#dc2626" stroke="none"/>
-<text x="900.5" y="289.2" font-size="10" text-anchor="start" style="fill:#dc2626">BV</text>
+<text x="900.5" y="479.70000000000005" font-size="10" text-anchor="start" style="fill:#dc2626">BV2</text>
 <path d="M1200.30,296.20 L1200.30,562.90" fill="none" stroke="#f8fafc" stroke-width="5" stroke-linejoin="round"/>
 <path d="M1200.30,296.20 L1200.30,562.90" fill="none" stroke="#059669" stroke-width="2.5" stroke-linejoin="round"/>
 <circle cx="1200.3000000000002" cy="296.2" r="4" fill="#059669" stroke="none"/>
@@ -696,9 +701,9 @@
 <text x="1325" y="450" font-size="20" text-anchor="start" style="fill:#172033">UNDERSIDE</text>
 <text x="1325" y="481" font-size="16" text-anchor="start" style="fill:#172033">No component bodies underneath.</text>
 <text x="1325" y="508" font-size="16" text-anchor="start" style="fill:#172033">BG1/BG2   two ground wires, 8 pads</text>
-<text x="1325" y="535" font-size="16" text-anchor="start" style="fill:#172033">BV   one wire, 3 power taps</text>
+<text x="1325" y="535" font-size="16" text-anchor="start" style="fill:#172033">BV1/BV2   two power wires, 4 pads</text>
 <text x="1325" y="562" font-size="16" text-anchor="start" style="fill:#172033">W10–W13   four signal wires</text>
-<text x="1325" y="589" font-size="16" text-anchor="start" style="fill:#172033">Seven pieces; 19 solder landings.</text>
+<text x="1325" y="589" font-size="16" text-anchor="start" style="fill:#172033">Eight pieces; 20 solder landings.</text>
 <text x="1325" y="616" font-size="16" text-anchor="start" style="fill:#172033">Sleeve buses between marked taps.</text>
 <text x="1325" y="690" font-size="18" text-anchor="start" style="fill:#172033">J1 · eight-wire controller pigtail</text>
 <text x="1325" y="710" font-size="16" text-anchor="start" style="fill:#172033">1 GND → B4</text>
@@ -716,9 +721,9 @@
 <rect x="35" y="1040" width="1690" height="216" rx="10" fill="#e2e8f0" stroke="none"/>
 <text x="52" y="1070" font-size="16" text-anchor="start" style="fill:#172033">No copper cuts. No shared component/jumper holes.</text>
 <text x="52" y="1096" font-size="16" text-anchor="start" style="fill:#172033">R1/R4–R8 stand upright; Q1 leads land at B12 (E), B13 (B), B16 (C). Insulate formed leads and check actual transistor marking.</text>
-<text x="52" y="1122" font-size="16" text-anchor="start" style="fill:#172033">R1 returns to F13 through the gap between U2 and K1. BV now lands at H13. Check actual socket clearance.</text>
+<text x="52" y="1122" font-size="16" text-anchor="start" style="fill:#172033">R1 returns to F13 through the gap between U2 and K1. BV2 lands at H13. Check actual socket clearance.</text>
 <text x="52" y="1148" font-size="16" text-anchor="start" style="fill:#172033">C1/C2 leads need careful forming. C3 negative stripe goes to J10 (GND). R10 1 kΩ is sleeved inline in the camera cable; it is not a board component.</text>
-<text x="52" y="1174" font-size="16" text-anchor="start" style="fill:#172033">BG/BV tack to the marked underside pads; they do not thread through every hole. Sleeve all sections between taps.</text>
+<text x="52" y="1174" font-size="16" text-anchor="start" style="fill:#172033">BG2 intermediate taps tack to the marked underside pads. Sleeve all sections between taps.</text>
 <text x="52" y="1200" font-size="16" text-anchor="start" style="fill:#172033">Nominal body envelopes do not certify sockets, mounting holes or final height. Dry-fit the actual board before soldering.</text>
 <text x="52" y="1226" font-size="16" text-anchor="start" style="fill:#172033">See pad-map.md and layout.json for every pin, terminal and jumper. Electrical mapping is checked; hardware remains untested.</text>
 </svg>

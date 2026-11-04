@@ -589,12 +589,11 @@
       "assembly": "One continuous sleeved ground bus; expose only listed pads."
     },
     {
-      "ref": "BV",
+      "ref": "BV1",
       "net": "+5V",
       "pads": [
         "G1",
-        "H6",
-        "H13"
+        "H6"
       ],
       "route": [
         [
@@ -620,7 +619,18 @@
         [
           27.94,
           17.78
-        ],
+        ]
+      ],
+      "assembly": "Separate through-hole power jumper."
+    },
+    {
+      "ref": "BV2",
+      "net": "+5V",
+      "pads": [
+        "G6",
+        "H13"
+      ],
+      "route": [
         [
           25.4,
           17.78
@@ -642,7 +652,7 @@
           35.56
         ]
       ],
-      "assembly": "One continuous sleeved power bus; three taps only. G7 is now GND; do not expose power wire there."
+      "assembly": "Separate through-hole power jumper."
     },
     {
       "ref": "W10",
@@ -745,5 +755,5 @@
       ]
     }
   ],
-  "revision_notes": "Camera uses U2 channel 4: pin13 GND, pin12 CAMERA_REQUEST, pin11 CAMERA_BUFFER. R8/R9 are on-board 47k pulldowns. R10 1k is sleeved inline in J2.3 output cable, not a board component. C2 ground I10; C3 +J6/-J10; J1.2 +5V H1; ground bus G10/J7; power tap at G7 removed. 16 board components, same board and seven underside wires."
+  "revision_notes": "Camera uses U2 channel 4: pin13 GND, pin12 CAMERA_REQUEST, pin11 CAMERA_BUFFER. R8/R9 are on-board 47k pulldowns. R10 1k is sleeved inline in J2.3 output cable, not a board component. C2 ground I10; C3 +J6/-J10; J1.2 +5V H1; ground bus G10/J7; power tap at G7 removed. 16 board components, same board and eight underside wires."
 }
