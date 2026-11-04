@@ -51,14 +51,15 @@ Crossings are not junctions. Use insulated wire; route clear of resistor bodies 
 
 | Wire | Net | Solder pads in order |
 | --- | --- | --- |
-| BG | GND | C4 → G4 → G10 → D12 → A9 → B6 → J7 |
+| BG1 | GND | C4 → G4 |
+| BG2 | GND | I4 → G10 → D12 → A9 → B6 → J7 |
 | BV | +5V | G1 → H6 → H13 |
 | W10 | CS_OUT | A1 → A8 |
 | W11 | SCK_OUT | B2 → B11 |
 | W12 | MOSI_OUT | C3 → J12 |
 | W13 | PW | H3 → G16 |
 
-BG and BV are each one continuous conductor with multiple solder taps, not chains of separate jumpers. Expose only the listed tap pads; sleeve all intervening sections. Untapped pads along the drawn route stay insulated. Tack the middle taps to the underside pads rather than threading a wire repeatedly through holes. This reduces wire pieces from 13 to 6 and wire solder landings from 26 to 18; it does not remove electrical nets. Four signal wires remain separate.
+BG1 runs from C4 to G4. BG2 starts at I4 on the same strip. BV and BG2 have intermediate taps. Expose only the listed tap pads and sleeve all intervening sections.
 
 If making continuous tapped buses is awkward, separate insulated segments following the same net connections remain electrically equivalent; they restore some of the original cut/strip work.
 
@@ -71,7 +72,7 @@ If making continuous tapped buses is awkward, separate insulated segments follow
 - Check supplied lead lengths before trimming. If a lead cannot follow its proposed route safely, revise the model or use an insulated extension; do not force the component.
 - C1/C2 leads are spread to the listed pads, rather than matching the stock 2.5 mm lead pitch. Avoid stress at the ceramic coating. C3 is polarized.
 - Body envelopes are provisional. The resistor envelope allows 6.8 × 2.6 mm, based on Yageo MFR-25 maximum body dimensions. Socket outlines, capacitor lead availability, mounting-hole locations and assembled height still require actual measurements.
-- All component bodies are on top; only the six wire pieces and solder joints are underneath. Distributed pigtails preserve the no-cut board. Mounted height and center mounting-hole access remain unverified.
+- All component bodies are on top; only the seven wire pieces and solder joints are underneath. Distributed pigtails preserve the no-cut board. Mounted height and center mounting-hole access remain unverified.
 - On the actual board, verify A–E / F–J strip continuity and orientation first. Do not solder until the dry-fit and receiver-disconnected electrical checks pass.
 
 ## Verification scope
