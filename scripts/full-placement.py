@@ -162,7 +162,6 @@ def draw(d):
         s.text(bx,191,'TOP · component view' if side=='top' else 'UNDERSIDE · board flipped left-to-right',21)
         s.rect(bx,by,38.1*scale,50.8*scale,'#e6edf3','#94a3b8',14)
         for row in range(1,18):
-            for group in ('ABCDE','FGHIJ'):s.path([pad(group[0]+str(row)),pad(group[-1]+str(row))],'#c5d0d9',4)
             for col in 'ABCDEFGHIJ':
                 x,y=pad(col+str(row));s.circle(x,y,4,'#fff','#8a9aaa')
             s.text(bx+8,pad('A'+str(row))[1]+4,row,11)
@@ -258,7 +257,7 @@ def draw(d):
     s.text(x,993,f'3 {contacts["J2.3"]} → inline R10 1 kΩ → EXT IN 1',14)
     s.rect(35,1040,1690,216,'#e2e8f0',radius=10)
     notes=[
-      'Gray bars are factory-connected strips: A–E and F–J for each row. No copper cuts. No shared component/jumper holes.',
+      'No copper cuts. No shared component/jumper holes.',
       'R1/R4–R8 stand upright; Q1 leads land at B12 (E), B13 (B), B16 (C). Insulate formed leads and check actual transistor marking.',
       'R1 returns to F13 through the gap between U2 and K1. BV now lands at H13. Check actual socket clearance.',
       'C1/C2 leads need careful forming. C3 negative stripe goes to J10 (GND). R10 1 kΩ is sleeved inline in the camera cable; it is not a board component.',
