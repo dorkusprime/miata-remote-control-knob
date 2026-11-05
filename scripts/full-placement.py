@@ -273,7 +273,7 @@ def draw(d):
     notes=[
       'No copper cuts. No shared component/jumper holes.',
       'R1/R4–R8 stand upright; Q1 leads land at B12 (E), B13 (B), B16 (C). Insulate formed leads and check actual transistor marking.',
-      'R1 returns to F13 through the gap between U2 and K1. BV2 lands at H13. Check actual socket clearance.',
+      'R1 returns to F13 through the gap between U2 and K1. BV2 lands at G13. Check actual socket clearance.',
       'C1/C2 leads need careful forming. C3 negative stripe goes to J10 (GND). R10 1 kΩ is sleeved inline in the camera cable; it is not a board component.',
       'Each underside wire has two through-hole ends. Sleeve the full span between joints.',
       'Nominal body envelopes do not certify sockets, mounting holes or final height. Dry-fit the actual board before soldering.',
@@ -292,7 +292,7 @@ def tables(d):
     for w in d['jumpers']:s.append(f'| {w["ref"]} | {w["net"]} | '+ ' → '.join(w['pads'])+' |')
     s+=['', 'Use one insulated through-hole jumper per listed pair. Each end has its own hole.', '', '## Assembly and physical conditions','',
         '- Fit sockets and top components first, without solder. The IC-only image is now a subset of this candidate.',
-        '- R1 and R4–R8 stand upright. R1 is at C15 and its sleeved return lead follows the gap between U2 and K1 to F13. The power bus now ends at H13. This is a formed-lead proposal, not a validated socket clearance or guaranteed supplied lead length.',
+        '- R1 and R4–R8 stand upright. R1 is at C15 and its sleeved return lead follows the gap between U2 and K1 to F13. The power bus now ends at G13. This is a formed-lead proposal, not a validated socket clearance or guaranteed supplied lead length.',
         '- Q1 has a formed-lead footprint, not the default three adjacent TO-92 holes. E=B12, B=B13, C=B16. Q1 moves to the lower-left corner; R7 runs straight along C12–C13. Check the actual part orientation and preform without force at the body.',
         '- All component bodies are now on top. R2 follows the top left edge; R3 follows the top right edge with a jog to x=37 mm past C3. Sleeve extended leads and dry-fit before trimming.',
         '- Check supplied lead lengths before trimming. If a lead cannot follow its proposed route safely, revise the model or use an insulated extension; do not force the component.',
