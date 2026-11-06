@@ -124,7 +124,7 @@ void help() {
   status("Serial (Enter): help/h, status/s, release, enable, boot; outputs are real requests, receiver acceptance unverified");
   status("LED: full blue idle; purple held; white volume pulse; green click; amber camera-gesture pulse only");
   status("Hold still for 10s: toggle learning. Entry=3 amber flashes; exit=3 blue; assignment=2 green flashes");
-  status("Learning: learn volume_up / volume_down / mute_att / next_track / previous_track; hold 3s; enable resumes knob");
+  status("Learning: learn volume_up / volume_down / mute_att / next_track / previous_track; hold 6s; enable resumes knob");
   heartbeat();
 }
 
@@ -244,7 +244,7 @@ void serialCommand(const char *text) {
       if (!strcmp(text + 6, actionName(action)) && interfaceReady && connected) {
         output.enable();
         output.learn(action, millis());
-        status("Learning resistance held for 3s, then released. Knob suspended; enable resumes");
+        status("Learning resistance held for 6s, then released. Knob suspended; enable resumes");
         return;
       }
     }

@@ -24,7 +24,7 @@ class SonyOutput {
   SonyOutput(Pot pot, Switch relay, Switch camera)
       : pot_(pot), relay_(relay), camera_(camera) {}
   static constexpr uint32_t kSettleMs = 1, kPulseMs = 55, kGapMs = 55;
-  static constexpr uint32_t kMaxAgeMs = 750, kLearnMs = 3000;
+  static constexpr uint32_t kMaxAgeMs = 750, kLearnMs = 6000;
   static constexpr uint8_t kCapacity = 8;
 
   void enable() { release(); enabled_ = true; }

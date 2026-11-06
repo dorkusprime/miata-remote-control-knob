@@ -4,11 +4,11 @@ Controller v3 connects the existing gesture engine and LED feedback to the assem
 
 ## Knob-operated learning — controller v3.2
 
-The Sony Custom assignment screen asks for a sustained button press. A normal 55 ms detent pulse did not register in the user's first attempt; the required duration and resistance recognition remain unverified. Learning mode supplies a bounded three-second hold instead.
+The Sony Custom assignment screen asks for a sustained button press. A normal 55 ms detent pulse did not register in the user's first attempt; the required duration and resistance recognition remain unverified. Learning mode supplies a bounded six-second hold instead.
 
 1. Open Sony Custom steering-control learning.
 2. Hold the knob **without turning for ten seconds**. Three amber flashes acknowledge entry. Release the knob; steady amber identifies the local learning mode.
-3. Select Volume + on Sony, then turn one positive detent. Two green flashes acknowledge starting that command's three-second resistance hold. It releases automatically. Wait until it ends before assigning the next function.
+3. Select Volume + on Sony, then turn one positive detent. Two green flashes acknowledge starting that command's six-second resistance hold. It releases automatically. Wait until it ends before assigning the next function.
 4. Repeat for Volume - (negative turn), Mute (single click), Next Track (held positive turn), Prev Track (held negative turn). A multi-detent event starts only one hold. Input during an active hold is ignored, so it cannot extend the hold or change resistance.
 5. Hold still for ten seconds again. Three blue flashes acknowledge exit, outputs release, and normal operation resumes. Release the button before further gestures.
 
@@ -16,7 +16,7 @@ A long hold fires once while still pressed and cannot also send Mute or a track 
 
 Entry/exit flashes are three 150 ms on / 150 ms off cycles; assignment feedback is two green cycles. Idle learning is full-brightness amber; a held button shows purple after transient feedback. These colors acknowledge local mode/requests, never successful Sony learning. The heartbeat includes `learning_mode`; monitor displays LEARNING MODE when active.
 
-Serial fallback: `learn volume_up`, `learn volume_down`, `learn mute_att`, `learn next_track`, `learn previous_track` each release other outputs, hold the named code for three seconds and leave normal knob outputs suspended. `enable` resumes normal mode. `release`, invalid input, boot and detected Twist failures cancel learning. Serial-origin holds also cancel on serial disconnect.
+Serial fallback: `learn volume_up`, `learn volume_down`, `learn mute_att`, `learn next_track`, `learn previous_track` each release other outputs, hold the named code for six seconds and leave normal knob outputs suspended. `enable` resumes normal mode. `release`, invalid input, boot and detected Twist failures cancel learning. Serial-origin holds also cancel on serial disconnect.
 
 ## Real output backend — 2026-11-06
 
@@ -165,3 +165,7 @@ XIAO controller compilation passed with the pinned toolchain. Full flash image: 
 Passed 24 gesture scenarios, 12 LED scenarios, 13 output-driver scenarios and 55 Python tests. Added checks cover the exact ten-second threshold, one toggle per press, no release click/turn after a toggle, reentry on a fresh hold, held-turn suppression, boot-held suppression, clearing a prior camera request, timer rollover, entry/exit/assignment flash timing, bounded learning holds, input suppression during a hold, release cancellation and restoration of ordinary 55 ms pulses. No physical hardware was accessed by these tests.
 
 Controller v3.2 compiles for XIAO RP2040: full flash image 87,976 bytes (4.2%); static RAM 10,000 bytes (3.8%). No sketch warnings were emitted. `git diff --check` passed. The agent did not flash the board. User verification of mode entry/exit, visual feedback and Sony assignment recognition remains pending.
+
+## Learning hold duration update — 2026-11-06
+
+At the user's request, learning holds are now six seconds for both knob and serial initiation, providing more time for voltage measurements. Ten-second mode entry/exit, LED patterns and normal 55 ms command pulses are unchanged. Driver tests verify the hold remains asserted past three seconds, releases at six seconds, and handles timestamp rollover. Sony currently groups the tested gestures as Volume Down; whether loaded output voltages differ is still awaiting measurement.

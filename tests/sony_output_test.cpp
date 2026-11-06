@@ -65,14 +65,16 @@ int main() {
     assert(!out.submit({Action::CameraOn, 1}, 101));
     out.tick(100); assert(!relay && codes.back() == 64);
     out.tick(101); assert(relay);
-    out.tick(3100); assert(relay);
-    out.tick(3101); assert(!relay && !out.learning() && !out.enabled());
-    out.enable(); out.submit({Action::MuteAtt, 1}, 3200);
-    out.tick(3200); out.tick(3201); assert(relay);
-    out.tick(3256); assert(!relay); }
+    out.tick(3101); assert(relay);
+    out.tick(6100); assert(relay);
+    out.tick(6101); assert(!relay && !out.learning() && !out.enabled());
+    out.enable(); out.submit({Action::MuteAtt, 1}, 6200);
+    out.tick(6200); out.tick(6201); assert(relay);
+    out.tick(6256); assert(!relay); }
   { auto out = makeOutput(); out.enable(); out.learn(Action::VolumeDown, 0xfffffff0u);
     out.tick(0xfffffff1u); assert(relay && codes.back() == 96);
-    out.tick(2985); assert(!relay && !out.enabled()); }
+    out.tick(2985); assert(relay);
+    out.tick(5985); assert(!relay && !out.enabled()); }
   { auto out = makeOutput(); out.enable(); out.learn(Action::MuteAtt, 0);
     out.tick(1); assert(relay); out.release();
     assert(!relay && !camera && !out.learning());
