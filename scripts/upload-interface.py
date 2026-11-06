@@ -18,15 +18,29 @@ def upload(picotool, firmware, serial, ports):
     if port:
         print(f"Requesting BOOTSEL through {port}", flush=True)
         try:
-            with serial.Serial(port=None, baudrate=9600, timeout=1, exclusive=True) as connection:
+            with serial.Serial(port=None, baudrate=115200, timeout=0.1,
+                               write_timeout=1, exclusive=True) as connection:
                 connection.port = port
                 connection.open()
                 connection.dtr = True
-                time.sleep(0.1)
-                connection.baudrate = 1200
-                time.sleep(0.1)
-                connection.dtr = False
-                time.sleep(0.3)
+                connection.write(b"status\n")
+                identified = False
+                for _ in range(20):
+                    response = connection.readline()
+                    if b"pot_requested=" in response and b"relay_requested=" in response:
+                        identified = True
+                        break
+                if identified:
+                    print("Interface diagnostic identified; requesting watchdog-safe boot.", flush=True)
+                    connection.write(b"boot\n")
+                    connection.flush()
+                    time.sleep(0.3)
+                else:
+                    print("No interface response; trying 1200-baud reset.", flush=True)
+                    connection.baudrate = 1200
+                    time.sleep(0.1)
+                    connection.dtr = False
+                    time.sleep(0.3)
         except serial.SerialException as error:
             print(f"Serial reboot reported {error}; checking USB re-enumeration.", file=sys.stderr)
     if port:

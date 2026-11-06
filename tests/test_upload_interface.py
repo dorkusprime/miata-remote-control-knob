@@ -24,6 +24,7 @@ class UploadTests(unittest.TestCase):
     def test_serial_reboot_and_retry(self, run, sleep):
         serial, ports = MagicMock(), MagicMock()
         ports.comports.return_value = [MagicMock(device="/dev/cu.usbmodem1", vid=0x2E8A, pid=0x000A)]
+        serial.Serial.return_value.__enter__.return_value.readline.return_value = b""
         run.side_effect = [subprocess.CompletedProcess([], 1, "", "waiting"),
                            subprocess.CompletedProcess([], 0, "rebooted", ""),
                            subprocess.CompletedProcess([], 0, "loaded", "")]
@@ -33,6 +34,20 @@ class UploadTests(unittest.TestCase):
         self.assertFalse(connection.dtr)
         self.assertEqual(run.call_count, 3)
         self.assertEqual(run.call_args_list[1].args[0], ["tool", "reboot", "-u", "-f"])
+
+    @patch.object(uploader.time, "sleep")
+    @patch.object(uploader.subprocess, "run")
+    def test_diagnostic_uses_boot_command_without_baud_reset(self, run, sleep):
+        serial, ports = MagicMock(), MagicMock()
+        ports.comports.return_value = [MagicMock(device="/dev/cu.usbmodem1", vid=0x2E8A, pid=0x000A)]
+        connection = serial.Serial.return_value.__enter__.return_value
+        connection.readline.return_value = b"armed=0 pot_requested=128 relay_requested=0 camera_requested=0"
+        run.return_value = subprocess.CompletedProcess([], 0, "loaded", "")
+        self.assertEqual(uploader.upload("tool", "file.uf2", serial, ports), 0)
+        self.assertEqual(connection.write.call_args_list[0].args, (b"status\n",))
+        self.assertEqual(connection.write.call_args_list[1].args, (b"boot\n",))
+        self.assertNotEqual(connection.baudrate, 1200)
+        self.assertEqual(run.call_count, 1)
 
     @patch.object(uploader.subprocess, "run")
     def test_ambiguous_devices_do_not_reset(self, run):
