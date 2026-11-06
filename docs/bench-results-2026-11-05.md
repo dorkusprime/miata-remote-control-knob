@@ -59,3 +59,9 @@ The user verified the interface firmware's serial `status`/`boot` path, successf
 ### Next acceptance
 
 User uploads controller v3 with Sony disconnected, checks gestures/LED and software reboot, then performs controlled Sony Custom learning of the five code assignments. Interface must be powered before Sony and remain powered until Sony is switched off for these bench checks. Power-loss orders, reset/fault timing, final camera-buffer loading, final wiring and installation remain pending.
+
+## Integrated controller and first Sony attempt — 2026-11-06
+
+The user uploaded controller v3 and reported the integrated knob working (gesture/LED behavior). Sony was then connected. On the Custom learning screen, Sony requested “press and hold to assign steering button”; a one-detent turn did not register. Normal firmware sends 55 ms pulses. Pulse duration is a plausible explanation, not a confirmed diagnosis; acceptance of the chosen high-resistance codes has not yet been established.
+
+Controller v3.2 adds a ten-second stationary hold to enter/exit learning and bounded three-second assignment holds from the existing gestures. Entry: three amber flashes; idle learning: amber; assignment request: two green flashes; exit: three blue flashes. The original diagnostics remain available. User upload and Sony acceptance of this new build are pending.

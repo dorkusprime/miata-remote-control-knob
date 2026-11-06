@@ -24,19 +24,31 @@ class SonyOutput {
   SonyOutput(Pot pot, Switch relay, Switch camera)
       : pot_(pot), relay_(relay), camera_(camera) {}
   static constexpr uint32_t kSettleMs = 1, kPulseMs = 55, kGapMs = 55;
-  static constexpr uint32_t kMaxAgeMs = 750;
+  static constexpr uint32_t kMaxAgeMs = 750, kLearnMs = 3000;
   static constexpr uint8_t kCapacity = 8;
 
   void enable() { release(); enabled_ = true; }
   void release() {
-    enabled_ = false;
+    enabled_ = learning_ = false;
+    pulseMs_ = kPulseMs;
     size_ = head_ = 0;
     phase_ = Phase::Idle;
     relayOn_ = cameraOn_ = false;
     relay_(false); camera_(false);
   }
+  bool learn(Action action, uint32_t now) {
+    uint8_t code;
+    if (!enabled_ || !sonyCode(action, code)) return false;
+    release();
+    enabled_ = learning_ = true;
+    pulseMs_ = kLearnMs;
+    pot_(code); code_ = code; activeAt_ = at_ = now;
+    phase_ = Phase::Settle;
+    return true;
+  }
+  bool learning() const { return learning_; }
   bool submit(const Event &event, uint32_t now) {
-    if (!enabled_ || !event.steps) return false;
+    if (!enabled_ || learning_ || !event.steps) return false;
     if (event.action == Action::CameraOn || event.action == Action::CameraOff) {
       cameraOn_ = event.action == Action::CameraOn;
       camera_(cameraOn_);
@@ -57,11 +69,13 @@ class SonyOutput {
     if (!enabled_) return;
     if (phase_ == Phase::Settle && now - at_ >= kSettleMs) {
       if (now - activeAt_ >= kMaxAgeMs) {
+        if (learning_) { release(); return; }
         phase_ = Phase::Gap; at_ = now; return;
       }
       relay_(true); relayOn_ = true;
       phase_ = Phase::Pulse; at_ = now;
-    } else if (phase_ == Phase::Pulse && now - at_ >= kPulseMs) {
+    } else if (phase_ == Phase::Pulse && now - at_ >= pulseMs_) {
+      if (learning_) { release(); return; }
       relay_(false); relayOn_ = false;
       phase_ = Phase::Gap; at_ = now;
     } else if (phase_ == Phase::Gap && now - at_ >= kGapMs) {
@@ -90,8 +104,8 @@ class SonyOutput {
   Switch relay_, camera_;
   Pending queue_[kCapacity] = {};
   uint8_t size_ = 0, head_ = 0, code_ = 128;
-  bool enabled_ = false, relayOn_ = false, cameraOn_ = false;
+  bool enabled_ = false, learning_ = false, relayOn_ = false, cameraOn_ = false;
   Phase phase_ = Phase::Idle;
-  uint32_t at_ = 0, activeAt_ = 0;
+  uint32_t at_ = 0, activeAt_ = 0, pulseMs_ = kPulseMs;
 };
 }  // namespace knob

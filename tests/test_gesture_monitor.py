@@ -53,6 +53,8 @@ class MonitorTests(unittest.TestCase):
         self.assertIn("hardware outputs enabled", renderer.render(json.dumps(data)))
         data["outputs_enabled"] = False
         self.assertIn("hardware outputs disabled", renderer.render(json.dumps(data)))
+        data["learning_mode"] = True
+        self.assertIn("LEARNING MODE", renderer.render(json.dumps(data)))
 
     def test_unknown_action(self):
         data = json.loads(gesture()); data["action"] = ["bad"]

@@ -19,9 +19,14 @@ constexpr Color kOff{0, 0, 0};
 
 class LedFeedback {
  public:
-  void clear() { duration_ = 0; }
+  void clear() { duration_ = 0; learning_ = flashing_ = false; }
+  void setLearning(bool on, uint32_t now) {
+    learning_ = on; flash(on ? kCameraAmber : kIdleBlue, now, 3);
+  }
+  void learningCommand(uint32_t now) { flash(kClickGreen, now, 2); }
 
   void onGesture(const Event &event, uint32_t now) {
+    if (learning_) return;
     switch (event.action) {
       case Action::VolumeUp:
       case Action::VolumeDown: pulse(kVolumeWhite, now, 120); break;
@@ -31,20 +36,27 @@ class LedFeedback {
       // Held track turns already have the observed-button purple indication.
       case Action::NextTrack:
       case Action::PreviousTrack:
-      case Action::LongPressIgnored: break;
+      case Action::LongPressIgnored:
+      case Action::LearningToggle: break;
     }
   }
 
   Color colorAt(uint32_t now, bool buttonHeld, bool connected) const {
     if (!connected) return kOff;
-    if (duration_ && static_cast<uint32_t>(now - started_) < duration_) return pulseColor_;
-    return buttonHeld ? kHeldPurple : kIdleBlue;
+    const uint32_t age = now - started_;
+    if (duration_ && age < duration_)
+      return flashing_ && (age / 150) % 2 ? kOff : pulseColor_;
+    return buttonHeld ? kHeldPurple : (learning_ ? kCameraAmber : kIdleBlue);
   }
 
  private:
   void pulse(Color color, uint32_t now, uint32_t duration) {
-    pulseColor_ = color; started_ = now; duration_ = duration;
+    pulseColor_ = color; started_ = now; duration_ = duration; flashing_ = false;
   }
+  void flash(Color color, uint32_t now, uint8_t count) {
+    pulse(color, now, static_cast<uint32_t>(count) * 300); flashing_ = true;
+  }
+  bool learning_ = false, flashing_ = false;
   Color pulseColor_ = kOff;
   uint32_t started_ = 0, duration_ = 0;
 };

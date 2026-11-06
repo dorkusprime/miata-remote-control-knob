@@ -2,6 +2,22 @@
 
 Controller v3 connects the existing gesture engine and LED feedback to the assembled Sony interface. The original Twist diagnostic and the separate interface bench diagnostic remain available. Gesture and LED behavior was previously user-verified; the integrated build still needs user upload and receiver learning. See [current code assignments](sony-interface.md#calibration-model-and-firmware-contract).
 
+## Knob-operated learning — controller v3.2
+
+The Sony Custom assignment screen asks for a sustained button press. A normal 55 ms detent pulse did not register in the user's first attempt; the required duration and resistance recognition remain unverified. Learning mode supplies a bounded three-second hold instead.
+
+1. Open Sony Custom steering-control learning.
+2. Hold the knob **without turning for ten seconds**. Three amber flashes acknowledge entry. Release the knob; steady amber identifies the local learning mode.
+3. Select Volume + on Sony, then turn one positive detent. Two green flashes acknowledge starting that command's three-second resistance hold. It releases automatically. Wait until it ends before assigning the next function.
+4. Repeat for Volume - (negative turn), Mute (single click), Next Track (held positive turn), Prev Track (held negative turn). A multi-detent event starts only one hold. Input during an active hold is ignored, so it cannot extend the hold or change resistance.
+5. Hold still for ten seconds again. Three blue flashes acknowledge exit, outputs release, and normal operation resumes. Release the button before further gestures.
+
+A long hold fires once while still pressed and cannot also send Mute or a track command on release. Rotation earlier in the same press consumes it as a track gesture and prevents a mode toggle. Booting with the button held does not enter learning. Camera requests are released on entry and are not driven by learning gestures. On disconnect/reset learning mode ends and pending commands are dropped. There is no automatic learning-mode timeout; enter and exit with the ten-second hold as requested. Closing the serial monitor does not cancel knob-operated learning.
+
+Entry/exit flashes are three 150 ms on / 150 ms off cycles; assignment feedback is two green cycles. Idle learning is full-brightness amber; a held button shows purple after transient feedback. These colors acknowledge local mode/requests, never successful Sony learning. The heartbeat includes `learning_mode`; monitor displays LEARNING MODE when active.
+
+Serial fallback: `learn volume_up`, `learn volume_down`, `learn mute_att`, `learn next_track`, `learn previous_track` each release other outputs, hold the named code for three seconds and leave normal knob outputs suspended. `enable` resumes normal mode. `release`, invalid input, boot and detected Twist failures cancel learning. Serial-origin holds also cancel on serial disconnect.
+
 ## Real output backend — 2026-11-06
 
 Each steering detent queues one 55 ms relay pulse, with a 1 ms pot settling interval and 55 ms minimum release gap. The queue holds eight pending detents; an oversized event is rejected in full, and queued work older than 750 ms is discarded. Camera on/off uses D2/GPIO28 separately and persists until the opposite request, reset, explicit release, or a detected input fault. The LED only acknowledges gestures and does not claim Sony state.
@@ -24,7 +40,8 @@ The gesture recognition defaults were user bench-verified through the earlier si
 | Short click | Mute / ATT request |
 | Hold button and turn positive / negative | Next / previous track, one step per detent |
 | Double click | Toggle manual-camera request |
-| Hold for 700 ms or longer, then release without turning | Ignored; reported as unassigned |
+| Hold for 700 ms to under 10 s, then release without turning | Ignored; reported as unassigned |
+| Hold still for 10 s | Toggle learning mode; fires while held |
 
 Positive/negative follow the Twist's counter direction; check the feel in the final mounting. No volume acceleration or track-repeat timer is implemented. Multiple detents in one sample are reported with a step count.
 
@@ -142,3 +159,9 @@ USB observation during a change of physical location: initially neither USB seri
 `python3 scripts/test.py` passed 19 gesture, 10 LED and 10 Sony-output host scenarios, plus 55 Python tests. New coverage includes pot-before-relay ordering, pulse/release timing, repeated detents, bounded capacity, expiry (including stalled settling), camera independence, release/reenable without replay, timer rollover, gesture-to-output dispatch, hardware monitor labels and serial status retry before boot. These tests use callbacks/mocks or virtual serial ports, not physical Sony hardware.
 
 XIAO controller compilation passed with the pinned toolchain. Full flash image: 86,640 / 2,093,056 bytes (4.1%); static RAM: 9,984 / 262,144 bytes (3.8%). Arduino section summary: 69,572 bytes flash. The initial rebuild reported the same two existing USB.cpp missing-initializer warnings; no sketch warnings. Current placement generators/checks and `git diff --check` passed. No hardware was flashed or energized by the agent. The user must upload and verify integrated gestures, software reboot/cold startup, actual Sony learning and pulse recognition.
+
+## Learning-mode implementation verification — 2026-11-06
+
+Passed 24 gesture scenarios, 12 LED scenarios, 13 output-driver scenarios and 55 Python tests. Added checks cover the exact ten-second threshold, one toggle per press, no release click/turn after a toggle, reentry on a fresh hold, held-turn suppression, boot-held suppression, clearing a prior camera request, timer rollover, entry/exit/assignment flash timing, bounded learning holds, input suppression during a hold, release cancellation and restoration of ordinary 55 ms pulses. No physical hardware was accessed by these tests.
+
+Controller v3.2 compiles for XIAO RP2040: full flash image 87,976 bytes (4.2%); static RAM 10,000 bytes (3.8%). No sketch warnings were emitted. `git diff --check` passed. The agent did not flash the board. User verification of mode entry/exit, visual feedback and Sony assignment recognition remains pending.

@@ -18,6 +18,7 @@ LABELS = {
     "camera_on": "Manual camera request: ON",
     "camera_off": "Manual camera request: OFF",
     "long_press_ignored": "Long press ignored (unassigned)",
+    "learning_toggle": "Learning mode toggled (watch amber/blue flashes)",
 }
 
 
@@ -85,7 +86,8 @@ class Renderer:
             return clean(event.get("message", ""))
         if kind == "heartbeat":
             state = (event.get("connected"), event.get("camera_preview"),
-                     event.get("simulated", True), event.get("outputs_enabled", False))
+                     event.get("simulated", True), event.get("outputs_enabled", False),
+                     event.get("learning_mode", False))
             if any(type(value) is not bool for value in state):
                 return "Invalid device state."
             if state == self.last_state:
@@ -94,7 +96,8 @@ class Renderer:
             return ("Twist " + ("connected" if state[0] else "missing") +
                     "; camera request " + ("ON" if state[1] else "OFF") +
                     ("; outputs simulated" if state[2] else
-                     "; hardware outputs " + ("enabled" if state[3] else "disabled")))
+                     "; hardware outputs " + ("enabled" if state[3] else "disabled")) +
+                    ("; LEARNING MODE" if state[4] else ""))
         if kind == "input" and self.raw:
             return "[input] " + clean(json.dumps(event, separators=(",", ":")))
         return None

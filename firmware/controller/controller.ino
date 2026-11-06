@@ -15,7 +15,7 @@
 #endif
 
 constexpr uint8_t kCs = 26, kRelay = 27, kCamera = 28;
-bool interfaceReady = false, suspended = false;
+bool interfaceReady = false, suspended = false, learningMode = false, serialLearning = false;
 char serialLine[48];
 size_t serialLength = 0;
 bool serialOverflow = false, hadSerial = false;
@@ -67,6 +67,7 @@ const char *actionName(knob::Action action) {
     case knob::Action::CameraOn: return "camera_on";
     case knob::Action::CameraOff: return "camera_off";
     case knob::Action::LongPressIgnored: return "long_press_ignored";
+    case knob::Action::LearningToggle: return "learning_toggle";
   }
   return "unknown";
 }
@@ -74,7 +75,22 @@ const char *actionName(knob::Action action) {
 void gestureEvent(const knob::Event &event, void *) {
   // Feedback must work with no serial monitor; fault-cancel events are not gestures.
   if (connected) feedback.onGesture(event, millis());
-  const bool accepted = output.submit(event, millis());
+  bool accepted = false;
+  if (event.action == knob::Action::LearningToggle && connected && interfaceReady) {
+    learningMode = !learningMode;
+    suspended = serialLearning = false;
+    output.release();
+    if (!learningMode) output.enable();
+    feedback.setLearning(learningMode, millis());
+    accepted = true;
+  } else if (learningMode) {
+    uint8_t ignored;
+    if (!output.learning() && knob::sonyCode(event.action, ignored)) {
+      output.enable();
+      accepted = output.learn(event.action, millis());
+      if (accepted) feedback.learningCommand(millis());
+    }
+  } else accepted = output.submit(event, millis());
   char fields[150];
   snprintf(fields, sizeof(fields),
       ",\"action\":\"%s\",\"steps\":%lu,\"simulated\":false,\"accepted\":%s",
@@ -91,20 +107,22 @@ void status(const char *message) {
 }
 
 void heartbeat() {
-  char fields[180];
+  char fields[195];
   snprintf(fields, sizeof(fields),
-      ",\"connected\":%s,\"camera_preview\":%s,\"simulated\":false,\"outputs_enabled\":%s,\"relay_requested\":%s",
+      ",\"connected\":%s,\"camera_preview\":%s,\"simulated\":false,\"outputs_enabled\":%s,\"relay_requested\":%s,\"learning_mode\":%s",
       connected ? "true" : "false", gestures.cameraRequested() ? "true" : "false",
-      output.enabled() ? "true" : "false", output.relayOn() ? "true" : "false");
+      output.enabled() ? "true" : "false", output.relayOn() ? "true" : "false", learningMode ? "true" : "false");
   emitEvent("heartbeat", fields);
 }
 
 void help() {
-  status("Gesture controller v3; USB maintenance: Picotool + boot command; Sony/camera hardware backend");
-  status("Turn=volume; click=mute/ATT; held turn=track; double click=camera preview; long hold=ignored");
+  status("Gesture controller v3.2; USB maintenance: Picotool + boot command; Sony/camera hardware backend");
+  status("Turn=volume; click=mute/ATT; held turn=track; double click=camera preview; 10s still hold=learning toggle");
   status("Debounce=30ms; double click=300ms from first release to second press; long hold=700ms");
   status("Serial (Enter): help/h, status/s, release, enable, boot; outputs are real requests, receiver acceptance unverified");
   status("LED: full blue idle; purple held; white volume pulse; green click; amber camera-gesture pulse only");
+  status("Hold still for 10s: toggle learning. Entry=3 amber flashes; exit=3 blue; assignment=2 green flashes");
+  status("Learning: learn volume_up / volume_down / mute_att / next_track / previous_track; hold 3s; enable resumes knob");
   heartbeat();
 }
 
@@ -136,6 +154,7 @@ void inputEvent(const Sample &sample) {
 
 void loseTwist(const char *message, bool tryOff = true) {
   output.release();
+  learningMode = serialLearning = false;
   connected = false;
   feedback.clear();
   ledKnown = false;
@@ -193,25 +212,44 @@ void serialCommand(const char *text) {
     output.release(); watchdog_disable(); reset_usb_boot(0, 0);
   } else if (!strcmp(text, "help") || !strcmp(text, "h") || !strcmp(text, "?")) help();
   else if (!strcmp(text, "status") || !strcmp(text, "s")) { maintenanceStatus(); heartbeat(); }
+  else if (!strncmp(text, "learn ", 6)) {
+    suspended = true; learningMode = false; serialLearning = true;
+    feedback.setLearning(false, millis()); output.release(); gestures.cancel();
+    const knob::Action choices[] = {knob::Action::VolumeUp, knob::Action::VolumeDown,
+        knob::Action::MuteAtt, knob::Action::NextTrack, knob::Action::PreviousTrack};
+    for (const knob::Action action : choices) {
+      if (!strcmp(text + 6, actionName(action)) && interfaceReady && connected) {
+        output.enable();
+        output.learn(action, millis());
+        status("Learning resistance held for 3s, then released. Knob suspended; enable resumes");
+        return;
+      }
+    }
+    status("Invalid learning action or Twist unavailable; outputs released");
+  }
   else if (!strcmp(text, "release")) {
-    suspended = true; output.release(); gestures.cancel();
+    suspended = true; learningMode = serialLearning = false;
+    feedback.clear(); output.release(); gestures.cancel();
     status("Outputs released; enter enable to resume");
   } else if (!strcmp(text, "enable")) {
-    suspended = false;
+    suspended = learningMode = serialLearning = false;
+    feedback.clear();
     if (connected && interfaceReady) {
       gestures.begin(millis(), lastSample.count, lastSample.down);
       output.enable();
     }
     heartbeat();
   } else {
-    suspended = true; output.release(); gestures.cancel();
+    suspended = true; learningMode = serialLearning = false;
+    feedback.clear(); output.release(); gestures.cancel();
     status("Unknown command; outputs released. Enter enable to resume");
   }
 }
 
 void serviceSerial() {
   if (!Serial) {
-    // Normal standalone operation does not depend on a serial monitor.
+    // A learning hold requires the terminal; normal operation does not.
+    if (serialLearning && output.learning()) output.release();
     serialLength = 0; serialOverflow = false; hadSerial = false; return;
   }
   if (!hadSerial) { hadSerial = true; status("Controller ready. Enter help or status."); }
@@ -226,7 +264,8 @@ void serviceSerial() {
       if (ch >= 32 && ch <= 126 && serialLength + 1 < sizeof(serialLine))
         serialLine[serialLength++] = ch;
       else {
-        suspended = true; output.release(); gestures.cancel();
+        suspended = true; learningMode = serialLearning = false;
+        feedback.clear(); output.release(); gestures.cancel();
         serialLength = 0; serialOverflow = true;
         status("Invalid/oversized input; outputs released");
       }

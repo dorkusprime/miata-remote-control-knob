@@ -57,5 +57,27 @@ int main() {
     gestures.begin(0, 0, false); gestures.update(100, 1, false);
     out.tick(100); out.tick(101); assert(relay && codes.back() == 64);
     out.release(); gestures.cancel(); out.tick(102); assert(!relay && !camera); }
-  std::cout << "10 Sony output scenarios passed\n";
+  { auto out = makeOutput(); out.enable();
+    out.submit({Action::CameraOn, 1}, 0); out.submit({Action::NextTrack, 3}, 0);
+    assert(out.learn(Action::VolumeUp, 100));
+    assert(!camera && !relay && out.pending() == 0 && out.learning());
+    assert(!out.submit({Action::VolumeDown, 1}, 101));
+    assert(!out.submit({Action::CameraOn, 1}, 101));
+    out.tick(100); assert(!relay && codes.back() == 64);
+    out.tick(101); assert(relay);
+    out.tick(3100); assert(relay);
+    out.tick(3101); assert(!relay && !out.learning() && !out.enabled());
+    out.enable(); out.submit({Action::MuteAtt, 1}, 3200);
+    out.tick(3200); out.tick(3201); assert(relay);
+    out.tick(3256); assert(!relay); }
+  { auto out = makeOutput(); out.enable(); out.learn(Action::VolumeDown, 0xfffffff0u);
+    out.tick(0xfffffff1u); assert(relay && codes.back() == 96);
+    out.tick(2985); assert(!relay && !out.enabled()); }
+  { auto out = makeOutput(); out.enable(); out.learn(Action::MuteAtt, 0);
+    out.tick(1); assert(relay); out.release();
+    assert(!relay && !camera && !out.learning());
+    out.enable(); assert(!out.learn(Action::CameraOn, 10));
+    out.learn(Action::NextTrack, 10); out.tick(800);
+    assert(!relay && !out.enabled()); }
+  std::cout << "13 Sony output scenarios passed\n";
 }

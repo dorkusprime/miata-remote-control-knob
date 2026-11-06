@@ -40,5 +40,23 @@ int main() {
     assert(led.colorAt(130, false, true) == kIdleBlue);
     led.onGesture({Action::LongPressIgnored, 1}, 140);
     assert(led.colorAt(150, false, true) == kIdleBlue); }
-  std::cout << "10 LED feedback scenarios passed\n";
+  { LedFeedback led; led.setLearning(true, 100);
+    assert(led.colorAt(100, false, true) == kCameraAmber);
+    assert(led.colorAt(250, false, true) == kOff);
+    assert(led.colorAt(400, false, true) == kCameraAmber);
+    assert(led.colorAt(850, false, true) == kOff);
+    assert(led.colorAt(1000, false, true) == kCameraAmber);
+    led.learningCommand(1100);
+    assert(led.colorAt(1100, false, true) == kClickGreen);
+    assert(led.colorAt(1250, false, true) == kOff);
+    assert(led.colorAt(1400, false, true) == kClickGreen);
+    assert(led.colorAt(1700, false, true) == kCameraAmber);
+    led.setLearning(false, 1800);
+    assert(led.colorAt(1800, false, true) == kIdleBlue);
+    assert(led.colorAt(1950, false, true) == kOff);
+    assert(led.colorAt(2700, false, true) == kIdleBlue); }
+  { LedFeedback led; led.setLearning(true, 0xfffffff0u);
+    assert(led.colorAt(134, false, true) == kOff);
+    led.clear(); assert(led.colorAt(200, false, true) == kIdleBlue); }
+  std::cout << "12 LED feedback scenarios passed\n";
 }

@@ -54,5 +54,20 @@ int main() {
     assert(!t.engine.cameraRequested()); }
   { Test t(0xFFFFFF00u); t.press(0xFFFFFF60u); t.release(0xFFFFFFE0u); t.tick(267);
     t.expect({}); t.tick(268); t.expect({Action::MuteAtt}); }  // millis wrap
-  std::cout << "19 gesture scenarios passed\n";
+  { Test t; t.press(100); t.tick(10099, 0, true); t.expect({});
+    t.tick(10100, 0, true); t.tick(25000, 0, true);
+    t.tick(25010, 1, true); t.release(26000, 1); t.tick(27000, 1);
+    t.expect({Action::LearningToggle});
+    t.press(28000, 1); t.tick(38000, 1, true); t.release(38100, 1);
+    t.expect({Action::LearningToggle, Action::LearningToggle}); }
+  { Test t; t.press(100); t.tick(200, 1, true); t.tick(20100, 1, true);
+    t.release(20200, 1); t.expect({Action::NextTrack}); }
+  { Test t(0, 0, true); t.tick(20000, 0, true); t.release(20100);
+    t.tick(21000); t.expect({}); }
+  { Test t(0xfffffff0u); t.press(0xfffffff5u); t.tick(9989, 0, true);
+    t.expect({Action::LearningToggle}); }
+  { Test t; t.tap(100); t.tap(300); t.press(500); t.tick(10500, 0, true);
+    t.expect({Action::CameraOn, Action::CameraOff, Action::LearningToggle});
+    assert(!t.engine.cameraRequested()); }
+  std::cout << "24 gesture scenarios passed\n";
 }

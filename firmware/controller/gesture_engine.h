@@ -3,12 +3,13 @@
 
 namespace knob {
 enum class Action { VolumeUp, VolumeDown, MuteAtt, NextTrack, PreviousTrack,
-                    CameraOn, CameraOff, LongPressIgnored };
+                    CameraOn, CameraOff, LongPressIgnored, LearningToggle };
 struct Event { Action action; uint32_t steps; };
 struct Timing {
   uint32_t debounceMs = 30;
   uint32_t doubleClickMs = 300;
   uint32_t longPressMs = 700;
+  uint32_t learningHoldMs = 10000;
 };
 
 // No Arduino or hardware dependencies. All outputs are intentions, never GPIO.
@@ -32,6 +33,7 @@ class Gestures {
     camera_ = false;
     initialized_ = pendingClick_ = secondClick_ = usedPress_ = false;
     deferredDelta_ = 0;
+    holdFired_ = false;
   }
 
   bool cameraRequested() const { return camera_; }
@@ -71,6 +73,13 @@ class Gestures {
       turn(delta + deferredDelta_, stableDown_);
       deferredDelta_ = 0;
     }
+    if (stableDown_ && rawDown_ && !usedPress_ && !holdFired_ &&
+        elapsed(now, pressedAt_) >= timing_.learningHoldMs) {
+      pendingClick_ = secondClick_ = false;
+      usedPress_ = holdFired_ = true;
+      if (camera_) { camera_ = false; emit(Action::CameraOff); }
+      emit(Action::LearningToggle);
+    }
     if (pendingClick_ && !rawDown_ && !stableDown_ &&
         elapsed(now, releasedAt_) >= timing_.doubleClickMs) {
       pendingClick_ = false;
@@ -87,7 +96,7 @@ class Gestures {
     secondClick_ = pendingClick_ && elapsed(when, releasedAt_) <= timing_.doubleClickMs;
     if (pendingClick_ && !secondClick_) emit(Action::MuteAtt);
     pendingClick_ = false;
-    usedPress_ = false;
+    usedPress_ = holdFired_ = false;
     pressedAt_ = when;
   }
   void release(uint32_t when) {
@@ -105,7 +114,7 @@ class Gestures {
     }
   }
   void turn(int32_t delta, bool down) {
-    if (!delta) return;
+    if (!delta || holdFired_) return;
     // Turning consumes a pending click; held turns never also trigger mute/camera.
     pendingClick_ = secondClick_ = false;
     if (down) usedPress_ = true;
@@ -118,7 +127,7 @@ class Gestures {
   void *context_;
   Timing timing_;
   bool initialized_ = false, armed_ = false, rawDown_ = false, stableDown_ = false;
-  bool pendingClick_ = false, secondClick_ = false, usedPress_ = false, camera_ = false;
+  bool pendingClick_ = false, secondClick_ = false, usedPress_ = false, camera_ = false, holdFired_ = false;
   uint16_t lastCount_ = 0;
   int32_t deferredDelta_ = 0;
   uint32_t rawChangedAt_ = 0, pressedAt_ = 0, releasedAt_ = 0;

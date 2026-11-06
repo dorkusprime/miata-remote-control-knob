@@ -89,3 +89,9 @@ Required scope: [Camera 1 hardware/firmware plan](camera-control.md).
 ## Latest implementation — 2026-11-06
 
 See [assembled bench results](bench-results-2026-11-05.md) and [controller v3 workflow](gestures.md). Historical checklist descriptions above are evidence of earlier plans, not a reason to repeat already completed strip-continuity tests. Sony learning, integrated physical behavior and power-loss acceptance remain open.
+
+## Learning mode — 2026-11-06
+
+- [x] User uploaded integrated controller and reported knob/LED operation working.
+- [x] Implement ten-second knob hold entry/exit, LED flash feedback and three-second learning holds; host testing and compile recorded in gestures.md.
+- [ ] User uploads v3.2 and verifies Sony Custom learning/recognition; 55 ms learning attempt did not register.
