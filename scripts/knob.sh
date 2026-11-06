@@ -5,7 +5,7 @@ ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$ROOT"
 usage() {
   echo 'Usage: scripts/knob.sh build|size [controller|diagnostic|interface]' >&2
-  echo '       scripts/knob.sh upload [controller|diagnostic|interface] [--port PORT]' >&2
+  echo '       scripts/knob.sh upload [controller|diagnostic|interface] [--port PORT] [--dry-run]' >&2
   echo '       scripts/knob.sh monitor [--port PORT] [--raw]' >&2
   echo '       scripts/knob.sh console [--port PORT]' >&2
   echo '       scripts/knob.sh raw-monitor PORT' >&2
@@ -21,10 +21,17 @@ case "${1:-}" in
       *) TARGET=$1; shift ;;
     esac
     PORT=
-    if [ "$#" -gt 0 ]; then
-      [ "$ACTION" = upload ] && [ "$#" -eq 2 ] && [ "$1" = --port ] && [ -n "$2" ] || usage
-      PORT=$2
-    fi
+    DRY_RUN=false
+    while [ "$#" -gt 0 ]; do
+      [ "$ACTION" = upload ] || usage
+      case "$1" in
+        --port)
+          [ "$#" -ge 2 ] && [ -n "$2" ] || usage
+          PORT=$2; shift 2 ;;
+        --dry-run) DRY_RUN=true; shift ;;
+        *) usage ;;
+      esac
+    done
     case "$TARGET" in controller|diagnostic|interface) ;; *) usage ;; esac
     FQBN=$(python3 -c 'import json; print(json.load(open("firmware/toolchain.json"))["fqbn"])')
     BUILD="$ROOT/build/$TARGET-picotool"
@@ -65,9 +72,13 @@ if ports:
 ' "$FQBN")
     fi
     # Delegate reset, mode transition and upload to the core-provided recipe.
-    # This property changes only the executable directory, not the recipe.
+    # CLI upload overrides use the flattened tool key (cmd), not tools.picotool.cmd.
+    # This changes only the executable directory, not the recipe.
     set -- upload --fqbn "$FQBN" --input-dir "$BUILD" --verbose \
-      --upload-property "tools.picotool.cmd=$(dirname "$PICOTOOL")"
+      --upload-property "cmd=$(dirname "$PICOTOOL")"
+    if [ "$DRY_RUN" = true ]; then
+      set -- "$@" --dry-run
+    fi
     if [ -n "$PORT" ]; then
       echo "Arduino CLI upload via $PORT (core Picotool recipe)"
       set -- "$@" --port "$PORT"

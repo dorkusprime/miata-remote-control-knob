@@ -65,7 +65,7 @@ else:
         self.assertEqual(args[args.index('--input-dir')+1], str(self.root / 'build/controller-picotool'))
         self.assertEqual(args[args.index('--port')+1], '/dev/cu.usbmodemTEST')
         self.assertIn('--verbose', args)
-        self.assertEqual(args[args.index('--upload-property')+1], 'tools.picotool.cmd='+str((self.root/'fake tool').resolve()))
+        self.assertEqual(args[args.index('--upload-property')+1], 'cmd='+str((self.root/'fake tool').resolve()))
         self.assertIn('Memory report', result.stdout)
 
     def test_explicit_port_and_default_target(self):
@@ -102,3 +102,22 @@ else:
         for args in [('build', '--port', '/dev/fake'), ('upload', 'bogus'), ('upload', '--port')]:
             self.assertNotEqual(self.run_wrapper(*args).returncode, 0)
         self.assertFalse((self.root/'cli-args.json').exists())
+
+
+@unittest.skipUnless(sys.platform == 'darwin' and (ROOT / '.tools/bin/arduino-cli').exists(), 'Project macOS CLI not installed')
+class RealCliRecipeTests(unittest.TestCase):
+    def test_real_cli_expands_pinned_executable_without_hardware(self):
+        # Real CLI, real installed core and real wrapper; dry run plus a nonexistent
+        # port ensure no uploader execution or access to the attached board.
+        if not (ROOT / 'build/controller-picotool/controller.ino.uf2').exists():
+            self.skipTest('Controller artifact not built')
+        result = subprocess.run(['sh', str(ROOT / 'scripts/knob.sh'), 'upload', 'controller',
+                                 '--port', '/dev/NO-HARDWARE-TEST', '--dry-run'],
+                                capture_output=True, text=True, timeout=20)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        command_lines = [line for line in result.stdout.splitlines() if '" load "' in line]
+        self.assertEqual(len(command_lines), 1, result.stdout)
+        self.assertTrue(command_lines[0].startswith('"' + str(ROOT / '.tools/picotool-host/picotool') + '" load '),
+                        command_lines[0])
+        self.assertTrue(command_lines[0].endswith(' -f -x'), command_lines[0])
+        self.assertNotIn('/pqt-picotool/', command_lines[0])
