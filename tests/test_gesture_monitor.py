@@ -56,6 +56,17 @@ class MonitorTests(unittest.TestCase):
         data["learning_mode"] = True
         self.assertIn("LEARNING MODE", renderer.render(json.dumps(data)))
 
+    def test_calibration_table_and_request_code(self):
+        codes = dict(volume_up=255, volume_down=0, mute_att=238, next_track=248, previous_track=215)
+        line = json.dumps(dict(v=1, type="calibration", codes=codes))
+        self.assertIn("mute_att=238", monitor.Renderer().render(line))
+        codes["mute_att"] = 256
+        self.assertEqual(monitor.Renderer().render(json.dumps(dict(v=1, type="calibration", codes=codes))),
+                         "Invalid calibration message.")
+        data = json.loads(gesture())
+        data.update(simulated=False, accepted=True, pot_code=255)
+        self.assertIn("(code 255)", monitor.Renderer().render(json.dumps(data)))
+
     def test_unknown_action(self):
         data = json.loads(gesture()); data["action"] = ["bad"]
         self.assertEqual(monitor.Renderer().render(json.dumps(data)), "Unknown gesture action.")
@@ -115,6 +126,33 @@ class MonitorTests(unittest.TestCase):
                                  capture_output=True, timeout=3)
         self.assertEqual(process.returncode, 0, process.stderr)
         self.assertIn("[SIM] Previous track × 2", process.stdout)
+
+    def test_interactive_console_with_virtual_port(self):
+        try:
+            monitor.serial_modules()
+        except RuntimeError:
+            self.skipTest("Project toolchain not installed")
+        master, slave = pty.openpty()
+        process = subprocess.Popen([sys.executable, str(ROOT / "scripts/gesture-monitor.py"),
+                                    "--interactive", "--port", os.ttyname(slave)],
+                                   stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            self.assertTrue(select.select([master], [], [], 3)[0], "No help request")
+            self.assertIn(b"h\n", os.read(master, 1024))
+            process.stdin.write(b"set mute_att 230\n"); process.stdin.flush()
+            self.assertTrue(select.select([master], [], [], 3)[0], "No calibration command")
+            self.assertEqual(os.read(master, 1024), b"set mute_att 230\n")
+            codes = dict(volume_up=255, volume_down=0, mute_att=230, next_track=248, previous_track=215)
+            os.write(master, (json.dumps(dict(v=1, type="calibration", codes=codes)) + "\n").encode())
+            collected = b""
+            deadline = time.monotonic() + 3
+            while b"mute_att=230" not in collected and time.monotonic() < deadline:
+                if select.select([process.stdout], [], [], 0.1)[0]:
+                    collected += os.read(process.stdout.fileno(), 4096)
+            self.assertIn(b"mute_att=230", collected)
+        finally:
+            process.terminate(); process.communicate(timeout=3)
+            os.close(master); os.close(slave)
 
     def test_serial_monitor_with_virtual_port(self):
         # Exercise actual pyserial and the process without opening the physical XIAO.

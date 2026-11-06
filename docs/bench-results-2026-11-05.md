@@ -79,3 +79,9 @@ The user identified a loose Twist ground connector as the cause of its no-ACK in
 Loaded Input 1 measurements (H5 to H4, DC volts): idle **3.27 V**; ordinary right turn **3.19 V**; held-left initially reported 3.17 V, then corrected to **3.06 V** after allowing more settling time. The user noted that six seconds is barely enough for the meter to settle. The Sony still reported Volume Down. These observations support differing analog outputs but do not measure Sony's recognition thresholds.
 
 At the user's request, controller v3.3 enables only two steering codes at opposite endpoints: right/Volume Up 255, left/Volume Down 0. Other steering outputs are disabled for this test. Six-second holds are retained. Estimates and wiper-current constraints are documented in gestures.md; physical endpoint/current/recognition acceptance is pending. No wiring change is requested and the agent has not flashed the board.
+
+## Endpoint recognition and expanded calibration — 2026-11-06
+
+After an interruption in which output did not change and learning appeared to end, the user suspected a jostled cable and then confirmed: **Sony properly distinguishes Volume Down from Volume Up** with the endpoint profile (left code 0, right code 255). This supersedes the earlier pending endpoint-recognition status. No final endpoint loaded voltages were reported, and the suspected cable event does not establish a firmware cause. Repeated software-only upload reliability remains unverified.
+
+At the user's request to find Sony's learning limits, controller v3.4 keeps both endpoints and introduces Mute 238, Next Track 248, Prev Track 215. These are voltage-spaced estimates, not receiver-validated assignments. Serial `codes`, RAM-only `set ACTION N`, and six-second raw `probe N` allow testing boundaries without repeated firmware uploads. First receiver test: Mute between the proven endpoints. See gestures.md for procedure and limitations. No hardware was flashed by the agent.

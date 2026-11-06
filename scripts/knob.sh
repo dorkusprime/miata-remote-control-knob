@@ -6,6 +6,7 @@ cd "$ROOT"
 usage() {
   echo 'Usage: scripts/knob.sh build|upload|size [controller|diagnostic|interface]' >&2
   echo '       scripts/knob.sh monitor [--port PORT] [--raw]' >&2
+  echo '       scripts/knob.sh console [--port PORT]' >&2
   echo '       scripts/knob.sh raw-monitor PORT' >&2
   exit 1
 }
@@ -41,6 +42,10 @@ case "${1:-}" in
     # Preserve the previous positional-port spelling too.
     case "${1:-}" in /dev/*) exec python3 "$ROOT/scripts/gesture-monitor.py" --port "$@" ;; esac
     exec python3 "$ROOT/scripts/gesture-monitor.py" "$@"
+    ;;
+  console)
+    shift
+    exec python3 "$ROOT/scripts/gesture-monitor.py" --interactive "$@"
     ;;
   raw-monitor)
     [ "$#" -eq 2 ] || usage

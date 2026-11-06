@@ -4,6 +4,7 @@ import argparse
 import datetime
 import json
 import pathlib
+import select
 import sys
 import time
 
@@ -81,7 +82,16 @@ class Renderer:
             if action in ("volume_up", "volume_down", "next_track", "previous_track"):
                 label += f" × {steps}"
             prefix = "[SIM] " if simulated else ("[REQUEST] " if event["accepted"] else "[DROPPED] ")
+            code = event.get("pot_code")
+            if not simulated and type(code) is int and 0 <= code <= 255:
+                label += f" (code {code})"
             return prefix + label
+        if kind == "calibration":
+            codes = event.get("codes")
+            names = ("volume_up", "volume_down", "mute_att", "next_track", "previous_track")
+            if not isinstance(codes, dict) or any(type(codes.get(n)) is not int or not 0 <= codes[n] <= 255 for n in names):
+                return "Invalid calibration message."
+            return "Codes (RAM only): " + ", ".join(f"{n}={codes[n]}" for n in names)
         if kind == "status":
             return clean(event.get("message", ""))
         if kind == "heartbeat":
@@ -151,10 +161,24 @@ def monitor(args):
                 connection.rts = True
                 connection.open()
                 announced_wait = False
+                if args.interactive:
+                    # Discard commands entered before connection; never replay them.
+                    while select.select([sys.stdin], [], [], 0)[0]:
+                        if not sys.stdin.readline(): return
                 output(f"Connected to {port}; awaiting firmware status. Ctrl+C exits.")
                 connection.write(b"h\n")
+                if args.interactive:
+                    output("Enter commands: codes; set ACTION 0..255; probe 0..255; learn ACTION; enable; release. Ctrl+C exits.")
                 renderer, lines = Renderer(args.raw), Lines()
                 while True:
+                    if args.interactive and select.select([sys.stdin], [], [], 0)[0]:
+                        line = sys.stdin.readline()
+                        if not line: return
+                        command = line.rstrip("\r\n")
+                        if command and len(command) <= 47 and all(32 <= ord(c) <= 126 for c in command):
+                            connection.write((command + "\n").encode("ascii"))
+                        elif command:
+                            output("Command must be ASCII and at most 47 characters; nothing sent.")
                     chunk = connection.read(min(connection.in_waiting or 1, 512))
                     if not chunk and not pathlib.Path(port).exists():
                         raise serial.SerialException("USB serial port disappeared")
@@ -168,6 +192,7 @@ def monitor(args):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--port", help="Serial port; otherwise detect the sole matching XIAO/RP2040")
+    parser.add_argument("--interactive", action="store_true", help="Also send commands typed into this terminal")
     parser.add_argument("--raw", action="store_true", help="Also show raw input samples and legacy text")
     parser.add_argument("--stdin", action="store_true", help="Render JSONL from stdin instead of a device")
     args = parser.parse_args()

@@ -45,13 +45,9 @@ int main() {
   { uint8_t code = 0;
     assert(sonyCode(Action::VolumeUp, code) && code == 255);
     assert(sonyCode(Action::VolumeDown, code) && code == 0);
-    for (const auto action : {Action::MuteAtt, Action::NextTrack, Action::PreviousTrack}) {
-      assert(!sonyCode(action, code));
-      auto disabled = makeOutput(); disabled.enable();
-      assert(!disabled.submit({action, 1}, 0));
-      assert(!disabled.learn(action, 0));
-      disabled.tick(100); assert(codes.empty() && !relay);
-    }
+    assert(sonyCode(Action::MuteAtt, code) && code == 238);
+    assert(sonyCode(Action::NextTrack, code) && code == 248);
+    assert(sonyCode(Action::PreviousTrack, code) && code == 215);
     assert(!sonyCode(Action::CameraOn, code));
     auto out = makeOutput(); out.enable();
     assert(!out.submit({Action::LongPressIgnored, 1}, 0));
@@ -88,5 +84,38 @@ int main() {
     out.enable(); assert(!out.learn(Action::CameraOn, 10));
     out.learn(Action::VolumeDown, 10); out.tick(800);
     assert(!relay && !out.enabled()); }
-  std::cout << "13 Sony output scenarios passed\n";
+  { auto out = makeOutput(); out.enable();
+    out.submit({Action::VolumeUp, 3}, 0); out.tick(0); out.tick(1); assert(relay);
+    assert(out.setCode(Action::VolumeUp, 240));
+    assert(!relay && !camera && out.pending() == 0 && out.enabled());
+    out.submit({Action::VolumeUp, 1}, 10); out.tick(10); assert(codes.back() == 240);
+    assert(out.learn(Action::VolumeUp, 20) && codes.back() == 240);
+    assert(!out.setCode(Action::VolumeUp, 256));
+    assert(!out.setCode(Action::CameraOn, 4));
+    uint8_t code = 0; assert(out.codeFor(Action::VolumeUp, code) && code == 240);
+    SonyOutput fresh(pot, setRelay, setCamera);
+    assert(fresh.codeFor(Action::VolumeUp, code) && code == 255); }
+  { for (const auto &entry : kDefaultCommands) {
+      Action action; uint8_t code = 0;
+      const std::string text = std::string(entry.name) + " 123";
+      assert(parseCodeSetting(text.c_str(), action, code) && action == entry.action && code == 123);
+    }
+    Action action; uint8_t code = 0;
+    for (const char *bad : {"", "mute_att", "mute_att ", "mute_att -1", "mute_att 256",
+                           "mute_att 99999999999999999999", "mute_att 2 extra", "mute_att 1x", "camera_on 2"})
+      assert(!parseCodeSetting(bad, action, code));
+    assert(parseCodeSetting("volume_up 0", action, code) && code == 0);
+    assert(parseCodeSetting("volume_up 255", action, code) && code == 255); }
+  { for (const auto &entry : kDefaultCommands) {
+      auto out = makeOutput(); out.enable(); assert(out.learn(entry.action, 0));
+      assert(codes.back() == entry.code); out.tick(1); assert(relay);
+      out.tick(6001); assert(!relay && !out.enabled());
+    } }
+  { auto out = makeOutput();
+    assert(!out.learnCode(100, 0)); out.enable();
+    assert(!out.learnCode(256, 0)); assert(out.learnCode(230, 0));
+    assert(codes.back() == 230); out.tick(1); assert(relay);
+    out.tick(6001); assert(!relay);
+    uint8_t code; assert(out.codeFor(Action::MuteAtt, code) && code == 238); }
+  std::cout << "17 Sony output scenarios passed\n";
 }

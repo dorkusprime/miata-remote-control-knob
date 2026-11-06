@@ -95,3 +95,14 @@ See [assembled bench results](bench-results-2026-11-05.md) and [controller v3 wo
 - [x] User uploaded integrated controller and reported knob/LED operation working.
 - [x] Implement ten-second knob hold entry/exit, LED flash feedback and three-second learning holds; host testing and compile recorded in gestures.md.
 - [ ] User uploads v3.2 and verifies Sony Custom learning/recognition; 55 ms learning attempt did not register.
+
+## Current Sony calibration — 2026-11-06
+
+- [x] User confirms Sony distinguishes code 0 / Volume Down and code 255 / Volume Up.
+- [x] Restore three interior steering candidates spaced by estimated input voltage, retaining both endpoint codes.
+- [x] Add RAM-only serial assignment changes and raw six-second probes; no reflashing needed per trial.
+- [ ] User uploads v3.4 and tests Mute first, then Next/Previous; record distinct/colliding/ignored responses.
+- [ ] Map recognition boundaries relative to learned assignments and establish the usable number of distinct commands.
+- [ ] Verify ordinary short-pulse operation for accepted commands, repeat software upload after cold startup, and complete power-transition acceptance.
+
+This current status supersedes older pending endpoint and initial learning-mode upload items; those historical entries retain their original context.

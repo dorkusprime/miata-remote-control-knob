@@ -1,10 +1,10 @@
 # Sony interface — through-hole prototype
 
-Selected 2026-10-27; assembled and bench-tested through 2026-11-06. The user verified GPIO camera assertion/release, relay drive, and three output resistances. Controller v3 integrates gestures with this interface; physical testing of that build, Sony learning and power-transition acceptance remain pending. Supersedes the [AD8400 version](archive/sony-interface-ad8400.md) and earlier five-relay diagrams. Use the current pad map and learned-code table below.
+Selected 2026-10-27; assembled and bench-tested through 2026-11-06. The user verified GPIO camera assertion/release, relay drive, and three output resistances. Controller v3 integrates gestures with this interface; the user verified integrated gestures and Sony recognition of the two volume endpoints. Interior assignments and power-transition acceptance remain pending. Supersedes the [AD8400 version](archive/sony-interface-ad8400.md) and earlier five-relay diagrams. Use the current pad map and learned-code table below.
 
-## Active firmware profile: two-command endpoint test
+## Active firmware profile: five-command calibration
 
-Controller v3.3 temporarily replaces the five-code candidates below: Volume Up/right = **255**, Volume Down/left = **0**. Mute and track resistance outputs are disabled. See [test procedure and current estimates](gestures.md#active-two-command-test--controller-v33). The six-second learning holds and ten-second mode toggle remain. The board and fixed 2.7 kohm resistor are unchanged. Receiver endpoint recognition and actual low-end current are pending measurement.
+Controller v3.4 preserves Sony-verified Volume Up/right = **255** and Volume Down/left = **0**. It adds Mute **238**, Next Track **248**, and Prev Track **215**, chosen for approximately separated input voltages. These three interior codes remain unverified. See the [current table and live calibration console](gestures.md#active-five-command-calibration--controller-v34). Six-second learning holds and the ten-second mode toggle remain. The board and fixed 2.7 kohm resistor are unchanged.
 
 ## Complete prototype BOM
 
@@ -90,13 +90,13 @@ Eight wires serve the complete remote-plus-camera design. D9/MISO remains unused
 
 Initialize relay enable LOW and CS HIGH before configuring outputs. While the relay is open, write MCP41050 command byte 0x11 followed by the calibrated 8-bit wiper value using SPI mode 0, MSB first. Wait initially 1 ms, enable relay 55 ms, then disable it at least 55 ms. Use nonblocking timers and clear queued commands on reset/fault; the controller backend includes a five-second watchdog. Only one command at a time. No chip readback or Sony acknowledgement is available.
 
-Sony Custom learning allows our own separated codes. Use the table below instead of the historical external-controller resistance targets. Actual learning and recognition are still pending.
+Sony Custom learning accepts the tested volume endpoints. Use the active profile above; the original five-code table below is historical evidence of the collision, not the current mapping.
 
 The relay input circuit is unchanged: about 10.5 mA nominal LED current from 5 V, with approximately 2.5 mA GPIO base drive. Allow 20 mA additional interface supply budget pending measurement. Use >=4 mA GPIO pad drive for the relay base signal. The HCT125's TTL inputs accept 3.3 V; its outputs meet the pot's 5 V logic requirement.
 
 ## Acceptance boundaries before installation
 
-- **MCP41050 wiper current is limited to ±1 mA.** The fixed 2.7 kohm resistor alone does not guarantee that at every code or with an ideal 5 V source. Only enable codes meeting this limit with margin. The current learned-code candidates keep measured output resistance at or above 16.4 kohm, replacing the previous 4.4 kohm ATT candidate. Their estimated steady-state current is below the prototype 0.5 mA target; Sony learning is pending. See the code table below.
+- **MCP41050 wiper current is limited to ±1 mA.** The fixed 2.7 kohm resistor alone does not guarantee that at every code or with an ideal 5 V source. Only enable codes meeting this limit with margin. The active profile extends to code 255, approximately 3.0 kohm total resistance and 0.8 mA with the measured Sony source. This is below 1 mA but exceeds the original conservative 0.5 mA prototype target. Endpoint recognition is verified; actual endpoint current and transitions still need measurement. See the current estimates in gestures.md.
 - All pot analog terminals must remain within GND and its actual VDD. Sony Input 1 measured approximately +3.3 V with an estimated 1.1–1.2 kohm source resistance from one load point; power transitions and all operating conditions remain uncharacterized.
 - At steady reset/power-off the normally-open contact releases. Abrupt power loss remains unresolved until tested: optical release can take milliseconds while the pot supply falls sooner. A transient back-power path is possible. Use a simulated Sony source and scope/appropriate measurements before installation approval; revise sequencing if necessary. This BOM is for the bench prototype, not a claim that those transitions are solved.
 - Calibrate with Sony physically disconnected; solderless duplication is optional. Resistance-mode measurements are only for the port with no external voltage applied. Energized simulated-input/Sony tests use voltage mode.
@@ -115,7 +115,7 @@ A [complete proposed ElectroCookie Mini pad allocation](../hardware/sony-remote/
 
 The assembled circuit grounds **PA, pin 5**, and leaves **PB, pin 7** open. Earlier documentation incorrectly interchanged the terminal names; the physical pin wiring stays unchanged. Microchip DS11195C Table 3-1 confirms these names. The matching estimate is `Rtotal ≈ R3 + Rcontact + Rwiper + (256 − code) × RAB / 256`: resistance decreases with increasing code, as observed.
 
-The Sony learns the following five distinct candidate codes; do not assume its recognition windows until tested. Codes are fixed in `firmware/controller/sony_output.h`.
+The following **historical** profile produced Sony assignment collisions. Do not build firmware from this table. Current defaults are in `firmware/controller/sony_output.h`; v3.4 allows RAM-only adjustments over serial.
 
 | Gesture / Sony learning assignment | Code | Output resistance |
 | --- | ---: | --- |
@@ -125,9 +125,9 @@ The Sony learns the following five distinct candidate codes; do not assume its r
 | Held positive turn / Next Track | 160 | about 23.2 kohm, interpolated |
 | Held negative turn / Prev Track | 192 | 16.4 kohm measured |
 
-The end measurements imply about 54.6 kohm full pot resistance. At the measured minimum 16.4 kohm, a 3.3 V source would supply at most about 0.20 mA, ignoring its internal resistance. Even an ideal 5 V source would supply about 0.31 mA. These are steady-state estimates, not power-transition validation. That earlier profile wrote codes 64–192; the active two-command endpoint test above supersedes it.
+The end measurements imply about 54.6 kohm full pot resistance. At the measured minimum 16.4 kohm, a 3.3 V source would supply at most about 0.20 mA, ignoring its internal resistance. Even an ideal 5 V source would supply about 0.31 mA. These are steady-state estimates, not power-transition validation. That earlier profile wrote codes 64–192; the active five-command calibration profile above supersedes it.
 
-For Sony Custom assignment, use [knob-operated learning mode](gestures.md#knob-operated-learning--controller-v32): ten-second stationary hold toggles the mode, and each mapped gesture holds its code for six seconds rather than sending normal short pulses. Each learning hold releases automatically and ignores intervening gestures. The first 55 ms learning attempt did not register; longer-hold acceptance remains pending.
+For Sony Custom assignment, use [knob-operated learning mode](gestures.md#knob-operated-learning--controller-v32): ten-second stationary hold toggles the mode, and each mapped gesture holds its code for six seconds rather than sending normal short pulses. Each learning hold releases automatically and ignores intervening gestures. The first 55 ms learning attempt did not register; six-second holds subsequently allowed the receiver to distinguish the volume endpoints.
 
 The implemented backend uses a bounded eight-step FIFO: relay open → program → settle at least 1 ms → assert 55 ms → release at least 55 ms. Each detent is one pulse. An event that cannot fit is rejected as a whole; queued commands older than 750 ms are discarded. Camera requests drive the separate GPIO and are unaffected by steering-pot changes. Reset, boot command, explicit release and detected Twist failures release both outputs and discard queued work. Standalone operation does not require a serial connection.
 

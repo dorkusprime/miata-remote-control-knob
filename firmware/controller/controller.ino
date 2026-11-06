@@ -90,16 +90,18 @@ void gestureEvent(const knob::Event &event, void *) {
     accepted = true;
   } else if (learningMode) {
     uint8_t ignored;
-    if (!output.learning() && knob::sonyCode(event.action, ignored)) {
+    if (!output.learning() && output.codeFor(event.action, ignored)) {
       output.enable();
       accepted = output.learn(event.action, millis());
       if (accepted) feedback.learningCommand(millis());
     }
   } else accepted = output.submit(event, millis());
-  char fields[150];
+  uint8_t requestedCode = 0;
+  const int code = output.codeFor(event.action, requestedCode) ? requestedCode : -1;
+  char fields[170];
   snprintf(fields, sizeof(fields),
-      ",\"action\":\"%s\",\"steps\":%lu,\"simulated\":false,\"accepted\":%s",
-      actionName(event.action), static_cast<unsigned long>(event.steps), accepted ? "true" : "false");
+      ",\"action\":\"%s\",\"steps\":%lu,\"simulated\":false,\"accepted\":%s,\"pot_code\":%d",
+      actionName(event.action), static_cast<unsigned long>(event.steps), accepted ? "true" : "false", code);
   emitEvent("gesture", fields);
 }
 knob::Gestures gestures(gestureEvent);
@@ -121,13 +123,13 @@ void heartbeat() {
 }
 
 void help() {
-  status("Gesture controller v3.3.1; USB maintenance: Picotool + boot command; Sony/camera hardware backend");
-  status("Two-command test: right=Volume Up code 255; left=Volume Down code 0; mute/track outputs disabled");
+  status("Gesture controller v3.4; USB maintenance: Picotool + boot command; Sony/camera hardware backend");
+  status("Voltage-spaced learning test: volume=255/0; mute=238; next=248; previous=215");
   status("Debounce=30ms; double click=300ms from first release to second press; long hold=700ms");
   status("Serial (Enter): help/h, status/s, release, enable, boot; outputs are real requests, receiver acceptance unverified");
   status("LED: full blue idle; purple held; white volume pulse; green click; amber camera-gesture pulse only");
   status("Hold still for 10s: toggle learning. Entry=3 amber flashes; exit=3 blue; assignment=2 green flashes");
-  status("Learning: learn volume_up / volume_down; hold 6s; enable resumes knob");
+  status("Calibration: codes; set ACTION 0..255; probe 0..255; learn ACTION; RAM-only settings; holds 6s");
   heartbeat();
 }
 
@@ -233,6 +235,17 @@ void maintenanceStatus() {
     Serial.write(reinterpret_cast<const uint8_t *>(record), length);
 }
 
+void reportCodes() {
+  char fields[170];
+  uint8_t values[knob::kCommandCount] = {};
+  for (uint8_t i = 0; i < knob::kCommandCount; ++i)
+    output.codeFor(knob::kDefaultCommands[i].action, values[i]);
+  snprintf(fields, sizeof(fields),
+      ",\"codes\":{\"volume_up\":%u,\"volume_down\":%u,\"mute_att\":%u,\"next_track\":%u,\"previous_track\":%u},\"persistent\":false",
+      values[0], values[1], values[2], values[3], values[4]);
+  emitEvent("calibration", fields);
+}
+
 void serialCommand(const char *text) {
   if (!strcmp(text, "boot")) {
     suspended = true;
@@ -242,12 +255,34 @@ void serialCommand(const char *text) {
     status("BOOTSEL requested; waiting for serial close, then disconnecting USB");
   } else if (!strcmp(text, "help") || !strcmp(text, "h") || !strcmp(text, "?")) help();
   else if (!strcmp(text, "status") || !strcmp(text, "s")) { maintenanceStatus(); heartbeat(); }
+  else if (!strcmp(text, "codes")) reportCodes();
+  else if (!strncmp(text, "set ", 4)) {
+    knob::Action action; uint8_t value;
+    if (knob::parseCodeSetting(text + 4, action, value)) {
+      output.setCode(action, value);
+      serialLearning = false;
+      reportCodes();
+    } else {
+      suspended = true; learningMode = serialLearning = false;
+      feedback.clear(); output.release(); gestures.cancel();
+      status("Invalid setting; use set ACTION 0..255. Outputs suspended; enable resumes");
+    }
+  }
+  else if (!strncmp(text, "probe ", 6)) {
+    suspended = true; learningMode = false; serialLearning = true;
+    output.release(); gestures.cancel(); feedback.setLearning(false, millis());
+    uint8_t code;
+    if (interfaceReady && connected && knob::parsePotCode(text + 6, code)) {
+      output.enable(); output.learnCode(code, millis());
+      status("Probe code held for 6s, then released. Knob suspended; enable resumes");
+    } else status("Invalid probe or Twist unavailable; outputs released");
+  }
   else if (!strncmp(text, "learn ", 6)) {
     suspended = true; learningMode = false; serialLearning = true;
     feedback.setLearning(false, millis()); output.release(); gestures.cancel();
-    const knob::Action choices[] = {knob::Action::VolumeUp, knob::Action::VolumeDown};
-    for (const knob::Action action : choices) {
-      if (!strcmp(text + 6, actionName(action)) && interfaceReady && connected) {
+    for (const auto &entry : knob::kDefaultCommands) {
+      const knob::Action action = entry.action;
+      if (!strcmp(text + 6, entry.name) && interfaceReady && connected) {
         output.enable();
         output.learn(action, millis());
         status("Learning resistance held for 6s, then released. Knob suspended; enable resumes");

@@ -1,16 +1,47 @@
 # Gesture controller and live monitor
 
-Controller v3 connects the existing gesture engine and LED feedback to the assembled Sony interface. The original Twist diagnostic and the separate interface bench diagnostic remain available. Gesture and LED behavior was previously user-verified; the integrated build still needs user upload and receiver learning. See [current code assignments](sony-interface.md#calibration-model-and-firmware-contract).
+Controller v3 connects the existing gesture engine and LED feedback to the assembled Sony interface. The original Twist diagnostic and the separate interface bench diagnostic remain available. Integrated gestures and the two endpoint Sony assignments are user-verified; the expanded five-command profile needs user upload and receiver testing. See [current code assignments](sony-interface.md#calibration-model-and-firmware-contract).
 
-## Active two-command test — controller v3.3
+## Active five-command calibration — controller v3.4
 
-Only steering Volume Up and Volume Down are enabled. Positive/right turn uses code **255** (minimum output resistance); negative/left uses code **0** (maximum). Click and held-turn intentions still appear in the monitor/LED feedback but are rejected by the steering driver. Camera remains a separate circuit. Ten-second learning-mode toggle and six-second assignment holds remain available. Serial learning accepts only `learn volume_up` and `learn volume_down`.
+Sony now distinguishes the two endpoint assignments, Volume + at code 255 and Volume - at code 0 (user observation, 2026-11-06). These endpoints stay unchanged. Three interior candidates are spaced by estimated **input voltage**, rather than evenly spaced pot codes, because the Sony input's voltage divider is nonlinear.
 
-At the Sony learning screen, remove the previous Volume Down assignment before teaching the new two-command mapping; use a steering-learning reset if the receiver offers it, not a whole-unit factory reset. Enter knob learning mode and assign the two directions separately, allowing each six-second hold to release. Test each direction before restoring more commands. These endpoint settings have not yet been physically tested.
+| Gesture / Sony assignment | Code | Estimated loaded Input 1 voltage |
+| --- | ---: | ---: |
+| Right turn / Volume + | 255 | 2.4 V |
+| Held right turn / Next Track | 248 | 2.6 V |
+| Single click / Mute | 238 | 2.8 V |
+| Held left turn / Prev Track | 215 | 3.0 V |
+| Left turn / Volume - | 0 | 3.2 V |
 
-Estimated endpoint totals are about 3.0 kohm at code 255 and 57.5 kohm at code 0, extrapolated from measured 64/192 outputs and R3. With the user's 3.27 V baseline and roughly 1.1–1.2 kohm inferred Sony source resistance, expected loaded voltages are roughly 2.4 V and 3.20–3.21 V. Estimated low-end current is about 0.8 mA: below the MCP41050 specified ±1 mA wiper limit but above the old conservative 0.5 mA prototype target. This is specific to the measured Sony input, not approval for an ideal 5 V source. Measure the low-end loaded voltage/current; do not reduce R3 for this test.
+Only the two endpoints are receiver-verified. Interior codes and all voltages in this table are estimates, not measured thresholds or proof of five distinct Sony assignments. Camera remains a separate output. No wiring change is needed. Existing volume assignments can stay; try teaching **Mute first**, then Next/Previous separately if Mute is distinct.
 
-The earlier five-code instructions below describe the previous profile; use only Volume + and Volume - with this build.
+The 64/192 resistance measurements fit `Rtotal_kohm ≈ 57.35 − 0.21328125 × code`. With the measured 3.27 V open input and an inferred 1.1–1.2 kohm source resistance, `Vinput ≈ 3.27 × Rtotal / (Rsource + Rtotal)`. Endpoint totals are approximately 3.0 and 57.4 kohm. Estimated low-end current is about 0.8 mA, below the MCP41050 ±1 mA limit but above the original conservative 0.5 mA prototype target. This estimate applies to this measured Sony input; keep R3 unchanged. Actual endpoint voltage/current and power-transition acceptance remain open.
+
+### Live calibration console
+
+After the user builds/uploads controller v3.4, close other serial monitors and run:
+
+```sh
+scripts/knob.sh console
+```
+
+The console displays translated gestures and sends commands typed with Enter. It reconnects after USB loss and discards commands typed before connection. It does not upload firmware.
+
+| Command | Effect |
+| --- | --- |
+| `codes` | Show the five current assignments |
+| `set mute_att 230` | Change Mute to code 230; release active outputs and discard queued pulses |
+| `learn mute_att` | Hold the configured Mute code for six seconds, then release |
+| `probe 230` | Hold raw code 230 for six seconds without changing any assignment |
+| `enable` | Exit serial calibration and resume normal knob control |
+| `release` | Release outputs and suspend normal control |
+
+`set` and `learn` accept `volume_up`, `volume_down`, `mute_att`, `next_track`, or `previous_track`. Codes must be decimal 0–255. Settings are **RAM-only**: reboot restores the table above. A `set` command releases active outputs but preserves the prior enabled/suspended state and the knob's local learning mode. `learn`/`probe` suspend normal gestures until `enable`; keep the console connected during their holds. A detected Twist failure releases outputs. No command reads Sony's recognition state.
+
+To find boundaries, leave the voltage probes fixed on H4/H5 if desired. Select an unassigned function in Sony's learning screen, then issue one `probe N`. Record the code, voltage if measured, and Sony's response (distinct assignment, collision with an existing assignment, or ignored). Wait for release before the next probe. Narrow intervals between different responses by testing intermediate codes. An accepted assignment changes Sony's learning table; record or clear that trial assignment before comparing later probes. This manual procedure maps behavior relative to the current learned assignments, not a guaranteed universal threshold. Do not automatically sweep codes or interpret the green LED as a Sony acknowledgment.
+
+The former v3.3 two-command profile and original 64/96/128/160/192 profile are superseded. The original profile produced collisions; evenly spaced resistance was insufficient.
 
 ## Knob-operated learning — controller v3.2
 
@@ -42,7 +73,7 @@ Build with `scripts/knob.sh build controller`, then the user uploads with `scrip
 
 ## Current mapping
 
-The gesture recognition defaults were user bench-verified through the earlier simulation; Sony recognition remains untested.
+Gesture recognition is user-verified. Sony distinguishes the volume endpoints; the three interior assignments remain candidates.
 
 | Input | Intention |
 | --- | --- |
@@ -187,3 +218,7 @@ Controller v3.3 compiles for the XIAO (Arduino section summary 71,236 bytes; sta
 ## Controller v3.3.1 USB maintenance change
 
 The active two-command test profile is unchanged. The serial `boot` command now releases outputs and schedules a USB detach followed by ROM entry after allowing the uploader to close its serial handle. No gesture processing resumes once boot is pending. See [upload recovery details](interface-diagnostic.md#explicit-usb-detach-before-controller-bootsel--2026-11-06). This change is intended to improve software update reliability; actual repeat-upload acceptance remains pending.
+
+## Five-command calibration verification — 2026-11-06
+
+Controller v3.4 compiled for XIAO RP2040: full flash image **89,496 / 2,093,056 bytes (4.3%)**, static RAM **10,012 / 262,144 bytes (3.8%)**. Passed 24 gesture, 12 LED, 17 Sony-output and 3 USB-maintenance scenarios, plus 60 Python tests. New coverage checks runtime assignment changes, release/queue clearing on reconfiguration, strict code parsing, all five learning assignments, bounded raw probes without altering assignments, calibration rendering and interactive command transmission over a virtual serial port. `git diff --check` passed. The agent did not flash hardware. Interior-code recognition and physical repeat-upload reliability remain pending user observations.
