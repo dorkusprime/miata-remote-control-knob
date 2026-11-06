@@ -1,6 +1,6 @@
 # Through-hole assembly and acceptance
 
-This procedure applies only to the [MCP41050/HCT125/LCC110 circuit](sony-interface.md). Parts ordered 2026-10-27; no assembly or electrical acceptance has been reported. Existing firmware offers gesture simulation, not a hardware calibration command. Steps requiring SPI or relay control wait for a separate diagnostic; do not assume the controller sketch drives these pins.
+This procedure applies only to the [MCP41050/HCT125/LCC110 circuit](sony-interface.md). The board is assembled. Initial electrical results are recorded in [November 5 bench results](bench-results-2026-11-05.md). The separate [interface diagnostic](interface-diagnostic.md) provides gated bench controls for SPI, relay and camera testing.
 
 ## Preparation and orientation
 
@@ -36,7 +36,7 @@ Measure LED current via voltage across the 330 ohm resistor divided by its measu
 
 ## Calibration with Sony disconnected
 
-Use an interface-only diagnostic once implemented. It must start relay-off, set GPIO pad drive appropriately, hold CS inactive, program the pot while disconnected and require an explicit action to close the relay. Current gesture firmware cannot perform these operations.
+Use the [interface diagnostic](interface-diagnostic.md). It must start relay-off, set GPIO pad drive appropriately, hold CS inactive, program the pot while disconnected and require an explicit action to close the relay. Current gesture firmware cannot perform these operations.
 
 With no external voltage source on INPUT1, use resistance mode from INPUT1 to REMOTE_GND. The ICs remain powered for programming and optical activation. Check the meter's resistance-mode test voltage/current first: it must not drive the pot above VDD, below GND or above its ±1 mA wiper limit. If the meter's test conditions are unsuitable or unknown, use a known limited source and voltage measurements instead. Do not probe resistance across a live Sony or simulated-source input.
 

@@ -87,3 +87,7 @@ The original serial upload reported `No drive to deploy`. The user successfully 
 ## Initial diagnostic complete — RGB confirmation
 
 On 2026-10-26 (client local date), the user reported that RGB worked after the r/g/b/o test instructions. Combined with the supplied rotation/button trace and two successful Picotool uploads, this completes the initial functional diagnostic. Gesture commands, installation checks, electrical fault/reset testing, and Sony/camera operation have not been validated by this milestone. Earlier entries used the execution host date; this entry uses the client local date.
+
+## Assembled interface diagnostic
+
+Build with `scripts/knob.sh build interface`. The user uploads with `scripts/knob.sh upload interface`. See [bench commands and wiring](../docs/interface-diagnostic.md).

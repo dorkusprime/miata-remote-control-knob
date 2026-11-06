@@ -4,7 +4,7 @@ set -eu
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$ROOT"
 usage() {
-  echo 'Usage: scripts/knob.sh build|upload|size [controller|diagnostic]' >&2
+  echo 'Usage: scripts/knob.sh build|upload|size [controller|diagnostic|interface]' >&2
   echo '       scripts/knob.sh monitor [--port PORT] [--raw]' >&2
   echo '       scripts/knob.sh raw-monitor PORT' >&2
   exit 1
@@ -13,7 +13,7 @@ case "${1:-}" in
   build|upload|size)
     [ "$#" -le 2 ] || usage
     TARGET=${2:-controller}
-    case "$TARGET" in controller|diagnostic) ;; *) usage ;; esac
+    case "$TARGET" in controller|diagnostic|interface) ;; *) usage ;; esac
     FQBN=$(python3 -c 'import json; print(json.load(open("firmware/toolchain.json"))["fqbn"])')
     BUILD="$ROOT/build/$TARGET-picotool"
     if [ "$1" = build ]; then
