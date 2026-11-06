@@ -1,6 +1,6 @@
 # Gesture controller and live monitor
 
-Controller v3 connects the existing gesture engine and LED feedback to the assembled Sony interface. The original Twist diagnostic and the separate interface bench diagnostic remain available. Integrated gestures and the two endpoint Sony assignments are user-verified; the expanded five-command profile needs user upload and receiver testing. See [current code assignments](sony-interface.md#calibration-model-and-firmware-contract).
+Controller v3 connects the existing gesture engine and LED feedback to the assembled Sony interface. The original Twist diagnostic and the separate interface bench diagnostic remain available. The user uploaded v3.4 and reports three working Sony assignments: Volume +, Volume -, and single-press Play/Pause. Next/Previous candidates still need receiver testing. See [current code assignments](sony-interface.md#calibration-model-and-firmware-contract).
 
 ## Active five-command calibration — controller v3.4
 
@@ -10,11 +10,11 @@ Sony now distinguishes the two endpoint assignments, Volume + at code 255 and Vo
 | --- | ---: | ---: |
 | Right turn / Volume + | 255 | 2.4 V |
 | Held right turn / Next Track | 248 | 2.6 V |
-| Single click / Mute | 238 | 2.8 V |
+| Single click / Play/Pause (user assignment) | 238 | 2.8 V |
 | Held left turn / Prev Track | 215 | 3.0 V |
 | Left turn / Volume - | 0 | 3.2 V |
 
-Only the two endpoints are receiver-verified. Interior codes and all voltages in this table are estimates, not measured thresholds or proof of five distinct Sony assignments. Camera remains a separate output. No wiring change is needed. Existing volume assignments can stay; try teaching **Mute first**, then Next/Previous separately if Mute is distinct.
+The user reports Volume +, Volume -, and single-press **Play/Pause** all working (2026-11-06). In the uploaded default profile, these are codes 255, 0, and 238. Next/Previous remain candidates; all voltages in this table are estimates, not measured recognition thresholds. The firmware/console still calls the single-click action `mute_att`; that is a local name, while Sony learns the chosen function. Use `learn mute_att` or `set mute_att N` for this same single-click output. No firmware or wiring change is needed to assign it Play/Pause. Camera remains separate. Next receiver test: assign **Next Track** using a held right turn at code 248.
 
 The 64/192 resistance measurements fit `Rtotal_kohm ≈ 57.35 − 0.21328125 × code`. With the measured 3.27 V open input and an inferred 1.1–1.2 kohm source resistance, `Vinput ≈ 3.27 × Rtotal / (Rsource + Rtotal)`. Endpoint totals are approximately 3.0 and 57.4 kohm. Estimated low-end current is about 0.8 mA, below the MCP41050 ±1 mA limit but above the original conservative 0.5 mA prototype target. This estimate applies to this measured Sony input; keep R3 unchanged. Actual endpoint voltage/current and power-transition acceptance remain open.
 

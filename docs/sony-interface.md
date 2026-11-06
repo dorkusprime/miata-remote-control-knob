@@ -4,7 +4,7 @@ Selected 2026-10-27; assembled and bench-tested through 2026-11-06. The user ver
 
 ## Active firmware profile: five-command calibration
 
-Controller v3.4 preserves Sony-verified Volume Up/right = **255** and Volume Down/left = **0**. It adds Mute **238**, Next Track **248**, and Prev Track **215**, chosen for approximately separated input voltages. These three interior codes remain unverified. See the [current table and live calibration console](gestures.md#active-five-command-calibration--controller-v34). Six-second learning holds and the ten-second mode toggle remain. The board and fixed 2.7 kohm resistor are unchanged.
+Controller v3.4 preserves Sony-verified Volume Up/right = **255** and Volume Down/left = **0**. The user assigned single-click code **238** to **Play/Pause** and reports all three functions working. Next Track **248** and Prev Track **215** remain candidates, chosen for approximately separated input voltages. The local single-click action/serial name remains `mute_att`; Sony determines its learned function. See the [current table and live calibration console](gestures.md#active-five-command-calibration--controller-v34). Six-second learning holds and the ten-second mode toggle remain. The board and fixed 2.7 kohm resistor are unchanged.
 
 ## Complete prototype BOM
 

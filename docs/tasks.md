@@ -118,3 +118,9 @@ This current status supersedes older pending endpoint and initial learning-mode 
 - [x] Record that Picotool/libusb upgrade alone did not resolve the user's failed software reset (zero-byte status response).
 - [x] Replace custom upload orchestration with Arduino CLI's core-provided Picotool recipe; retain memory reporting and explicit port selection.
 - [ ] User verifies initial, repeat and post-power-cycle upload without pressing BOOT. This is required before burial behind the console fascia.
+
+## Sony learning progress — 2026-11-06
+
+- [x] User confirms v3.4 loaded and three commands functional: Volume - (0), Play/Pause via single press (238), Volume + (255).
+- [ ] Test Next Track via held right turn (248), then Previous Track via held left turn (215), one assignment at a time.
+- [ ] Establish learning-window limits beyond the three accepted commands; maximum command count remains unknown.
