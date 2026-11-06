@@ -34,6 +34,7 @@ Send each command followed by Enter. The gesture monitor parses a different prot
 | relay | Release other output, then assert relay drive for 10 seconds |
 | camera | Release other output, then assert camera request for 10 seconds |
 | release | Release both outputs and disarm |
+| boot | Release outputs, disable watchdog and enter USB BOOTSEL for maintenance |
 
 The pot starts at code 128. Writes use SPI mode 0 at 100 kHz with command byte 0x11. CS is D0/GPIO26, clock D8/GPIO2, MOSI D10/GPIO3, relay D1/GPIO27 and camera D2/GPIO28. D9/GPIO4 is configured as an unused SPI MISO input.
 

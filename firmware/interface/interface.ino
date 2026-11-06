@@ -1,5 +1,6 @@
 #include <SPI.h>
 #include <hardware/watchdog.h>
+#include <pico/bootrom.h>
 #include <hardware/gpio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -54,14 +55,18 @@ void status() {
 
 void help() {
   Serial.println("Interface BENCH diagnostic. Disconnect Sony and all external signal sources.");
-  Serial.println("Commands (Enter after each): help, status, arm bench, pot 0..255, relay, camera, release");
+  Serial.println("Commands (Enter after each): help, status, arm bench, pot 0..255, relay, camera, release, boot");
   Serial.println("relay/camera assert for 10 seconds. Arm expires after 60 seconds.");
   Serial.println("release, invalid input, serial loss and reset release outputs and disarm.");
   Serial.println("Status reports requested settings; MCP41050 has no SPI readback.");
 }
 
 void command(const char *text) {
-  if (!strcmp(text, "release")) {
+  if (!strcmp(text, "boot")) {
+    disarm();
+    watchdog_disable();
+    reset_usb_boot(0, 0);
+  } else if (!strcmp(text, "release")) {
     disarm();
   } else if (!strcmp(text, "help")) {
     help();
