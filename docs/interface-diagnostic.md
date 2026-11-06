@@ -48,3 +48,7 @@ Send `status`. Expect armed=0, pot_requested=128, relay_requested=0 and camera_r
 Subsequent checks proceed one at a time. Relay contacts and pot resistance can be checked with a known current-limited source and voltage measurements. Check the meter's resistance-mode test voltage/current before using ohms mode on powered analog terminals. Continue to [assembly acceptance](assembly-and-test.md) for voltage, current and power-sequencing limits.
 
 Microchip reference: https://ww1.microchip.com/downloads/en/DeviceDoc/11195c.pdf
+
+## USB upload recovery
+
+The upload helper detects the sole matching RP2040 serial device, requests BOOTSEL using the pinned core’s 1200-baud serial reset sequence, and retries Picotool ROM access for up to 12 seconds while USB re-enumerates. It avoids the forced Picotool reboot handoff when a serial device is available. Close serial monitors before uploading. With no serial device, it tries an already-present BOOTSEL device once. Multiple matching serial devices are rejected before reset. This recovery is unit-tested with mocked USB operations. Repeat flashing on the actual XIAO remains to be verified.

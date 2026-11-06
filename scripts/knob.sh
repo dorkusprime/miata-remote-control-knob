@@ -34,7 +34,7 @@ case "${1:-}" in
       exit 1
     fi
     python3 "$ROOT/scripts/memory-usage.py" "$BUILD/$TARGET.ino.elf"
-    exec "$PICOTOOL" load "$BUILD/$TARGET.ino.uf2" -v -f -x
+    exec python3 "$ROOT/scripts/upload-interface.py" "$PICOTOOL" "$BUILD/$TARGET.ino.uf2"
     ;;
   monitor)
     shift
