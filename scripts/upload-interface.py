@@ -23,18 +23,31 @@ def upload(picotool, firmware, serial, ports):
                 connection.open()
                 connection.dtr = True
                 time.sleep(0.1)
-                connection.dtr = False
                 connection.baudrate = 1200
+                time.sleep(0.1)
+                connection.dtr = False
+                time.sleep(0.3)
         except serial.SerialException as error:
             print(f"Serial reboot reported {error}; checking USB re-enumeration.", file=sys.stderr)
+    if port:
+        time.sleep(1)  # Allow macOS to enumerate the ROM USB device.
     # After serial reboot, use ROM access without another forced reboot.
     command = [picotool, "load", firmware, "-v", "-x"]
     deadline = time.monotonic() + 12
+    fallback_requested = False
     while True:
         result = subprocess.run(command, capture_output=True, text=True)
         if result.returncode == 0:
             print(result.stdout, end="")
             return 0
+        if port and not fallback_requested:
+            # Request ROM mode separately so upload does not inherit Picotool's
+            # runtime-device tracking (some firmware exposes an empty serial).
+            print("Serial reset has not exposed ROM mode; requesting Picotool USB reboot.", flush=True)
+            reboot = subprocess.run([picotool, "reboot", "-u", "-f"],
+                                    capture_output=True, text=True)
+            print(reboot.stdout + reboot.stderr, end="")
+            fallback_requested = True
         if not port or time.monotonic() >= deadline:
             print(result.stdout + result.stderr, end="", file=sys.stderr)
             print("Upload failed. Close serial monitors and check USB data connectivity. "

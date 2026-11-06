@@ -25,12 +25,14 @@ class UploadTests(unittest.TestCase):
         serial, ports = MagicMock(), MagicMock()
         ports.comports.return_value = [MagicMock(device="/dev/cu.usbmodem1", vid=0x2E8A, pid=0x000A)]
         run.side_effect = [subprocess.CompletedProcess([], 1, "", "waiting"),
+                           subprocess.CompletedProcess([], 0, "rebooted", ""),
                            subprocess.CompletedProcess([], 0, "loaded", "")]
         self.assertEqual(uploader.upload("tool", "file.uf2", serial, ports), 0)
         connection = serial.Serial.return_value.__enter__.return_value
         self.assertEqual(connection.baudrate, 1200)
         self.assertFalse(connection.dtr)
-        self.assertEqual(run.call_count, 2)
+        self.assertEqual(run.call_count, 3)
+        self.assertEqual(run.call_args_list[1].args[0], ["tool", "reboot", "-u", "-f"])
 
     @patch.object(uploader.subprocess, "run")
     def test_ambiguous_devices_do_not_reset(self, run):
