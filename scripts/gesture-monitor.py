@@ -71,23 +71,30 @@ class Renderer:
             steps = event.get("steps")
             if type(steps) is not int or not 1 <= steps <= 65536:
                 return "Invalid gesture step count."
-            if event.get("simulated") is not True:
+            simulated = event.get("simulated")
+            if type(simulated) is not bool:
                 return "Gesture message missing simulation marker; ignored."
+            if not simulated and type(event.get("accepted")) is not bool:
+                return "Hardware gesture missing acceptance marker; ignored."
             label = LABELS[action]
             if action in ("volume_up", "volume_down", "next_track", "previous_track"):
                 label += f" × {steps}"
-            return "[SIM] " + label
+            prefix = "[SIM] " if simulated else ("[REQUEST] " if event["accepted"] else "[DROPPED] ")
+            return prefix + label
         if kind == "status":
             return clean(event.get("message", ""))
         if kind == "heartbeat":
-            state = (event.get("connected"), event.get("camera_preview"))
+            state = (event.get("connected"), event.get("camera_preview"),
+                     event.get("simulated", True), event.get("outputs_enabled", False))
             if any(type(value) is not bool for value in state):
                 return "Invalid device state."
             if state == self.last_state:
                 return None
             self.last_state = state
             return ("Twist " + ("connected" if state[0] else "missing") +
-                    "; camera preview " + ("ON" if state[1] else "OFF") + "; outputs simulated")
+                    "; camera request " + ("ON" if state[1] else "OFF") +
+                    ("; outputs simulated" if state[2] else
+                     "; hardware outputs " + ("enabled" if state[3] else "disabled")))
         if kind == "input" and self.raw:
             return "[input] " + clean(json.dumps(event, separators=(",", ":")))
         return None
@@ -141,7 +148,7 @@ def monitor(args):
                 connection.rts = True
                 connection.open()
                 announced_wait = False
-                output(f"Connected to {port}; all actions are simulations. Ctrl+C exits.")
+                output(f"Connected to {port}; awaiting firmware status. Ctrl+C exits.")
                 connection.write(b"h\n")
                 renderer, lines = Renderer(args.raw), Lines()
                 while True:

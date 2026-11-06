@@ -1,8 +1,10 @@
 # Firmware environment
 
-Two sketches are available: the preserved [hardware diagnostic](diagnostic/diagnostic.ino) and the new [gesture controller](controller/controller.ino). See [gesture mapping and live monitor](../docs/gestures.md) for controller commands. The build/upload helper now defaults to `controller`; the commands below explicitly select `diagnostic`.
+Three sketches are available: the preserved [Twist diagnostic](diagnostic/diagnostic.ino), the [interface bench diagnostic](interface/interface.ino), and the integrated [gesture controller](controller/controller.ino). Build/upload defaults to `controller`; uploading is always explicit and performed by the user.
 
-The serial-only diagnostic builds for Seeed XIAO RP2040. User-provided v2 output confirms rotation in both directions, button transitions, and rotation while held. Twist firmware is 1.2. The user confirmed two consecutive Picotool uploads without button access or unplugging USB. Sony and camera outputs are not configured or driven.
+Controller v3 drives the assembled board: turn=volume, click=Mute, held turn=track, double click=Camera 1 request. It preserves LED feedback and serial `status`/`boot` maintenance for uploads. See [gesture workflow](../docs/gestures.md) and [learned-code assignments](../docs/sony-interface.md#calibration-model-and-firmware-contract). The board's separate interface diagnostic passed user GPIO, relay and three resistance checks. The integrated controller has not yet been uploaded or tested with Sony.
+
+The historical diagnostic setup/results below remain for reference. For current upload recovery, all targets use `scripts/upload-interface.py`: it first identifies the interface/controller via serial status and requests `boot`, with 1200-baud/Picotool fallback for other firmware. Close monitors before uploading. USB recovery with the interface sketch passed after cold power cycling; repeat acceptance with the controller remains pending.
 
 ## Pinned dependencies
 
@@ -39,7 +41,7 @@ The diagnostic starts USB serial at 115200, scans I2C, and looks for a Twist at 
 | `w` | All channels at 8/255 |
 | `o` | LED off |
 
-This diagnostic reports raw events only. The separate [controller sketch](../docs/gestures.md) implements gestures and LED feedback; real Sony commands and camera switching remain unimplemented. Snapshot reads check the device ID and exact returned byte count. Read failures suspend events and trigger a retry; this diagnostic is not a validated fault-tolerant controller. The difference register is shown for comparison but is no longer cleared or used to derive TURN events.
+This diagnostic reports raw events only. The separate [controller sketch](../docs/gestures.md) implements gestures and LED feedback; the current controller implements real requests; Sony learning/recognition remain pending. Snapshot reads check the device ID and exact returned byte count. Read failures suspend events and trigger a retry; this diagnostic is not a validated fault-tolerant controller. The difference register is shown for comparison but is no longer cleared or used to derive TURN events.
 
 ## USB updates without board-button access
 

@@ -19,7 +19,7 @@
 - Press and turn: previous/next track.
 - Double press: toggle manual camera.
 
-These are serial-only simulated intentions in the separate controller sketch. Initial timing: 30 ms debounce, 300 ms double-click window, 700 ms long-hold threshold (unassigned). Held rotation suppresses clicks; a double click does not emit mute. See [gesture rules and monitor workflow](gestures.md). The user reports all gestures functional in the serial simulation. Exact Sony command behavior remains untested. Arbitrary CarPlay menu navigation is not promised.
+Controller v3 connects these intentions to the assembled interface through a bounded, nonblocking driver. Initial timing: 30 ms debounce, 300 ms double-click window, 700 ms long-hold threshold (unassigned). Held rotation suppresses clicks; a double click does not emit mute. See [gesture rules and monitor workflow](gestures.md). The user reports all gestures functional in the serial simulation. Exact Sony command behavior remains untested. Arbitrary CarPlay menu navigation is not promised.
 
 ## Sony interface evidence
 
@@ -39,7 +39,7 @@ It uses 50 ms command and release intervals. These are external implementation v
 
 The selected through-hole prototype uses one LCC110, one MCP41050-I/P digital pot, one SN74HCT125N SPI buffer and a 2N3904 relay-input driver. The pot runs at 5 V; HCT input thresholds allow 3.3 V XIAO control while delivering 5 V logic to the pot. This buffer is required for the selected pot and does not drive the relay LED. Logic and Sony grounds are shared. See [the complete circuit](sony-interface.md) and [assembly procedure](assembly-and-test.md).
 
-The user ordered the supporting parts on 2026-10-27, intentionally including spares. No circuit assembly has been reported. Sony Input 1 was measured around +3.3 V and characterized with a 9.86 kohm load. Camera trigger/release, video, separate-input guidelines and reverse priority were user-verified. See [bench report](bench-results-2026-10-28.md). Assembled-interface power transitions, ATT current margin and command learning remain acceptance gates. The [archive](archive/README.md) preserves the superseded five-switch, SMD AD8400 and earlier MCP research; none supplies current pin assignments.
+The user ordered the supporting parts on 2026-10-27, intentionally including spares. The user assembled and bench-tested the circuit; see [assembled results](bench-results-2026-11-05.md). Sony Input 1 was measured around +3.3 V and characterized with a 9.86 kohm load. Camera trigger/release, video, separate-input guidelines and reverse priority were user-verified. See [bench report](bench-results-2026-10-28.md). Assembled-interface power transitions, power-loss handling and command learning remain acceptance gates. The [archive](archive/README.md) preserves the superseded five-switch, SMD AD8400 and earlier MCP research; none supplies current pin assignments.
 
 No upstream firmware is included here. Review the upstream GPL-3.0 license before code reuse.
 
@@ -60,8 +60,8 @@ References recorded 2026-10-26. Record hardware test results separately with dat
 
 ## Integrated camera output
 
-The current placement includes Camera 1 control using U2 channel 4, R8/R9 on the existing board and R10 inline in the Sony camera pigtail. This supersedes the second-LCC110 camera proposal. No camera output firmware has been enabled. See camera-control.md for electrical budgets and release/priority acceptance.
+The current placement includes Camera 1 control using U2 channel 4, R8/R9 on the existing board and R10 inline in the Sony camera pigtail. This supersedes the second-LCC110 camera proposal. Controller v3 implements the camera request; its Sony-buffer connection still needs testing. See camera-control.md for electrical budgets and release/priority acceptance.
 
 ## Observed steering-remote learning menu
 
-User confirmed: Prev Track, Play/Pause, Next Track, Source, Mute, Volume -, Volume +, Voice, Answer Call, Hang Up. See [bench record](bench-results-2026-10-28.md#user-observed-steering-remote-learning-options). No camera assignment is listed; retain separate EXT IN 1 camera output. Initial five-command mapping is unchanged. Additional menu functions have no assigned gestures or validated resistance values yet. Menu availability does not establish successful command learning. Earlier Mute/ATT resistance remains a candidate for the menu's Mute function, pending calibration and recognition.
+User confirmed: Prev Track, Play/Pause, Next Track, Source, Mute, Volume -, Volume +, Voice, Answer Call, Hang Up. See [bench record](bench-results-2026-10-28.md#user-observed-steering-remote-learning-options). No camera assignment is listed; retain separate EXT IN 1 camera output. Initial five-command mapping is unchanged. Additional menu functions have no assigned gestures or validated resistance values yet. Menu availability does not establish successful command learning. The current controller uses five distinct learnable codes in the 64–192 range instead of the historical external resistance targets. Actual recognition is pending.

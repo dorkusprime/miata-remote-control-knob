@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 TARGET = ROOT / 'hardware/sony-remote/placement.svg'
 PARTS = [
     ('U1', 'MCP41050-I/P', 1, 4, '#0f766e',
-     ['CS', 'SCK', 'SI', 'GND'], ['+5V', 'PA: NC', 'PW', 'GND']),
+     ['CS', 'SCK', 'SI', 'GND'], ['+5V', 'PB: NC', 'PW', 'GND']),
     ('U2', 'SN74HCT125N', 6, 7, '#1d4ed8',
      ['GND', 'CS in', 'CS out', 'GND', 'SCK in', 'SCK out', 'GND'],
      ['+5V', '+5V', 'GND', 'NC', 'GND', 'MOSI in', 'MOSI out']),

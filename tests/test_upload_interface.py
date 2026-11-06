@@ -49,6 +49,19 @@ class UploadTests(unittest.TestCase):
         self.assertNotEqual(connection.baudrate, 1200)
         self.assertEqual(run.call_count, 1)
 
+    @patch.object(uploader.time, "sleep")
+    @patch.object(uploader.subprocess, "run")
+    def test_controller_status_retry_before_boot(self, run, sleep):
+        serial, ports = MagicMock(), MagicMock()
+        ports.comports.return_value = [MagicMock(device="/dev/cu.usbmodem1", vid=0x2E8A, pid=0x000A)]
+        connection = serial.Serial.return_value.__enter__.return_value
+        connection.readline.side_effect = [b""] * 5 + [b"pot_requested=128 relay_requested=0"]
+        run.return_value = subprocess.CompletedProcess([], 0, "loaded", "")
+        self.assertEqual(uploader.upload("tool", "file.uf2", serial, ports), 0)
+        self.assertEqual([c.args[0] for c in connection.write.call_args_list],
+                         [b"status\n", b"status\n", b"boot\n"])
+        self.assertNotEqual(connection.baudrate, 1200)
+
     @patch.object(uploader.subprocess, "run")
     def test_ambiguous_devices_do_not_reset(self, run):
         serial, ports = MagicMock(), MagicMock()

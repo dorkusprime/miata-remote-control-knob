@@ -25,13 +25,15 @@ def upload(picotool, firmware, serial, ports):
                 connection.dtr = True
                 connection.write(b"status\n")
                 identified = False
-                for _ in range(20):
+                for attempt in range(20):
+                    if attempt in (5, 10, 15):
+                        connection.write(b"status\n")
                     response = connection.readline()
                     if b"pot_requested=" in response and b"relay_requested=" in response:
                         identified = True
                         break
                 if identified:
-                    print("Interface diagnostic identified; requesting watchdog-safe boot.", flush=True)
+                    print("Knob firmware identified; requesting watchdog-safe boot.", flush=True)
                     connection.write(b"boot\n")
                     connection.flush()
                     time.sleep(0.3)

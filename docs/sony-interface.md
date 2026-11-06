@@ -1,6 +1,6 @@
 # Sony interface — through-hole prototype
 
-Selected 2026-10-27: MCP41050-I/P, SN74HCT125N and one existing LCC110. Parts ordered from DigiKey, confirmed by the user on 2026-10-27. Prototype only: not assembled or electrically validated; no Sony-output firmware implemented or enabled. Supersedes the [AD8400 version](archive/sony-interface-ad8400.md) and previous five-relay diagrams. Do not use earlier pin maps or calibrated codes.
+Selected 2026-10-27; assembled and bench-tested through 2026-11-06. The user verified GPIO camera assertion/release, relay drive, and three output resistances. Controller v3 integrates gestures with this interface; physical testing of that build, Sony learning and power-transition acceptance remain pending. Supersedes the [AD8400 version](archive/sony-interface-ad8400.md) and earlier five-relay diagrams. Use the current pad map and learned-code table below.
 
 ## Complete prototype BOM
 
@@ -25,7 +25,7 @@ No SMD chip, adapter, soldering practice parts, extra SSR, flyback diode or addi
 
 ## Signal and power
 
-Sony Input 1 -> 2.7 kohm -> LCC110 normally-open contact -> pot PW -> pot PB -> shared ground. Input 2 insulated. Sony ST Remote GND joins XIAO ground. Relay isolates the signal when open; the whole assembly is not galvanically isolated.
+Sony Input 1 -> 2.7 kohm -> LCC110 normally-open contact -> pot PW -> pot PA -> shared ground. Input 2 insulated. Sony ST Remote GND joins XIAO ground. Relay isolates the signal when open; the whole assembly is not galvanically isolated.
 
 Both powered ICs and relay LED driver use regulated 5 V from the XIAO USB/VBUS supply. Twist stays on 3V3. Never put vehicle 12 V on this circuit. Design supply target is 4.75–5.25 V at the interface under load.
 
@@ -35,7 +35,7 @@ Both powered ICs and relay LED driver use regulated 5 V from the XIAO USB/VBUS s
 flowchart TD
     S["Sony Input 1"] --> R["R3: 2.7 kohm"]
     R --> K["K1: LCC110 NO pins 5–6"]
-    K --> P["U1: MCP41050 PW → PB"]
+    K --> P["U1: MCP41050 PW → PA"]
     P --> G["Shared GND / ST Remote GND"]
     X["XIAO: 3.3 V SPI"] --> B["U2: HCT125 at 5 V"]
     B --> P
@@ -52,7 +52,7 @@ Reference designators: U1 pot, U2 buffer, K1 optical relay, Q1 transistor; R1 33
 
 | Part | Pins and nets |
 | --- | --- |
-| MCP41050 | 1 CS from buffer 3; 2 SCK from buffer 6; 3 SI from buffer 8; 4 GND; 5 PB to GND; 6 PW to LCC110 pin 6; 7 PA unconnected; 8 +5 V |
+| MCP41050 | 1 CS from buffer 3; 2 SCK from buffer 6; 3 SI from buffer 8; 4 GND; 5 PA to GND; 6 PW to LCC110 pin 6; 7 PB unconnected; 8 +5 V |
 | HCT125 power | 14 +5 V; 7 GND |
 | HCT125 channel 1 | 1 enable to GND; 2 input from D0/GPIO26 with 47 kohm to GND; 3 output to pot CS |
 | HCT125 channel 2 | 4 enable to GND; 5 input from D8/GPIO2 with 47 kohm to GND; 6 output to pot SCK |
@@ -84,18 +84,18 @@ Eight wires serve the complete remote-plus-camera design. D9/MISO remains unused
 
 ## Driver and calibration
 
-Initialize relay enable LOW and CS HIGH before configuring outputs. While the relay is open, write MCP41050 command byte 0x11 followed by the calibrated 8-bit wiper value using SPI mode 0, MSB first. Wait initially 1 ms, enable relay 55 ms, then disable it at least 55 ms. Use nonblocking timers and clear queued commands on reset/fault; add a watchdog in the future hardware backend. Only one command at a time. No chip readback or Sony acknowledgement is available.
+Initialize relay enable LOW and CS HIGH before configuring outputs. While the relay is open, write MCP41050 command byte 0x11 followed by the calibrated 8-bit wiper value using SPI mode 0, MSB first. Wait initially 1 ms, enable relay 55 ms, then disable it at least 55 ms. Use nonblocking timers and clear queued commands on reset/fault; the controller backend includes a five-second watchdog. Only one command at a time. No chip readback or Sony acknowledgement is available.
 
-Calibrate total resistances, including the fixed resistor, contact and wiper: mute 4.4 kohm, next 8.8 kohm, previous 12.1 kohm, volume up 16.8 kohm, volume down 23.6 kohm. MCP41050 wiper resistance differs from AD8400 and its full resistance tolerance is ±30%; do not reuse old nominal codes as calibrated values.
+Sony Custom learning allows our own separated codes. Use the table below instead of the historical external-controller resistance targets. Actual learning and recognition are still pending.
 
 The relay input circuit is unchanged: about 10.5 mA nominal LED current from 5 V, with approximately 2.5 mA GPIO base drive. Allow 20 mA additional interface supply budget pending measurement. Use >=4 mA GPIO pad drive for the relay base signal. The HCT125's TTL inputs accept 3.3 V; its outputs meet the pot's 5 V logic requirement.
 
 ## Acceptance boundaries before installation
 
-- **MCP41050 wiper current is limited to ±1 mA.** The fixed 2.7 kohm resistor alone does not guarantee that at every code or with an ideal 5 V source. Measure the Sony's source impedance/loaded current. Only enable calibrated commands meeting this limit, with margin; the original <=0.5 mA prototype target remains a design check. Measured Sony source estimates predict about 0.59 mA at nominal 4.4 kohm ATT: below the absolute limit but above that target. Resolve command learning/current margin explicitly before enabling outputs; see [bench calculations](bench-results-2026-10-28.md). Use a simulated 5 V source through 10 kohm initially.
+- **MCP41050 wiper current is limited to ±1 mA.** The fixed 2.7 kohm resistor alone does not guarantee that at every code or with an ideal 5 V source. Only enable codes meeting this limit with margin. The current learned-code candidates keep measured output resistance at or above 16.4 kohm, replacing the previous 4.4 kohm ATT candidate. Their estimated steady-state current is below the prototype 0.5 mA target; Sony learning is pending. See the code table below.
 - All pot analog terminals must remain within GND and its actual VDD. Sony Input 1 measured approximately +3.3 V with an estimated 1.1–1.2 kohm source resistance from one load point; power transitions and all operating conditions remain uncharacterized.
 - At steady reset/power-off the normally-open contact releases. Abrupt power loss remains unresolved until tested: optical release can take milliseconds while the pot supply falls sooner. A transient back-power path is possible. Use a simulated Sony source and scope/appropriate measurements before installation approval; revise sequencing if necessary. This BOM is for the bench prototype, not a claim that those transitions are solved.
-- Assemble in stages and calibrate with Sony physically disconnected; solderless duplication is optional. Resistance-mode measurements are only for the port with no external voltage applied. Energized simulated-input/Sony tests use voltage mode.
+- Calibrate with Sony physically disconnected; solderless duplication is optional. Resistance-mode measurements are only for the port with no external voltage applied. Energized simulated-input/Sony tests use voltage mode.
 - Check continuity, rails, relay LED current, each commanded resistance, release/reset, cable behavior and power transitions. Then test actual receiver recognition at low volume. Firmware outputs remain disabled until validation; user performs flashing.
 
 A [complete proposed ElectroCookie Mini pad allocation](../hardware/sony-remote/pad-map.md) and [all-component image](../hardware/sony-remote/placement-full.svg) are available; final physical acceptance is pending. The DIP packages occupy 4+7+4 pin rows, leaving little slack on a 17-row board; sockets, mounting clearance and wiring must be dry-fitted before permanent assembly. No larger board is being ordered speculatively. Camera controls are included: R8/R9 on board, R10 in the cable, using U2 channel 4.
@@ -109,23 +109,27 @@ A [complete proposed ElectroCookie Mini pad allocation](../hardware/sony-remote/
 
 ## Calibration model and firmware contract
 
-For an initial estimate only, `Rtotal ≈ R3 + Rcontact + Rwiper + code × RAB / 256`. Code 0 is near PB, not an open circuit; power-up code is midscale. The 50 kohm value is nominal. For a first estimate taking Rcontact = 23 ohm and Rwiper = 125 ohm, codes are approximately:
+The assembled circuit grounds **PA, pin 5**, and leaves **PB, pin 7** open. Earlier documentation incorrectly interchanged the terminal names; the physical pin wiring stays unchanged. Microchip DS11195C Table 3-1 confirms these names. The matching estimate is `Rtotal ≈ R3 + Rcontact + Rwiper + (256 − code) × RAB / 256`: resistance decreases with increasing code, as observed.
 
-| Intention | Target total | Initial estimate only |
-| --- | ---: | ---: |
-| Mute/ATT | 4,400 ohm | 8 |
-| Next track | 8,800 ohm | 30 |
-| Previous track | 12,100 ohm | 47 |
-| Volume up | 16,800 ohm | 71 |
-| Volume down | 23,600 ohm | 106 |
+The Sony learns the following five distinct candidate codes; do not assume its recognition windows until tested. Codes are fixed in `firmware/controller/sony_output.h`.
 
-These are calculations, not measured settings or released firmware constants. Measure the assembled output and select the nearest achievable safe code. Record actual total resistance and receiver acceptance; Sony acceptance windows are unknown. Do not scan arbitrary codes while connected to the receiver.
+| Gesture / Sony learning assignment | Code | Output resistance |
+| --- | ---: | --- |
+| Positive turn / Volume + | 64 | 43.7 kohm measured |
+| Negative turn / Volume - | 96 | about 36.9 kohm, interpolated |
+| Single click / Mute | 128 | about 30 kohm measured |
+| Held positive turn / Next Track | 160 | about 23.2 kohm, interpolated |
+| Held negative turn / Prev Track | 192 | 16.4 kohm measured |
 
-The future backend must accept one intention plus a positive step count from the existing gesture engine. It must split steps into bounded pulses, reject uncalibrated commands, and drop stale work on disconnect/fault rather than replaying a backlog. Camera intentions stay separate. Suggested state progression is RELEASED → PROGRAM → SETTLE → ASSERT → RELEASE GAP → RELEASED. Any error returns to relay-off; a watchdog must address a stalled MCU. None of this backend exists yet.
+The end measurements imply about 54.6 kohm full pot resistance. At the measured minimum 16.4 kohm, a 3.3 V source would supply at most about 0.20 mA, ignoring its internal resistance. Even an ideal 5 V source would supply about 0.31 mA. These are steady-state estimates, not power-transition validation. No controller command writes outside the selected 64–192 range.
+
+The implemented backend uses a bounded eight-step FIFO: relay open → program → settle at least 1 ms → assert 55 ms → release at least 55 ms. Each detent is one pulse. An event that cannot fit is rejected as a whole; queued commands older than 750 ms are discarded. Camera requests drive the separate GPIO and are unaffected by steering-pot changes. Reset, boot command, explicit release and detected Twist failures release both outputs and discard queued work. Standalone operation does not require a serial connection.
+
+Controller v3 uses a five-second watchdog, 25 ms I2C timeouts and skips USB log records when transmit space is insufficient. These protect against normal scheduling stalls; physical pulse timing, fault and reset behavior remain bench acceptance items. The controller reports requests, never receiver acknowledgement.
 
 At startup the CS buffer's pull-down holds CS low until the MCU drives it high. The relay remains off through R7. Preload output values before enabling GPIO directions, then establish CS high, SCK low and MOSI low. Program a known calibration value with the relay open before allowing pulses. A pot register write is exactly 16 clocks with CS low, command 0x11 followed by one code byte, then CS high. No MISO connection or readback exists.
 
-The current firmware does not measure interface supply, Sony voltage, or relay state. Software cannot presently detect a disconnected interface or prove a command was accepted. Release-on-fault applies to faults it can observe; power sequencing and a hung controller require hardware validation and future watchdog work.
+The current firmware does not measure interface supply, Sony voltage, or relay state. Software cannot presently detect a disconnected interface or prove a command was accepted. Release-on-fault applies to faults it can observe; power sequencing and a hung controller require hardware validation and watchdog testing.
 
 ## Required Camera 1 extension
 
@@ -133,8 +137,8 @@ See [camera circuit and acceptance](camera-control.md). R8/R9 add two 47 kohm bo
 
 ## Receiver measurements
 
-See [2026-10-28 bench report](bench-results-2026-10-28.md) for raw readings, assumptions, derived command currents and remaining tests. Sony powered successfully; resistor sensing was characterized at one load point. No steering command has been learned or validated yet.
+See [2026-10-28 bench report](bench-results-2026-10-28.md) for raw readings, assumptions, derived command currents and remaining tests. Sony powered successfully; resistor sensing was characterized at one load point. No steering command has been learned or validated yet. See also the [assembled-board results](bench-results-2026-11-05.md).
 
 ## Observed learning functions
 
-The actual receiver offers Prev Track, Play/Pause, Next Track, Source, Mute, Volume -, Volume +, Voice, Answer Call and Hang Up; see [user observation](bench-results-2026-10-28.md#user-observed-steering-remote-learning-options). Initial calibration targets remain the five selected functions. Treat the external implementation's Mute/ATT resistance as an unverified candidate for Sony's Mute assignment. Camera control remains a separate EXT IN 1 output. No resistance values for the additional functions are established by this menu observation.
+The actual receiver offers Prev Track, Play/Pause, Next Track, Source, Mute, Volume -, Volume +, Voice, Answer Call and Hang Up; see [user observation](bench-results-2026-10-28.md#user-observed-steering-remote-learning-options). The five mapped functions use the current learned-code table. The old external-controller Mute/ATT resistance is superseded. Camera control remains a separate EXT IN 1 output. No resistance values for the additional functions are established by this menu observation.

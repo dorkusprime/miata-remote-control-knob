@@ -37,6 +37,23 @@ class MonitorTests(unittest.TestCase):
         data = json.loads(gesture()); del data["simulated"]
         self.assertIn("ignored", monitor.Renderer().render(json.dumps(data)))
 
+    def test_hardware_requests_and_rejections(self):
+        data = json.loads(gesture())
+        data.update(simulated=False, accepted=True)
+        self.assertEqual(monitor.Renderer().render(json.dumps(data)), "[REQUEST] Volume up × 1")
+        data["accepted"] = False
+        self.assertEqual(monitor.Renderer().render(json.dumps(data)), "[DROPPED] Volume up × 1")
+        del data["accepted"]
+        self.assertIn("ignored", monitor.Renderer().render(json.dumps(data)))
+
+    def test_hardware_heartbeat(self):
+        data = dict(v=1, type="heartbeat", connected=True, camera_preview=False,
+                    simulated=False, outputs_enabled=True)
+        renderer = monitor.Renderer()
+        self.assertIn("hardware outputs enabled", renderer.render(json.dumps(data)))
+        data["outputs_enabled"] = False
+        self.assertIn("hardware outputs disabled", renderer.render(json.dumps(data)))
+
     def test_unknown_action(self):
         data = json.loads(gesture()); data["action"] = ["bad"]
         self.assertEqual(monitor.Renderer().render(json.dumps(data)), "Unknown gesture action.")

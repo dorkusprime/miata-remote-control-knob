@@ -268,7 +268,7 @@
 <text x="572" y="292" font-size="14" style="fill:#172033"> 1   E1    CS</text>
 <text x="886" y="292" font-size="14" style="fill:#172033"> 8   F1    +5V</text>
 <text x="572" y="314" font-size="14" style="fill:#172033"> 2   E2    SCK</text>
-<text x="886" y="314" font-size="14" style="fill:#172033"> 7   F2    PA: NC</text>
+<text x="886" y="314" font-size="14" style="fill:#172033"> 7   F2    PB: NC</text>
 <text x="572" y="336" font-size="14" style="fill:#172033"> 3   E3    SI</text>
 <text x="886" y="336" font-size="14" style="fill:#172033"> 6   F3    PW</text>
 <text x="572" y="358" font-size="14" style="fill:#172033"> 4   E4    GND</text>

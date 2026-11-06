@@ -1,17 +1,29 @@
 # Gesture controller and live monitor
 
-The controller is a separate sketch from the preserved hardware diagnostic. It translates input into intentions and streams JSON lines over USB. Sony and camera pins are never configured or driven. Every action is marked simulated; a camera request changes only the controller's preview state.
+Controller v3 connects the existing gesture engine and LED feedback to the assembled Sony interface. The original Twist diagnostic and the separate interface bench diagnostic remain available. Gesture and LED behavior was previously user-verified; the integrated build still needs user upload and receiver learning. See [current code assignments](sony-interface.md#calibration-model-and-firmware-contract).
+
+## Real output backend — 2026-11-06
+
+Each steering detent queues one 55 ms relay pulse, with a 1 ms pot settling interval and 55 ms minimum release gap. The queue holds eight pending detents; an oversized event is rejected in full, and queued work older than 750 ms is discarded. Camera on/off uses D2/GPIO28 separately and persists until the opposite request, reset, explicit release, or a detected input fault. The LED only acknowledges gestures and does not claim Sony state.
+
+Normal operation starts automatically after a two-second USB maintenance window and successful Twist connection. GPIO outputs start low, pot CS high; initialization selects code 128 with the relay open. A five-second watchdog runs after initialization, and I2C has a 25 ms timeout. USB reporting is skipped unless there is space for a complete bounded record. Monitor closure does not suspend standalone operation. A Twist failure releases outputs/queue; reconnect establishes a new gesture baseline and resumes unless explicitly suspended.
+
+Serial commands require Enter: `help`/`h`/`?`, `status`/`s`, `release`, `enable`, `boot`. `release` suspends outputs until `enable` or restart. Invalid/oversized commands also suspend outputs. `boot` releases outputs and enters BOOTSEL with the watchdog disabled, retaining the application-command upload recovery. `status` includes the uploader's `pot_requested` and `relay_requested` signature.
+
+The monitor labels accepted hardware intentions `[REQUEST]`, rejected/unassigned intentions `[DROPPED]`, and historical simulations `[SIM]`. Accepted means queued or locally requested, not Sony recognition. Later queue expiry is not separately acknowledged. Hardware heartbeats show whether outputs are enabled. Camera preview in the protocol means the local request only.
+
+Build with `scripts/knob.sh build controller`, then the user uploads with `scripts/knob.sh upload controller`. Use `scripts/knob.sh monitor` for translated events. First flash and test with Sony disconnected; then learn the five assignments from the current code table. Power the interface before the Sony and switch the Sony off first during controlled bench work. Installation approval still requires power-transition testing.
 
 ## Current mapping
 
-These defaults are user bench-verified through the live monitor; Sony behavior remains untested.
+The gesture recognition defaults were user bench-verified through the earlier simulation; Sony recognition remains untested.
 
 | Input | Intention |
 | --- | --- |
 | Turn positive / negative | Volume up / down, one step per detent |
 | Short click | Mute / ATT request |
 | Hold button and turn positive / negative | Next / previous track, one step per detent |
-| Double click | Toggle simulated manual-camera request |
+| Double click | Toggle manual-camera request |
 | Hold for 700 ms or longer, then release without turning | Ignored; reported as unassigned |
 
 Positive/negative follow the Twist's counter direction; check the feel in the final mounting. No volume acceleration or track-repeat timer is implemented. Multiple detents in one sample are reported with a step count.
@@ -23,14 +35,14 @@ Positive/negative follow the Twist's counter direction; check the feel in the fi
 - Both clicks must be shorter than 700 ms and contain no held rotation. A valid double click emits only the camera request, never an intermediate mute.
 - Turning consumes pending clicks. Held rotation produces track intentions and suppresses a click when released. A long second press cancels the first pending click too.
 - A button held at startup/reconnect is ignored until released. Existing count is taken as the baseline, so reconnect does not replay old movement.
-- A checked I2C read failure cancels pending clicks, releases the simulated camera request, and suspends input. Reconnect establishes a new baseline. Restart also starts with camera preview off.
+- A checked I2C read failure cancels pending clicks, releases the camera request, and suspends input. Reconnect establishes a new baseline. Restart also starts with camera preview off.
 - Counts and timestamps wrap safely. There is no intentional output on idle.
 
 The pure C++ state machine is [gesture_engine.h](../firmware/controller/gesture_engine.h). The hardware polling/JSON output is [controller.ino](../firmware/controller/controller.ino).
 
 ## LED feedback
 
-Controller v2 adds automatic RGB feedback for the opaque knob. Idle is full-intensity blue `(0, 0, 255)`, with no global dimmer. Palette and durations are in [led_feedback.h](../firmware/controller/led_feedback.h).
+The controller provides automatic RGB feedback for the opaque knob. Idle is full-intensity blue `(0, 0, 255)`, with no global dimmer. Palette and durations are in [led_feedback.h](../firmware/controller/led_feedback.h).
 
 | Observed input / recognized gesture | Color | Duration |
 | --- | --- | --- |
@@ -80,7 +92,7 @@ scripts/knob.sh monitor --raw
 python3 scripts/gesture-monitor.py --stdin < recorded-events.jsonl
 ```
 
-`--raw` also displays input samples. Repeated heartbeats are suppressed unless state changes. All action labels are marked `[SIM]`; the monitor never claims the radio or camera actually changed.
+`--raw` also displays input samples. Repeated heartbeats are suppressed unless state changes. Labels distinguish simulations, hardware requests and dropped requests; none claims that the radio or camera actually changed.
 
 ## Keep using the original diagnostic
 
@@ -93,11 +105,11 @@ scripts/arduino.sh board list
 scripts/knob.sh raw-monitor /dev/cu.usbmodem1412301
 ```
 
-Use the current serial port. The diagnostic retains its `h`, `s`, `c`, `r`, `g`, `b`, `w`, `o` commands. The controller's commands are only `h`/`?` for help and `s` for state; manual RGB testing stays in the diagnostic while the controller supplies automatic gesture feedback.
+Use the current serial port. The diagnostic retains its `h`, `s`, `c`, `r`, `g`, `b`, `w`, `o` commands. The controller's commands are listed above; manual RGB testing stays in the diagnostic while the controller supplies automatic gesture feedback.
 
 ## Protocol
 
-One JSON object per newline, protocol `v=1`; each record has `type`, `seq`, and device uptime `ms`. Types are `status` (fixed message), `input` (raw count/button), `heartbeat` (connection/camera-preview state), and `gesture` (action and positive step count). Gesture records include `simulated=true`.
+One JSON object per newline, protocol `v=1`; each record has `type`, `seq`, and device uptime `ms`. Types are `status` (fixed message), `input` (raw count/button), `heartbeat` (connection/camera-preview state), and `gesture` (action and positive step count). Controller v3 gesture records include `simulated=false` and a boolean `accepted`. Older simulation records use `simulated=true`.
 
 ```json
 {"v":1,"type":"gesture","seq":12,"ms":2500,"action":"volume_up","steps":2,"simulated":true}
@@ -105,7 +117,7 @@ One JSON object per newline, protocol `v=1`; each record has `type`, `seq`, and 
 
 Action names: `volume_up`, `volume_down`, `mute_att`, `next_track`, `previous_track`, `camera_on`, `camera_off`, `long_press_ignored`. The host renders the firmware's decisions; it does not independently infer gestures from raw input. Firmware keeps processing input if the monitor is closed but does not buffer/replay past commands to a later monitor.
 
-## Verification
+## Historical simulation verification
 
 Run `python3 scripts/test.py`. It builds the exact gesture engine for the host with address/undefined-behavior sanitizers and runs Python monitor tests. Tests exercise timing, bounce, click/turn conflicts, startup-held behavior, counter/millis rollover, disconnect cancellation, malformed protocol data, framing, CLI stdin, and a virtual serial port. It never opens the physical XIAO.
 
@@ -124,3 +136,9 @@ USB observation during a change of physical location: initially neither USB seri
 ## LED implementation verification — 2026-10-26
 
 19 gesture scenarios, 10 LED scenarios, and 19 Python monitor/memory tests passed. LED tests cover full-brightness idle, press/release restoration, pulse expiry/retrigger, both camera directions returning to idle, fault clearing, and timestamp rollover. Controller v2 compiles: Arduino summary 63,528 bytes flash / 9,376 bytes static RAM; full flash image 80,320 bytes (3.8%). The two existing USB.cpp core warnings remain; no controller warnings were reported. The agent did not upload this LED build. After performing the upload, the user reported that all feedback works (2026-10-26 client local date). Gesture and LED feedback are now user bench-verified; actual Sony and camera behavior remain untested.
+
+## Controller v3 implementation verification — 2026-11-06
+
+`python3 scripts/test.py` passed 19 gesture, 10 LED and 10 Sony-output host scenarios, plus 55 Python tests. New coverage includes pot-before-relay ordering, pulse/release timing, repeated detents, bounded capacity, expiry (including stalled settling), camera independence, release/reenable without replay, timer rollover, gesture-to-output dispatch, hardware monitor labels and serial status retry before boot. These tests use callbacks/mocks or virtual serial ports, not physical Sony hardware.
+
+XIAO controller compilation passed with the pinned toolchain. Full flash image: 86,640 / 2,093,056 bytes (4.1%); static RAM: 9,984 / 262,144 bytes (3.8%). Arduino section summary: 69,572 bytes flash. The initial rebuild reported the same two existing USB.cpp missing-initializer warnings; no sketch warnings. Current placement generators/checks and `git diff --check` passed. No hardware was flashed or energized by the agent. The user must upload and verify integrated gestures, software reboot/cold startup, actual Sony learning and pulse recognition.

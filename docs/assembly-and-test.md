@@ -13,7 +13,7 @@ Check the solderless board's rail continuity: long rails may be split. Place eac
 ## Assembly order
 
 1. **Ground and power, unpowered.** Establish common GND and regulated +5 V. Add C3 10 uF with positive to +5 V, negative to GND. Verify rail polarity and no short. Do not connect raw 12 V. For initial tests use one USB supply path; do not parallel an external 5 V supply with laptop USB VBUS.
-2. **U1 pot.** Connect pins 8 +5 V, 4 GND, 5 PB GND, C1 100 nF across 8/4. Leave PA pin 7 unconnected. PW pin 6 is the signal output toward K1. Complete CS/SCK/SI only through U2.
+2. **U1 pot.** Connect pins 8 +5 V, 4 GND, 5 PA GND, C1 100 nF across 8/4. Leave PB pin 7 unconnected. PW pin 6 is the signal output toward K1. Complete CS/SCK/SI only through U2.
 3. **U2 buffer.** Pins 14 +5 V, 7 GND, C2 100 nF across 14/7. Ground active-low enables 1, 4 and 10. Use channel 4 for camera: pin 13 GND, pin 12 D2/GPIO28 with R8 47 kohm to GND, pin 11 with R9 47 kohm to GND and inline R10 1 kohm to EXT IN 1. Keep Sony disconnected. Wire input/output pairs 2→3 for CS, 5→6 for clock, 9→8 for MOSI. Outputs 3/6/8 go to U1 pins 1/2/3 respectively. Put R4/R5/R6 47 kohm from each buffer input to GND.
 4. **Q1 and optical input.** Q1 emitter GND; collector K1 pin 3; R2 1 kohm from relay-enable cable lead to Q1 base; R7 47 kohm base to GND. +5 V through R1 330 ohm to K1 pin 2. Do not connect this load to a buffer output. No flyback diode is required for the optical LED.
 5. **Sony-side path, still disconnected from Sony.** A labeled test point INPUT1 goes through R3 2.7 kohm to K1 pin 5; K1 pin 6 to U1 PW pin 6. K1 pins 7/8 (normally closed) and package NC pins 1/4 stay unconnected. A second test point REMOTE_GND joins shared GND.

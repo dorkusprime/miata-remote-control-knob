@@ -46,7 +46,7 @@ The current placement and pad map replace the remote-only layout. They include R
 - LED provides a brief acknowledgement only, never a latched camera-state indication.
 - Real reverse goes directly to Sony REVERSE IN independently of the MCU. Sony supplies priority; no reverse GPIO or sensing circuit is required for that priority alone.
 - Whether Camera 1 resumes after leaving reverse is a bench acceptance question. No claim that firmware clears a request on reverse without a reverse-sensing input.
-- Hardware backend remains disabled pending acceptance. Existing serial camera-toggle intent remains a simulation.
+- Controller v3 implements the real camera request separately from steering pulses. User upload, buffer-to-Sony recognition and power-transition acceptance remain pending.
 
 ## Video and camera power
 
@@ -61,7 +61,7 @@ Camera video feeds REAR CAMERA IN for actual reversing and CAMERA IN 1 for manua
 5. Reverse priority and separate-input guidelines passed. Test reverse exit with a standing manual request, and installed camera power. Split-video quality and reverse/manual switching passed user testing on 2026-10-31.
 6. Implement/test nonblocking camera backend and release-on-fault; user performs flashing and energizing.
 
-The buffer circuit has not been assembled or connected to Sony. The updated board netlist and nominal geometry pass software checks. Sony-side tests below used independent bench supplies, not the proposed buffer.
+The buffer circuit is assembled and GPIO assertion/release passed with Sony disconnected; it has not been connected to Sony. The updated board netlist and nominal geometry pass software checks. Sony-side tests below used independent bench supplies, not the proposed buffer.
 
 ## User-observed Sony bench results — 2026-10-28
 

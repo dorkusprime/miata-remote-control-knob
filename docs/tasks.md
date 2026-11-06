@@ -46,21 +46,22 @@ Initial functional diagnostic complete: USB/I2C, rotation, button, RGB, and repe
 - [x] User ordered DigiKey components, including intentional spares (2026-10-27).
 - [x] Consolidate active docs and archive superseded build instructions.
 - [x] Choose a small soldered protoboard near the Sony (prior user decision).
-- [ ] Receive and inspect parts; verify actual packages, polarity and pin orientation.
+- [x] Receive parts and assemble permanent board; replaced defective LCC110 after diode comparison.
 - [x] Add a provisional current-design DIP placement image with pin/net reference; not a complete routed layout.
 - [x] Place every component and pigtail in a complete proposed pad map; document top / underside views and check all nets, holes and nominal body separation.
 - [x] Simplify placement: all component bodies on top, with two tapped buses and four signal wires underneath; all drawn lead and wire routes orthogonal.
 - [ ] Dry-fit actual components, sockets, mounting holes, formed leads and bus construction; verify insulation, clearances and overall height.
-- [ ] Assemble the receiver-disconnected permanent board in stages (solderless duplicate optional); verify rails and relay LED current.
-- [ ] Implement a separate calibration/driver diagnostic with relay-off defaults; user performs flashing.
+- [x] Assemble permanent board; user verified rails, continuity corrections and relay LED current.
+- [x] Implement interface diagnostic; user verified GPIO outputs and pot codes 64/128/192.
 - [ ] Measure and record the five calibrated output resistances.
 - [ ] Validate simulated-input current, reset/fault behavior and both supply-loss orders.
 - [x] Estimate Sony source impedance from user measurements: about 1.1–1.2 kohm; see bench report.
-- [ ] Resolve ATT current estimate about 0.59 mA versus previous <=0.5 mA design target; verify actual limits/margins before activation.
+- [x] Replace historical low-resistance ATT candidate with Sony-learned codes 64–192; measured minimum 16.4 kohm gives estimated steady-state current below 0.5 mA. Receiver acceptance remains pending.
 - [ ] Validate Sony recognition, learning and pulse timing at low volume.
 - [ ] Validate final cable length, connector orientation, mounting and strain relief.
 - [ ] Repeat electrical acceptance after permanent assembly.
-- [ ] Add a nonblocking bounded backend and watchdog; enable controller outputs only after validation.
+- [x] Implement controller v3 bounded pulse queue, fault release, watchdog and real requests; host-tested/compiled.
+- [ ] User upload and disconnected controller test, repeat cold-start upload, then controlled Sony learning; integrated hardware behavior remains unverified.
 
 ## Camera and installation
 
@@ -68,7 +69,7 @@ Required scope: [Camera 1 hardware/firmware plan](camera-control.md).
 
 - [x] Integrate spare HCT125 camera channel, R8/R9 pull-downs and inline R10 into checked layout/BOM/docs; hardware untested.
 - [ ] Allocate harness contact 8 to D2/GPIO28; verify eight-wire connector orientation.
-- [ ] Implement camera-request backend, reset/fault release and tests after trigger validation.
+- [x] Implement camera-request backend and host fault-release tests; user upload and integrated hardware acceptance pending.
 - [x] Verify external-source EXT IN 1 assertion and release to previous screen (2026-10-28).
 - [ ] Test touchscreen Back/retrigger and repeat release with actual buffer.
 - [ ] Provide camera power during manual preview, independent of reverse-lamp-only power.
@@ -84,3 +85,7 @@ Required scope: [Camera 1 hardware/firmware plan](camera-control.md).
 ## Bench evidence and next session
 
 [2026-10-28 results](bench-results-2026-10-28.md) separate observations from estimates. Head unit may be packed away pending interface components. Passive RCA split-video and reverse/manual switching passed on 2026-10-31. Next work is staged permanent assembly and a disabled-by-default calibration/backend diagnostic. No firmware was flashed or live outputs enabled during documentation work.
+
+## Latest implementation — 2026-11-06
+
+See [assembled bench results](bench-results-2026-11-05.md) and [controller v3 workflow](gestures.md). Historical checklist descriptions above are evidence of earlier plans, not a reason to repeat already completed strip-continuity tests. Sony learning, integrated physical behavior and power-loss acceptance remain open.
