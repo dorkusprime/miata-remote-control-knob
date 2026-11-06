@@ -2,6 +2,7 @@
 """Upload explicitly, using serial reboot before Picotool when USB serial is present."""
 import argparse
 import importlib.util
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -56,18 +57,36 @@ def upload(picotool, firmware, serial, ports):
         if result.returncode == 0:
             print(result.stdout, end="")
             return 0
-        if port and not fallback_requested:
+        details = result.stdout + result.stderr
+        # Picotool can see a runtime USB maintenance interface even when macOS
+        # has not created a serial device. Count actual reports before reset;
+        # never blindly reset an unidentified or ambiguous collection.
+        runtime_devices = re.findall(r"Device at bus [^\n]*appears to be a RP(?:2040|2350) device", details)
+        if not port and len(runtime_devices) > 1:
+            print(details, end="", file=sys.stderr)
+            print("Multiple runtime RP devices; connect only the intended XIAO before uploading.", file=sys.stderr)
+            return result.returncode
+        if (port or len(runtime_devices) == 1) and not fallback_requested:
             # Request ROM mode separately so upload does not inherit Picotool's
             # runtime-device tracking (some firmware exposes an empty serial).
-            print("Serial reset has not exposed ROM mode; requesting Picotool USB reboot.", flush=True)
+            print("Requesting Picotool USB reboot into BOOTSEL.", flush=True)
             reboot = subprocess.run([picotool, "reboot", "-u", "-f"],
                                     capture_output=True, text=True)
             print(reboot.stdout + reboot.stderr, end="")
             fallback_requested = True
-        if not port or time.monotonic() >= deadline:
+            if not port and reboot.returncode != 0:
+                print("Runtime USB reboot failed; no XIAO serial port is available.", file=sys.stderr)
+                return reboot.returncode
+        if (not port and not fallback_requested) or time.monotonic() >= deadline:
             print(result.stdout + result.stderr, end="", file=sys.stderr)
-            print("Upload failed. Close serial monitors and check USB data connectivity. "
-                  "Software recovery requires working USB firmware or BOOTSEL.", file=sys.stderr)
+            if not port and not fallback_requested:
+                print("Upload stopped: no matching XIAO serial port, no accessible BOOTSEL device, "
+                      "and no runtime USB device reported by Picotool. No reboot or flashing occurred. "
+                      "Restore USB data detection, then rerun; closing monitors alone does not create a missing port.",
+                      file=sys.stderr)
+            else:
+                print("Upload failed after requesting USB reboot. The device did not become accessible "
+                      "in BOOTSEL; inspect USB detection before retrying.", file=sys.stderr)
             return result.returncode
         time.sleep(0.5)
 

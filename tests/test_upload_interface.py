@@ -72,6 +72,28 @@ class UploadTests(unittest.TestCase):
         serial.Serial.assert_not_called()
         run.assert_not_called()
 
+    @patch.object(uploader.time, "sleep")
+    @patch.object(uploader.subprocess, "run")
+    def test_runtime_usb_reboot_without_serial_port(self, run, sleep):
+        serial, ports = MagicMock(), MagicMock()
+        ports.comports.return_value = []
+        run.side_effect = [subprocess.CompletedProcess([], 1, "", "Device at bus 1, address 1 appears to be a RP2040 device with a USB serial connection"),
+                           subprocess.CompletedProcess([], 0, "rebooted", ""),
+                           subprocess.CompletedProcess([], 0, "loaded", "")]
+        self.assertEqual(uploader.upload("tool", "file.uf2", serial, ports), 0)
+        serial.Serial.assert_not_called()
+        self.assertEqual(run.call_args_list[1].args[0], ["tool", "reboot", "-u", "-f"])
+
+    @patch.object(uploader.subprocess, "run")
+    def test_multiple_runtime_usb_devices_do_not_reset(self, run):
+        serial, ports = MagicMock(), MagicMock()
+        ports.comports.return_value = []
+        details = "Device at bus 1, address 1 appears to be a RP2040 device\nDevice at bus 1, address 2 appears to be a RP2350 device\n"
+        run.return_value = subprocess.CompletedProcess([], 1, "", details)
+        self.assertEqual(uploader.upload("tool", "file.uf2", serial, ports), 1)
+        self.assertEqual(run.call_count, 1)
+        serial.Serial.assert_not_called()
+
     @patch.object(uploader.subprocess, "run")
     def test_no_usb_fails_without_reset(self, run):
         serial, ports = MagicMock(), MagicMock()
