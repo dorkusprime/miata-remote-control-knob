@@ -112,3 +112,9 @@ This current status supersedes older pending endpoint and initial learning-mode 
 - [x] Research upstream reset failures through their resolution and inspect actual local tool/library versions.
 - [x] Replace macOS uploader dependency Picotool 2.0.0/libusb 1.0.27 with pinned official 2.3.1/1.0.30 bundle; no firmware change or agent flash.
 - [ ] User retries upload with the corrected host bundle, then repeats after successful programming; actual software-reset reliability remains unverified.
+
+## Standard upload baseline — 2026-11-06
+
+- [x] Record that Picotool/libusb upgrade alone did not resolve the user's failed software reset (zero-byte status response).
+- [x] Replace custom upload orchestration with Arduino CLI's core-provided Picotool recipe; retain memory reporting and explicit port selection.
+- [ ] User verifies initial, repeat and post-power-cycle upload without pressing BOOT. This is required before burial behind the console fascia.

@@ -2,13 +2,31 @@
 
 Three sketches are available: the preserved [Twist diagnostic](diagnostic/diagnostic.ino), the [interface bench diagnostic](interface/interface.ino), and the integrated [gesture controller](controller/controller.ino). Build/upload defaults to `controller`; uploading is always explicit and performed by the user.
 
-Controller v3 drives the assembled board: turn=volume, click=Mute, held turn=track, double click=Camera 1 request. It preserves LED feedback and serial `status`/`boot` maintenance for uploads. See [gesture workflow](../docs/gestures.md) and [learned-code assignments](../docs/sony-interface.md#calibration-model-and-firmware-contract). The board's separate interface diagnostic passed user GPIO, relay and three resistance checks. The integrated controller has not yet been uploaded or tested with Sony.
+Controller v3 drives the assembled board: turn=volume, click=Mute, held turn=track, double click=Camera 1 request. It preserves LED feedback and serial `status`/`boot` maintenance for uploads. See [gesture workflow](../docs/gestures.md) and [learned-code assignments](../docs/sony-interface.md#calibration-model-and-firmware-contract). The board's separate interface diagnostic passed user GPIO, relay and three resistance checks. The integrated controller has been uploaded and Sony distinguishes the two volume endpoint assignments; interior assignments remain under test.
 
-The historical diagnostic setup/results below remain for reference. For current upload recovery, all targets use `scripts/upload-interface.py`: it first identifies the interface/controller via serial status and requests `boot`, with 1200-baud/Picotool fallback for other firmware. Close monitors before uploading. USB recovery with the interface sketch passed after cold power cycling; repeat acceptance with the controller remains pending.
+## Current upload workflow — Arduino CLI
+
+`scripts/knob.sh upload controller` delegates uploading to **Arduino CLI and the installed Arduino-Pico core's Picotool recipe**, matching the IDE configuration `Seeed XIAO RP2040` / `Upload Method: Picotool`. The core recipe executes `picotool load <sketch>.ino.uf2 -f -x`. The wrapper reports memory and selects a matching serial port from Arduino CLI discovery; it sends no `status`/`boot` command, performs no 1200-baud sequence and adds no reboot/retry loop. The retired custom uploader and its tests have been removed; older recovery notes below describe historical attempts.
+
+Close the monitor, then use the existing build:
+
+```sh
+scripts/knob.sh upload controller
+```
+
+To select a port explicitly, including when more than one matching serial device exists:
+
+```sh
+scripts/knob.sh upload controller --port /dev/cu.usbmodem1101
+```
+
+With no matching serial port, Arduino CLI runs the same core recipe and Picotool handles USB discovery. The standard Picotool recipe discovers its USB target itself; a serial `--port` does not constrain Picotool's target selection. Connect only the intended RP2040 for this test. Upload is verbose and returns the CLI's exit status directly. It does not rebuild. On macOS the sole upload-property override is `tools.picotool.cmd`, selecting the pinned official 2.3.1 executable directory and libusb 1.0.30. The upload pattern itself is unchanged. An IDE using another board core, upload method or executable version would be a different comparison.
+
+This change establishes a standard baseline; it does **not** establish reliable software entry into BOOTSEL. The console installation requires repeated software uploads without opening the fascia or pressing BOOT. User acceptance must include repeat upload and upload after a normal power cycle. No hardware was flashed by the agent.
 
 ## macOS Tahoe uploader correction — 2026-11-06
 
-The Arduino package folder `pqt-picotool/5.0.0-9576866` actually contains Picotool **2.0.0**, linked to its adjacent libusb **1.0.27**. On this Mac running **26.6.2**, that library predates the libusb **1.0.30 Tahoe compatibility fix**. `scripts/knob.sh upload` now selects the separate project-local **official Raspberry Pi Picotool 2.3.1 macOS distribution**, which bundles libusb **1.0.30**. The core/compiler and firmware are unchanged by this correction. This removes a confirmed dependency mismatch; whether it resolves this board's failed reboot must be established by a user upload.
+The Arduino package folder `pqt-picotool/5.0.0-9576866` actually contains Picotool **2.0.0**, linked to its adjacent libusb **1.0.27**. On this Mac running **26.6.2**, that library predates the libusb **1.0.30 Tahoe compatibility fix**. `scripts/knob.sh upload` now selects the separate project-local **official Raspberry Pi Picotool 2.3.1 macOS distribution**, which bundles libusb **1.0.30**. The core/compiler and firmware are unchanged by this correction. This removes a confirmed dependency mismatch; the user subsequently retried the custom uploader with these corrected versions and the same reset failure remained. The version upgrade did not resolve it.
 
 The current workspace already has this uploader installed. Fresh setups install it with `setup-toolchain.py`; an existing checkout can install it without rebuilding or touching hardware:
 
@@ -18,7 +36,7 @@ python3 scripts/picotool-host.py setup
 
 The official archive URL, version and SHA-256 are pinned in toolchain.json. Only the executable and its adjacent library are extracted; the runtime checks reject libusb older than 1.0.30 or a different Picotool version. No global Homebrew package or Arduino package file is overwritten. Picotool is BSD-3-Clause and libusb is LGPL-2.1-or-later; they remain local tool dependencies, not vendored firmware sources.
 
-The next controlled test is the ordinary `scripts/knob.sh upload controller`, without changing the current board, cable, port or application binary first. Confirm the opening `USB uploader: Picotool 2.3.1 / libusb 1.0.30` line. After a successful upload, repeat once to exercise software reset from the newly running firmware. No repeat-upload success is assumed.
+The next controlled test uses Arduino CLI's standard recipe as described above, replacing the failed custom sequence. The opening tool-version line should still read `USB uploader: Picotool 2.3.1 / libusb 1.0.30`.
 
 For research findings and the remaining distinction between an unanswered CDC port and failed ROM re-enumeration, see [USB investigation](../docs/interface-diagnostic.md#macos-host-tool-investigation--2026-11-06).
 
@@ -80,7 +98,7 @@ scripts/arduino.sh board list
 scripts/knob.sh raw-monitor /dev/cu.usbmodem1412301
 ```
 
-Use the current port from `board list` for the monitor; Picotool upload itself does not require a serial-port name. Connect only the intended RP2040 target when uploading: Picotool selects a device over USB. The helper does not compile implicitly during upload; build after each source change. With target `diagnostic`, it uploads only from `build/diagnostic-picotool` using the installed Picotool with forced USB reset, read-back verification, and execution (`load -v -f -x`). The build FQBN in `toolchain.json` must retain `uploadmethod=picotool`.
+Use the current port from `board list` for the monitor; Picotool upload itself does not require a serial-port name. Connect only the intended RP2040 target when uploading: Picotool selects a device over USB. The helper does not compile implicitly during upload; build after each source change. With target `diagnostic`, it uploads only from `build/diagnostic-picotool` through the core-provided Picotool recipe (`load -f -x`). The build FQBN in `toolchain.json` must retain `uploadmethod=picotool`.
 
 The user confirmed two successive Picotool uploads without pressing buttons or unplugging USB (2026-10-27). This is user-reported hardware validation, separate from compilation. The `h` command can display the maintenance banner. A firmware/USB failure can still require hardware recovery; Picotool is not a guarantee against every hang. Keep an accessible USB data connection in the installation design.
 

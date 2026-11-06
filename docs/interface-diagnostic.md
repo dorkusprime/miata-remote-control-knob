@@ -50,7 +50,9 @@ Subsequent checks proceed one at a time. Relay contacts and pot resistance can b
 
 Microchip reference: https://ww1.microchip.com/downloads/en/DeviceDoc/11195c.pdf
 
-## USB upload recovery
+## Historical custom USB upload recovery (retired)
+
+Current uploads use Arduino CLI directly through `knob.sh`; see the [current workflow](../firmware/README.md#current-upload-workflow--arduino-cli). The custom uploader described in this section was removed after repeated failures.
 
 The upload helper detects the sole matching RP2040 serial device, requests BOOTSEL using the pinned core’s 1200-baud serial reset sequence, and retries Picotool ROM access for up to 12 seconds while USB re-enumerates. It holds DTR low after selecting 1200 baud and allows USB re-enumeration. If serial reset does not expose ROM mode, it requests a separate Picotool USB reboot before retrying the load. Close serial monitors before uploading. With no serial device, it tries an already-present BOOTSEL device once. Multiple matching serial devices are rejected before reset. This recovery is unit-tested with mocked USB operations. The user verified repeat flashing and flashing after unplug/replug with the interface firmware.
 
@@ -103,3 +105,15 @@ Other upstream reports were checked through their conclusions:
 If the corrected host bundle still fails, the unresolved branch is **CDC unresponsiveness versus USB mode transition**, not another blind delay tweak. Record the new tool/version line and received-byte count before choosing further firmware changes. Do not erase flash, change wiring, or attribute this to the known-capable cable without additional evidence.
 
 Verification: pinned archive SHA-256 matched `7bb3cea5d9f1b000fc758cf4b54774fda5c16a9899d342ef6b0c30138988793b`; actual executable reported 2.3.1 and adjacent library reported 1.0.30. The host suite passed 24 gesture, 12 LED, 17 Sony-output, 3 USB-maintenance scenarios and 64 Python tests, including rejection of a pre-Tahoe library, archive checksum enforcement, exact-member extraction and version-only verification. Shell/Python syntax and `git diff --check` passed. No firmware rebuild was necessary because no sketch source changed. No agent reset, upload or power transition was performed.
+
+## Standard Arduino CLI upload baseline — 2026-11-06
+
+The user retried the corrected Picotool 2.3.1/libusb 1.0.30 bundle. The custom uploader received **0 bytes** in response to `status`, then failed to reach accessible BOOTSEL through both its 1200-baud and separate Picotool reset attempts. The host-library update was insufficient. Because the status signature was absent, the custom firmware `boot` command was not sent, so its deferred detach logic was not exercised by that attempt.
+
+The user requested the accepted Arduino workflow because pressing BOOT after console installation is untenable. `knob.sh upload` now invokes Arduino CLI `upload --fqbn ...:uploadmethod=picotool --input-dir ... --verbose` using the installed core recipe. The local platform.txt recipe is `"{cmd}/picotool" load "{build.path}/{build.project_name}.uf2" -f -x`. On macOS the executable-directory property selects the already-installed current host bundle; no upload-pattern override is made. The custom serial exchange, 1200-baud fallback, separate reboot request and retry orchestration are removed. Firmware and the existing compiled image are unchanged.
+
+Port discovery uses Arduino CLI's board list and matches the XIAO FQBN. An explicit `--port` bypasses auto-selection; multiple matching ports stop before invoking upload. No serial port is required when the core's Picotool can discover USB directly. Picotool itself selects its USB target independently of the serial port, so use only one intended RP target for the baseline test.
+
+User test: close monitor; run `scripts/knob.sh upload controller`. Preserve verbose output if it fails. If it succeeds, repeat without touching the board, then verify after normal power cycling. The cause of the earlier failure is still unconfirmed; moving to the standard recipe is a controlled comparison, not a claim that native USB recovery is now solved.
+
+Verification: seven wrapper integration tests used a fake Arduino CLI and fake artifacts, with no device access. They cover exact core/FQBN/artifact arguments, the executable-directory override, automatic and explicit port selection, multiple-port refusal, no-serial delegation, other sketches, paths containing spaces, argument rejection and preserving CLI failure without retry. The complete host suite passed 62 Python tests plus 24 gesture, 12 LED, 17 output and 3 USB-maintenance scenarios. `git diff --check` and shell syntax passed. No firmware was flashed and no reset request was sent by the agent.

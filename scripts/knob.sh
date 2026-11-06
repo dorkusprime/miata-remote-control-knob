@@ -4,7 +4,8 @@ set -eu
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$ROOT"
 usage() {
-  echo 'Usage: scripts/knob.sh build|upload|size [controller|diagnostic|interface]' >&2
+  echo 'Usage: scripts/knob.sh build|size [controller|diagnostic|interface]' >&2
+  echo '       scripts/knob.sh upload [controller|diagnostic|interface] [--port PORT]' >&2
   echo '       scripts/knob.sh monitor [--port PORT] [--raw]' >&2
   echo '       scripts/knob.sh console [--port PORT]' >&2
   echo '       scripts/knob.sh raw-monitor PORT' >&2
@@ -12,16 +13,26 @@ usage() {
 }
 case "${1:-}" in
   build|upload|size)
-    [ "$#" -le 2 ] || usage
-    TARGET=${2:-controller}
+    ACTION=$1
+    shift
+    TARGET=controller
+    case "${1:-}" in
+      --port|'') ;;
+      *) TARGET=$1; shift ;;
+    esac
+    PORT=
+    if [ "$#" -gt 0 ]; then
+      [ "$ACTION" = upload ] && [ "$#" -eq 2 ] && [ "$1" = --port ] && [ -n "$2" ] || usage
+      PORT=$2
+    fi
     case "$TARGET" in controller|diagnostic|interface) ;; *) usage ;; esac
     FQBN=$(python3 -c 'import json; print(json.load(open("firmware/toolchain.json"))["fqbn"])')
     BUILD="$ROOT/build/$TARGET-picotool"
-    if [ "$1" = build ]; then
+    if [ "$ACTION" = build ]; then
       exec "$ROOT/scripts/arduino.sh" compile --fqbn "$FQBN" --warnings all \
         --build-path "$BUILD" "$ROOT/firmware/$TARGET"
     fi
-    if [ "$1" = size ]; then
+    if [ "$ACTION" = size ]; then
       exec python3 "$ROOT/scripts/memory-usage.py" "$BUILD/$TARGET.ino.elf"
     fi
     if [ ! -f "$BUILD/$TARGET.ino.uf2" ]; then
@@ -39,7 +50,31 @@ case "${1:-}" in
       exit 1
     fi
     python3 "$ROOT/scripts/memory-usage.py" "$BUILD/$TARGET.ino.elf"
-    exec python3 "$ROOT/scripts/upload-interface.py" "$PICOTOOL" "$BUILD/$TARGET.ino.uf2"
+    if [ -z "$PORT" ]; then
+      # Discovery only: Arduino CLI lists ports; no application serial commands.
+      PORT=$("$ROOT/scripts/arduino.sh" board list --json | python3 -c '
+import json, sys
+board = ":".join(sys.argv[1].split(":")[:3])
+ports = sorted({item["port"]["address"] for item in json.load(sys.stdin).get("detected_ports", [])
+                if item.get("port", {}).get("protocol") == "serial"
+                and any(match.get("fqbn") == board for match in item.get("matching_boards", []))})
+if len(ports) > 1:
+    sys.exit("Multiple matching serial ports; select one with --port PORT.")
+if ports:
+    print(ports[0])
+' "$FQBN")
+    fi
+    # Delegate reset, mode transition and upload to the core-provided recipe.
+    # This property changes only the executable directory, not the recipe.
+    set -- upload --fqbn "$FQBN" --input-dir "$BUILD" --verbose \
+      --upload-property "tools.picotool.cmd=$(dirname "$PICOTOOL")"
+    if [ -n "$PORT" ]; then
+      echo "Arduino CLI upload via $PORT (core Picotool recipe)"
+      set -- "$@" --port "$PORT"
+    else
+      echo 'Arduino CLI upload (no matching serial port; core Picotool handles USB discovery)'
+    fi
+    exec "$ROOT/scripts/arduino.sh" "$@" "$ROOT/firmware/$TARGET"
     ;;
   monitor)
     shift
