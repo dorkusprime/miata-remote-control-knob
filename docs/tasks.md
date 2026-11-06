@@ -122,5 +122,5 @@ This current status supersedes older pending endpoint and initial learning-mode 
 ## Sony learning progress — 2026-11-06
 
 - [x] User confirms v3.4 loaded and three commands functional: Volume - (0), Play/Pause via single press (238), Volume + (255).
-- [ ] Test Next Track via held right turn (248), then Previous Track via held left turn (215), one assignment at a time.
-- [ ] Establish learning-window limits beyond the three accepted commands; maximum command count remains unknown.
+- [x] User taught Next Track via held right turn (248) and Previous Track via held left turn (215); all five commands work.
+- [ ] Establish learning-window limits beyond the five accepted commands; maximum command count remains unknown.
