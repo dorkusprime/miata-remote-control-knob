@@ -4,6 +4,7 @@
 #include "led_feedback.h"
 #include "sony_output.h"
 #include "usb_maintenance.h"
+#include "output_trace.h"
 #include <USB.h>
 #include <SPI.h>
 #include <hardware/watchdog.h>
@@ -23,6 +24,10 @@ size_t serialLength = 0;
 bool serialOverflow = false, hadSerial = false;
 uint32_t startupAt = 0;
 knob::BootRequest bootRequest;
+knob::OutputTrace outputTrace;
+uint32_t lastAudioInputAt = 0;
+bool audioInputSeen = false;
+void recordRelayEdge(bool on);
 
 void writePot(uint8_t code) {
   digitalWrite(kRelay, LOW);
@@ -32,9 +37,14 @@ void writePot(uint8_t code) {
   digitalWrite(kCs, HIGH);
   SPI.endTransaction();
 }
-void setRelay(bool on) { digitalWrite(kRelay, on ? HIGH : LOW); }
+void setRelay(bool on) { digitalWrite(kRelay, on ? HIGH : LOW); recordRelayEdge(on); }
 void setCamera(bool on) { digitalWrite(kCamera, on ? HIGH : LOW); }
 knob::SonyOutput output(writePot, setRelay, setCamera);
+void recordRelayEdge(bool on) {
+  const uint32_t now = millis();
+  outputTrace.record({now, audioInputSeen ? now - lastAudioInputAt : UINT32_MAX,
+                      output.code(), output.pending(), on});
+}
 TWIST twist;
 struct Sample { uint16_t count; bool down; uint8_t major, minor; };
 // Explicit declarations prevent Arduino's generated prototypes preceding Sample.
@@ -49,17 +59,29 @@ knob::Color lastLed = knob::kOff;
 bool ledKnown = false;
 uint32_t lastAttempt = 0, lastPoll = 0, lastHeartbeat = 0, sequence = 0;
 
-void emitEvent(const char *type, const char *fields) {
-  if (!Serial) return;
+bool emitEvent(const char *type, const char *fields) {
+  if (!Serial) return false;
   char record[256];
   const int length = snprintf(record, sizeof(record),
       "{\"v\":1,\"type\":\"%s\",\"seq\":%lu,\"ms\":%lu%s}\n",
       type, static_cast<unsigned long>(sequence + 1),
       static_cast<unsigned long>(millis()), fields);
   if (length <= 0 || static_cast<size_t>(length) >= sizeof(record) ||
-      Serial.availableForWrite() < length) return;
+      Serial.availableForWrite() < length) return false;
   ++sequence;
-  Serial.write(reinterpret_cast<const uint8_t *>(record), length);
+  return Serial.write(reinterpret_cast<const uint8_t *>(record), length) == static_cast<size_t>(length);
+}
+
+void serviceOutputTrace() {
+  if (!Serial) { outputTrace.discard(); return; }
+  const knob::OutputEdge *edge = outputTrace.front();
+  if (!edge) return;
+  char fields[180];
+  snprintf(fields, sizeof(fields),
+      ",\"edge_ms\":%lu,\"on\":%s,\"code\":%u,\"pending\":%u,\"input_age_ms\":%lu,\"trace_lost\":%lu",
+      static_cast<unsigned long>(edge->at), edge->on ? "true" : "false", edge->code, edge->pending,
+      static_cast<unsigned long>(edge->inputAge), static_cast<unsigned long>(outputTrace.lost()));
+  if (emitEvent("output", fields)) outputTrace.pop();
 }
 
 const char *actionName(knob::Action action) {
@@ -79,6 +101,10 @@ const char *actionName(knob::Action action) {
 }
 
 void gestureEvent(const knob::Event &event, void *) {
+  uint8_t audioCode;
+  if (output.codeFor(event.action, audioCode)) {
+    lastAudioInputAt = millis(); audioInputSeen = true;
+  }
   // Feedback must work with no serial monitor; fault-cancel events are not gestures.
   if (connected) feedback.onGesture(event, millis());
   bool accepted = false;
@@ -124,7 +150,7 @@ void heartbeat() {
 }
 
 void help() {
-  status("Gesture controller v3.5; USB maintenance: Picotool + boot command; Sony/camera hardware backend");
+  status("Gesture controller v3.5.1; USB maintenance: Picotool + boot command; Sony/camera hardware backend");
   status("Turn=volume; click=play/pause; held turn=track; hold/release >=0.7s=mute; double click=Camera 1");
   status("Debounce=30ms; double click=300ms from first release to second press; long hold=700ms");
   status("Sony codes: volume=255/0; play/pause=238; mute=230; next=248; previous=215");
@@ -390,6 +416,7 @@ void loop() {
   }
   output.tick(millis());
   applyFeedback(millis());
+  serviceOutputTrace();  // Report captured edges after servicing time-critical outputs.
   if (now - lastHeartbeat >= 2000) { lastHeartbeat = now; heartbeat(); }
   delay(1);
 }

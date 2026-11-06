@@ -231,3 +231,19 @@ Controller v3.4 compiled for XIAO RP2040: full flash image **89,496 / 2,093,056 
 ## Six-control profile verification — 2026-11-06
 
 Controller v3.5 compiled for XIAO RP2040: full flash image **89,584 / 2,093,056 bytes (4.3%)**, static RAM **10,016 / 262,144 bytes (3.8%)**. Passed 31 gesture scenarios, 13 LED scenarios, 18 Sony-output scenarios, 3 USB-maintenance scenarios and 63 Python tests. Coverage includes Play/Pause versus Mute code separation, Mute once on release at the 700 ms boundary, no Mute after held rotation, no extra Play/Pause on a long second click, cancellation on reconnect, timer wrap and ten-second learning suppression including release as the first threshold sample. The monitor's six-code calibration output and Play/Pause action are covered. `git diff --check` passed. The agent did not upload or reset hardware. The new Mute gesture remains pending user acceptance.
+
+## Output timing trace — controller v3.5.1
+
+The user reports roughly three seconds of continued volume-down activity after a fast turn and confirms normal mode, not learning mode. Normal firmware deliberately serializes each detent into a 1 ms pot settle, 55 ms relay assertion and 55 ms release gap (about nine steps/second). It queues up to eight pending steps, rejects an entire incoming batch that cannot fit, and drops commands older than 750 ms. Button debounce is 30 ms; ordinary turning is not delayed by the 300 ms click window. With a normally serviced loop, stale queued commands should not explain a three-second post-input tail; loop stalls, additional input, and receiver behavior must be distinguished by observations.
+
+v3.5.1 keeps the six-control map and output timing unchanged and adds a bounded diagnostic trace. After user upload, run:
+
+```sh
+scripts/knob.sh monitor --outputs
+```
+
+Each actual change written by the relay GPIO callback is captured with its original device timestamp, commanded pot code, pending queue count, and age since the last observed audio gesture. The monitor renders `[OUTPUT @1234ms] PRESS/RELEASE code=0 pending=0; 680ms since last audio gesture`. These are GPIO-write observations, not direct measurements of PhotoMOS contacts or Sony's input voltage. Trace reporting occurs after output servicing, with up to 32 stored transitions; a lost-edge counter explicitly flags overflow. With no serial connection, stored records are discarded. Normal monitor output hides the trace unless `--outputs` is selected. Device timestamps, rather than host display timestamps, identify when each edge occurred.
+
+Test: make one quick left roll, release the knob and wait until volume stops. Compare the final RELEASE/input-age against the observed Sony tail; share the trace around that roll. If output edges themselves run late, inspect the controller/input timeline. If GPIO activity ends promptly while Sony continues, investigate the remaining electrical/receiver path. No timing reduction, queue-policy change or Sony-delay diagnosis is claimed from this instrumentation alone.
+
+Verification: 31 gesture, 13 LED, 18 output-driver, 3 USB-maintenance and 3 trace-buffer scenarios passed, plus 64 Python tests. The XIAO build uses 90,040 bytes flash (4.3%) and 10,412 bytes static RAM (4.0%). Two existing USB.cpp initializer warnings remain; no sketch warning. `git diff --check` passed. Agent did not upload or reset hardware.

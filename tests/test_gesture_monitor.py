@@ -67,6 +67,18 @@ class MonitorTests(unittest.TestCase):
         data.update(simulated=False, accepted=True, pot_code=255)
         self.assertIn("(code 255)", monitor.Renderer().render(json.dumps(data)))
 
+    def test_actual_output_trace(self):
+        event = dict(v=1, type="output", edge_ms=1234, on=False, code=0,
+                     pending=0, input_age_ms=680, trace_lost=0)
+        self.assertIsNone(monitor.Renderer().render(json.dumps(event)))
+        text = monitor.Renderer(outputs=True).render(json.dumps(event))
+        self.assertIn("[OUTPUT @1234ms] RELEASE code=0 pending=0", text)
+        self.assertIn("680ms since last audio gesture", text)
+        event["trace_lost"] = 2
+        self.assertIn("LOST 2", monitor.Renderer(outputs=True).render(json.dumps(event)))
+        event["on"] = "false"
+        self.assertEqual(monitor.Renderer(outputs=True).render(json.dumps(event)), "Invalid output trace.")
+
     def test_unknown_action(self):
         data = json.loads(gesture()); data["action"] = ["bad"]
         self.assertEqual(monitor.Renderer().render(json.dumps(data)), "Unknown gesture action.")

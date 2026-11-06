@@ -6,7 +6,7 @@ cd "$ROOT"
 usage() {
   echo 'Usage: scripts/knob.sh build|size [controller|diagnostic|interface]' >&2
   echo '       scripts/knob.sh upload [controller|diagnostic|interface] [--port PORT] [--dry-run]' >&2
-  echo '       scripts/knob.sh monitor [--port PORT] [--raw]' >&2
+  echo '       scripts/knob.sh monitor [--port PORT] [--raw] [--outputs]' >&2
   echo '       scripts/knob.sh console [--port PORT]' >&2
   echo '       scripts/knob.sh raw-monitor PORT' >&2
   exit 1
