@@ -73,3 +73,33 @@ The uploader now asserts DTR/RTS before opening, allows 250 ms for line state re
 Rationale: [Arduino-Pico issue 3240](https://github.com/earlephilhower/arduino-pico/issues/3240) reports sensitivity to reset/detach timing on a different Linux/hub configuration and discusses explicit TinyUSB detach. This is supporting evidence for a recovery experiment, not proof that the Mac has the same cause. The software changes need an initial successful recovery upload and then repeated software uploads/cold-start testing. BOOTSEL has consistently worked by user report; the cable/port have previously transferred data. No live reboot/upload was performed by the agent.
 
 Verification for v3.3.1: pinned XIAO build passed (88,496-byte flash image; 10,008-byte static RAM). Passed 24 gesture, 12 LED, 13 output-driver, three USB-maintenance timing scenarios and 58 Python tests, including fragmented status identification. Initial core rebuild emitted its two previously recorded USB.cpp initializer warnings; no sketch warnings. Final `git diff --check` passed. These are software checks, not proof that the intermittent USB failure is fixed on hardware.
+
+## macOS host-tool investigation — 2026-11-06
+
+The user again reported the full sequence: a matching `/dev/cu.usbmodem1101`, no interface status response, unsuccessful 1200-baud reset, Picotool claiming it asked for BOOTSEL, and a subsequent load still reporting a runtime device. This does not establish whether ROM was never reached, briefly reached, or was hidden by host re-enumeration failure. A reboot request message is not a successful reboot acknowledgment. Manual BOOT uploads have repeatedly worked, including when software uploads failed.
+
+Read-only inspection found:
+
+| Item | Observation |
+| --- | --- |
+| macOS | 26.6.2, build 25G83 |
+| Actual bundled Picotool | 2.0.0, despite Arduino package label 5.0.0-9576866 |
+| Actual adjacent libusb | 1.0.27.11882, queried using `libusb_get_version` |
+| Runtime USB registry | XIAO RP2040, VID:PID 2e8a:000a; serial device exists |
+| Open serial owner | `lsof` reported none at inspection time |
+| Agent status-only read | Blocked by device sandbox (`Operation not permitted`); no inference about firmware responsiveness |
+| Application build | Correct XIAO FQBN with `uploadmethod=picotool`; compile-time check requires USB reset interface |
+
+The official [libusb changelog](https://github.com/libusb/libusb/blob/master/ChangeLog) records a macOS 26 Tahoe compatibility repair in **1.0.30**, specifically port-number lookup after Apple changed `kUSBHostPortPropertyPortNumber`. That is a concrete compatibility defect in our old host dependency, but port-number repair alone is not proof of the cause of silent CDC or failed reset. The official [Raspberry Pi host tools release](https://github.com/raspberrypi/pico-sdk-tools/releases/tag/v2.3.1-0) provides Picotool 2.3.1; its macOS archive was downloaded, checked against the release SHA-256, and inspected. It bundles libusb 1.0.30. Both versions were executed/queried locally without resetting or flashing hardware.
+
+The uploader now uses this separate pinned host bundle on macOS. The existing firmware reset path remains unchanged, providing a controlled comparison. Its initial log identifies actual host-tool versions. When CDC does not identify the firmware, the uploader reports how many bytes arrived and an escaped bounded sample, distinguishing silence from an unexpected response. No automatic upload acceptance is claimed; the user must retry the same upload, then repeat after success.
+
+Other upstream reports were checked through their conclusions:
+
+- [Arduino-Pico #3240](https://github.com/earlephilhower/arduino-pico/issues/3240) closely matches manual-BOOT success/software-reset failure. Its author ultimately traced their failure to a **Linux USB hub/host interaction when the serial handle remained open** and closed it as not an Arduino-Pico bug. A suggested `tud_disconnect` change did not solve that case. It is relevant evidence about reset/handle ordering, not proof that our Mac has the same bug or a reason to apply an unmerged core patch.
+- [Picotool #56](https://github.com/raspberrypi/picotool/issues/56) was resolved by including firmware USB reset support. Our build already enables that support.
+- [Arduino-Pico #2078](https://github.com/earlephilhower/arduino-pico/issues/2078) concerns older Picotool's hardcoded VID/PID handling of third-party boards. Our observed runtime identity is already 2e8a:000a and the old tool reported it, so that report does not explain the entire present failure.
+
+If the corrected host bundle still fails, the unresolved branch is **CDC unresponsiveness versus USB mode transition**, not another blind delay tweak. Record the new tool/version line and received-byte count before choosing further firmware changes. Do not erase flash, change wiring, or attribute this to the known-capable cable without additional evidence.
+
+Verification: pinned archive SHA-256 matched `7bb3cea5d9f1b000fc758cf4b54774fda5c16a9899d342ef6b0c30138988793b`; actual executable reported 2.3.1 and adjacent library reported 1.0.30. The host suite passed 24 gesture, 12 LED, 17 Sony-output, 3 USB-maintenance scenarios and 64 Python tests, including rejection of a pre-Tahoe library, archive checksum enforcement, exact-member extraction and version-only verification. Shell/Python syntax and `git diff --check` passed. No firmware rebuild was necessary because no sketch source changed. No agent reset, upload or power transition was performed.

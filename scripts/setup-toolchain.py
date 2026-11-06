@@ -6,6 +6,7 @@ import json
 import pathlib
 import platform
 import subprocess
+import sys
 import tarfile
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -108,6 +109,7 @@ def main():
         subprocess.run([str(CLI), "--config-file", str(CONFIG), *args], check=True)
     cli("core", "install", LOCK["core"] + "@" + LOCK["core_version"])
     cli("lib", "install", LOCK["library"] + "@" + LOCK["library_version"])
+    subprocess.run([sys.executable, str(ROOT / "scripts/picotool-host.py"), "setup"], check=True)
     print("Toolchain installed. No hardware has been flashed.")
 
 

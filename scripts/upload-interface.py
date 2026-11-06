@@ -43,7 +43,9 @@ def upload(picotool, firmware, serial, ports):
                     # Close the host serial handle now. New controller firmware
                     # waits for this, then explicitly detaches USB before ROM boot.
                 else:
-                    print("No interface response; trying 1200-baud reset.", flush=True)
+                    print(f"No interface status signature ({len(received)} bytes received); trying 1200-baud reset.", flush=True)
+                    if received:
+                        print("Serial response sample: " + repr(received[-300:]), flush=True)
                     connection.baudrate = 1200
                     time.sleep(0.1)
                     connection.dtr = False

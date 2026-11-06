@@ -6,5 +6,10 @@
   "fqbn": "rp2040:rp2040:seeed_xiao_rp2040:uploadmethod=picotool",
   "library": "SparkFun Qwiic Twist Arduino Library",
   "library_version": "1.0.4",
-  "additional_url": "https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json"
+  "additional_url": "https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json",
+  "macos_picotool": {
+    "version": "2.3.1",
+    "url": "https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.3.1-0/picotool-2.3.1-mac.zip",
+    "sha256": "7bb3cea5d9f1b000fc758cf4b54774fda5c16a9899d342ef6b0c30138988793b"
+  }
 }

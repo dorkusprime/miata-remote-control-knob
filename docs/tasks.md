@@ -106,3 +106,9 @@ See [assembled bench results](bench-results-2026-11-05.md) and [controller v3 wo
 - [ ] Verify ordinary short-pulse operation for accepted commands, repeat software upload after cold startup, and complete power-transition acceptance.
 
 This current status supersedes older pending endpoint and initial learning-mode upload items; those historical entries retain their original context.
+
+## USB host compatibility — 2026-11-06
+
+- [x] Research upstream reset failures through their resolution and inspect actual local tool/library versions.
+- [x] Replace macOS uploader dependency Picotool 2.0.0/libusb 1.0.27 with pinned official 2.3.1/1.0.30 bundle; no firmware change or agent flash.
+- [ ] User retries upload with the corrected host bundle, then repeats after successful programming; actual software-reset reliability remains unverified.

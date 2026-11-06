@@ -30,6 +30,10 @@ case "${1:-}" in
     fi
     VERSION=$(python3 -c 'import json; print(json.load(open("firmware/toolchain.json"))["picotool_package_version"])')
     PICOTOOL="$ROOT/.tools/arduino/data/packages/rp2040/tools/pqt-picotool/$VERSION/picotool"
+    # The Arduino package bundles libusb 1.0.27, predating macOS Tahoe fixes.
+    if [ "$(uname -s)" = Darwin ]; then
+      PICOTOOL=$(python3 "$ROOT/scripts/picotool-host.py" path)
+    fi
     if [ ! -x "$PICOTOOL" ]; then
       echo 'Picotool missing; run python3 scripts/setup-toolchain.py.' >&2
       exit 1

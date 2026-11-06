@@ -6,6 +6,22 @@ Controller v3 drives the assembled board: turn=volume, click=Mute, held turn=tra
 
 The historical diagnostic setup/results below remain for reference. For current upload recovery, all targets use `scripts/upload-interface.py`: it first identifies the interface/controller via serial status and requests `boot`, with 1200-baud/Picotool fallback for other firmware. Close monitors before uploading. USB recovery with the interface sketch passed after cold power cycling; repeat acceptance with the controller remains pending.
 
+## macOS Tahoe uploader correction — 2026-11-06
+
+The Arduino package folder `pqt-picotool/5.0.0-9576866` actually contains Picotool **2.0.0**, linked to its adjacent libusb **1.0.27**. On this Mac running **26.6.2**, that library predates the libusb **1.0.30 Tahoe compatibility fix**. `scripts/knob.sh upload` now selects the separate project-local **official Raspberry Pi Picotool 2.3.1 macOS distribution**, which bundles libusb **1.0.30**. The core/compiler and firmware are unchanged by this correction. This removes a confirmed dependency mismatch; whether it resolves this board's failed reboot must be established by a user upload.
+
+The current workspace already has this uploader installed. Fresh setups install it with `setup-toolchain.py`; an existing checkout can install it without rebuilding or touching hardware:
+
+```sh
+python3 scripts/picotool-host.py setup
+```
+
+The official archive URL, version and SHA-256 are pinned in toolchain.json. Only the executable and its adjacent library are extracted; the runtime checks reject libusb older than 1.0.30 or a different Picotool version. No global Homebrew package or Arduino package file is overwritten. Picotool is BSD-3-Clause and libusb is LGPL-2.1-or-later; they remain local tool dependencies, not vendored firmware sources.
+
+The next controlled test is the ordinary `scripts/knob.sh upload controller`, without changing the current board, cable, port or application binary first. Confirm the opening `USB uploader: Picotool 2.3.1 / libusb 1.0.30` line. After a successful upload, repeat once to exercise software reset from the newly running firmware. No repeat-upload success is assumed.
+
+For research findings and the remaining distinction between an unanswered CDC port and failed ROM re-enumeration, see [USB investigation](../docs/interface-diagnostic.md#macos-host-tool-investigation--2026-11-06).
+
 ## Pinned dependencies
 
 Versions are recorded in [toolchain.json](toolchain.json): Arduino CLI 1.5.1, Earle Philhower Arduino-Pico core 6.3.1, SparkFun Qwiic Twist Arduino Library 1.0.4. Board FQBN: `rp2040:rp2040:seeed_xiao_rp2040:uploadmethod=picotool`. The upload method is also a compile option: it adds the USB maintenance interface to the running firmware.
