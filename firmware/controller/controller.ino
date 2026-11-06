@@ -38,6 +38,8 @@ struct Sample { uint16_t count; bool down; uint8_t major, minor; };
 bool readSample(Sample &sample);
 void inputEvent(const Sample &sample);
 Sample lastSample = {};
+const char *sampleError = "none";
+uint8_t sampleDetail = 0;
 bool connected = false;
 knob::LedFeedback feedback;
 knob::Color lastLed = knob::kOff;
@@ -116,7 +118,7 @@ void heartbeat() {
 }
 
 void help() {
-  status("Gesture controller v3.2; USB maintenance: Picotool + boot command; Sony/camera hardware backend");
+  status("Gesture controller v3.2.1; USB maintenance: Picotool + boot command; Sony/camera hardware backend");
   status("Turn=volume; click=mute/ATT; held turn=track; double click=camera preview; 10s still hold=learning toggle");
   status("Debounce=30ms; double click=300ms from first release to second press; long hold=700ms");
   status("Serial (Enter): help/h, status/s, release, enable, boot; outputs are real requests, receiver acceptance unverified");
@@ -129,14 +131,18 @@ void help() {
 bool readSample(Sample &sample) {
   Wire.beginTransmission(QWIIC_TWIST_ADDR);
   Wire.write(TWIST_ID);
-  if (Wire.endTransmission() != 0) return false;
-  if (Wire.requestFrom(QWIIC_TWIST_ADDR, static_cast<uint8_t>(7)) != 7) {
+  sampleDetail = Wire.endTransmission();
+  if (sampleDetail != 0) { sampleError = "register-pointer write"; return false; }
+  sampleDetail = Wire.requestFrom(QWIIC_TWIST_ADDR, static_cast<uint8_t>(7));
+  if (sampleDetail != 7) {
+    sampleError = "snapshot byte count";
     while (Wire.available()) Wire.read();
     return false;
   }
   uint8_t bytes[7];
   for (unsigned i = 0; i < sizeof(bytes); ++i) bytes[i] = Wire.read();
-  if (bytes[0] != 0x5C) return false;
+  if (bytes[0] != 0x5C) { sampleError = "device ID"; sampleDetail = bytes[0]; return false; }
+  sampleError = "none";
   sample.count = static_cast<uint16_t>(bytes[5]) | (static_cast<uint16_t>(bytes[6]) << 8);
   sample.down = bytes[1] & (1 << statusButtonPressedBit);
   sample.major = bytes[2]; sample.minor = bytes[3];
@@ -179,11 +185,28 @@ void applyFeedback(uint32_t now) {
 
 void attachTwist() {
   lastAttempt = millis();
-  bool ok = twist.begin(Wire);
+  const bool detected = twist.begin(Wire);
   Wire.setClock(100000);
-  if (ok) ok = readSample(lastSample);
-  if (ok) ok = twist.connectColor(0, 0, 0) && twist.setLimit(0);
-  if (!ok) { status("Twist unavailable; retrying in 2s"); return; }
+  if (!detected) {
+    Wire.beginTransmission(QWIIC_TWIST_ADDR);
+    const uint8_t error = Wire.endTransmission();
+    char message[170];
+    snprintf(message, sizeof(message),
+        "Twist begin failed at 0x3F; re-probe I2C error=%u, SDA=%d SCL=%d timeout=%d; retrying in 2s",
+        error, digitalRead(6), digitalRead(7), Wire.getTimeoutFlag());
+    status(message); return;
+  }
+  if (!readSample(lastSample)) {
+    char message[170];
+    snprintf(message, sizeof(message), "Twist ACKs but %s failed (detail=%u); retrying in 2s", sampleError, sampleDetail);
+    status(message); return;
+  }
+  if (!twist.connectColor(0, 0, 0)) {
+    status("Twist snapshot OK; connectColor write failed; retrying in 2s"); return;
+  }
+  if (!twist.setLimit(0)) {
+    status("Twist snapshot/color setup OK; setLimit write failed; retrying in 2s"); return;
+  }
   gestures.begin(millis(), lastSample.count, lastSample.down);
   feedback.clear();
   ledKnown = false;

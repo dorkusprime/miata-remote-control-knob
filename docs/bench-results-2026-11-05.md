@@ -65,3 +65,9 @@ User uploads controller v3 with Sony disconnected, checks gestures/LED and softw
 The user uploaded controller v3 and reported the integrated knob working (gesture/LED behavior). Sony was then connected. On the Custom learning screen, Sony requested “press and hold to assign steering button”; a one-detent turn did not register. Normal firmware sends 55 ms pulses. Pulse duration is a plausible explanation, not a confirmed diagnosis; acceptance of the chosen high-resistance codes has not yet been established.
 
 Controller v3.2 adds a ten-second stationary hold to enter/exit learning and bounded three-second assignment holds from the existing gestures. Entry: three amber flashes; idle learning: amber; assignment request: two green flashes; exit: three blue flashes. The original diagnostics remain available. User upload and Sony acceptance of this new build are pending.
+
+## Twist discovery failure after upload — 2026-11-06
+
+Following successful upload by switching laptop USB ports, the user supplied v3.2 monitor output showing USB maintenance running but repeated “Twist unavailable; retrying in 2s”. The controller keeps outputs disabled. Comparing v3 with v3.2 shows no changes to I2C pin selection or Twist initialization. This does not establish a hardware versus firmware cause.
+
+Controller v3.2.1 separates discovery failures: library begin/address response (including a follow-up I2C return code, instantaneous SDA/SCL levels and timeout flag), register-pointer write, short snapshot, unexpected device ID, color setup and count-limit setup. Pin levels are diagnostic observations, not proof of wiring continuity or power. No changed I2C timing, automatic bus scanning, or new recovery mechanism is introduced. The next hardware check is a full XIAO/Twist power cycle with Sony off; diagnosis remains pending.
