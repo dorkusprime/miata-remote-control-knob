@@ -12,6 +12,7 @@ constexpr uint8_t kCamera = 28;  // D2
 constexpr uint32_t kTestMs = 10000;
 constexpr uint32_t kArmMs = 60000;
 bool armed = false;
+bool interfaceReady = false;
 bool relayOn = false;
 bool cameraOn = false;
 uint8_t potCode = 128;
@@ -32,6 +33,7 @@ void disarm() {
   releaseOutputs();
   digitalWrite(kCs, HIGH);
   armed = false;
+  watchdog_disable();
 }
 
 void writePot(uint8_t code) {
@@ -47,7 +49,8 @@ void writePot(uint8_t code) {
 }
 
 void status() {
-  Serial.print("armed="); Serial.print(armed);
+  Serial.print("ready="); Serial.print(interfaceReady);
+  Serial.print(" armed="); Serial.print(armed);
   Serial.print(" pot_requested="); Serial.print(potCode);
   Serial.print(" relay_requested="); Serial.print(relayOn);
   Serial.print(" camera_requested="); Serial.println(cameraOn);
@@ -75,6 +78,17 @@ void command(const char *text) {
     return;
   } else if (!strcmp(text, "arm bench")) {
     disarm();
+    // Keep cold startup available for USB maintenance. Hardware initialization
+    // runs only after the user explicitly arms the disconnected bench setup.
+    watchdog_enable(5000, true);
+    if (!interfaceReady) {
+      SPI.setSCK(2);
+      SPI.setTX(3);
+      SPI.setRX(4);
+      SPI.begin();
+      writePot(128);
+      interfaceReady = true;
+    }
     armed = true;
     armedAt = millis();
   } else if (armed && !strncmp(text, "pot ", 4)) {
@@ -103,17 +117,15 @@ void setup() {
   digitalWrite(kCamera, LOW); pinMode(kCamera, OUTPUT);
   digitalWrite(kCs, HIGH); pinMode(kCs, OUTPUT);
   gpio_set_drive_strength(kRelay, GPIO_DRIVE_STRENGTH_4MA);
-  SPI.setSCK(2);   // D8
-  SPI.setTX(3);    // D10
-  SPI.setRX(4);    // D9, unused MISO input
-  SPI.begin();
-  writePot(128);
   Serial.begin(115200);
-  watchdog_enable(1000, true);
+  // Leave the watchdog disabled in maintenance mode. USB writes in the core
+  // may wait a full second each, exceeding the original one-second watchdog.
+
 }
 
 void loop() {
-  watchdog_update();
+  if (armed) watchdog_update();
+  delay(1);
   if (!Serial) {
     disarm();
     length = 0;
@@ -121,7 +133,7 @@ void loop() {
     hadSerial = false;
     return;
   }
-  if (!hadSerial) { help(); hadSerial = true; }
+  if (!hadSerial) { Serial.println("Interface maintenance ready. Enter help or status."); hadSerial = true; }
   const uint32_t now = millis();
   if (armed && now - armedAt >= kArmMs) {
     disarm(); Serial.println("Arm expired; released.");

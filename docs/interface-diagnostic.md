@@ -36,15 +36,15 @@ Send each command followed by Enter. The gesture monitor parses a different prot
 | release | Release both outputs and disarm |
 | boot | Release outputs, disable watchdog and enter USB BOOTSEL for maintenance |
 
-The pot starts at code 128. Writes use SPI mode 0 at 100 kHz with command byte 0x11. CS is D0/GPIO26, clock D8/GPIO2, MOSI D10/GPIO3, relay D1/GPIO27 and camera D2/GPIO28. D9/GPIO4 is configured as an unused SPI MISO input.
+The diagnostic requests code 128 initially. It initializes SPI and programs that code when first armed. Writes use SPI mode 0 at 100 kHz with command byte 0x11. CS is D0/GPIO26, clock D8/GPIO2, MOSI D10/GPIO3, relay D1/GPIO27 and camera D2/GPIO28. D9/GPIO4 is configured as an unused SPI MISO input.
 
-Invalid commands, input overflow, serial disconnect and arm expiry release both outputs and disarm. A one-second watchdog resets stalled firmware. Hardware pull-downs provide reset defaults. Each output assertion ends after ten seconds. SPI transactions and USB prints are bounded under normal core operation. Physical power-transition behavior still requires electrical acceptance.
+Invalid commands, input overflow, serial disconnect and arm expiry release both outputs and disarm. A five-second watchdog resets stalled firmware while bench commands are armed. Disarming disables it. Cold startup services USB maintenance before SPI initialization. Hardware pull-downs provide reset defaults. Each output assertion ends after ten seconds. SPI transactions and USB prints are bounded under normal core operation. Physical power-transition behavior still requires electrical acceptance.
 
 Serial status describes software requests. Measure actual outputs and resistance to confirm device operation. MCP41050 has no SPI readback.
 
 ## First check
 
-Send `status`. Expect armed=0, pot_requested=128, relay_requested=0 and camera_requested=0. Measure H9 to B4 in DC volts and expect approximately 0 V.
+Send `status`. Expect ready=0, armed=0, pot_requested=128, relay_requested=0 and camera_requested=0. Measure H9 to B4 in DC volts and expect approximately 0 V.
 
 Subsequent checks proceed one at a time. Relay contacts and pot resistance can be checked with a known current-limited source and voltage measurements. Check the meter's resistance-mode test voltage/current before using ohms mode on powered analog terminals. Continue to [assembly acceptance](assembly-and-test.md) for voltage, current and power-sequencing limits.
 
