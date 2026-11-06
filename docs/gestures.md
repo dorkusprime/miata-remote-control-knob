@@ -2,6 +2,16 @@
 
 Controller v3 connects the existing gesture engine and LED feedback to the assembled Sony interface. The original Twist diagnostic and the separate interface bench diagnostic remain available. Gesture and LED behavior was previously user-verified; the integrated build still needs user upload and receiver learning. See [current code assignments](sony-interface.md#calibration-model-and-firmware-contract).
 
+## Active two-command test — controller v3.3
+
+Only steering Volume Up and Volume Down are enabled. Positive/right turn uses code **255** (minimum output resistance); negative/left uses code **0** (maximum). Click and held-turn intentions still appear in the monitor/LED feedback but are rejected by the steering driver. Camera remains a separate circuit. Ten-second learning-mode toggle and six-second assignment holds remain available. Serial learning accepts only `learn volume_up` and `learn volume_down`.
+
+At the Sony learning screen, remove the previous Volume Down assignment before teaching the new two-command mapping; use a steering-learning reset if the receiver offers it, not a whole-unit factory reset. Enter knob learning mode and assign the two directions separately, allowing each six-second hold to release. Test each direction before restoring more commands. These endpoint settings have not yet been physically tested.
+
+Estimated endpoint totals are about 3.0 kohm at code 255 and 57.5 kohm at code 0, extrapolated from measured 64/192 outputs and R3. With the user's 3.27 V baseline and roughly 1.1–1.2 kohm inferred Sony source resistance, expected loaded voltages are roughly 2.4 V and 3.20–3.21 V. Estimated low-end current is about 0.8 mA: below the MCP41050 specified ±1 mA wiper limit but above the old conservative 0.5 mA prototype target. This is specific to the measured Sony input, not approval for an ideal 5 V source. Measure the low-end loaded voltage/current; do not reduce R3 for this test.
+
+The earlier five-code instructions below describe the previous profile; use only Volume + and Volume - with this build.
+
 ## Knob-operated learning — controller v3.2
 
 The Sony Custom assignment screen asks for a sustained button press. A normal 55 ms detent pulse did not register in the user's first attempt; the required duration and resistance recognition remain unverified. Learning mode supplies a bounded six-second hold instead.
@@ -169,3 +179,7 @@ Controller v3.2 compiles for XIAO RP2040: full flash image 87,976 bytes (4.2%); 
 ## Learning hold duration update — 2026-11-06
 
 At the user's request, learning holds are now six seconds for both knob and serial initiation, providing more time for voltage measurements. Ten-second mode entry/exit, LED patterns and normal 55 ms command pulses are unchanged. Driver tests verify the hold remains asserted past three seconds, releases at six seconds, and handles timestamp rollover. Sony currently groups the tested gestures as Volume Down; whether loaded output voltages differ is still awaiting measurement.
+
+## Endpoint-test build verification — 2026-11-06
+
+Controller v3.3 compiles for the XIAO (Arduino section summary 71,236 bytes; static RAM 10,000 bytes). Passed 24 gesture, 12 LED, 13 output-driver scenarios and 57 Python tests. Driver coverage checks exact 0/255 volume assignments and rejection of Mute/Next/Previous in both ordinary and learning paths, plus pulse/hold release behavior. `git diff --check` passed. User upload and physical receiver endpoint validation remain pending.

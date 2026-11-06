@@ -71,3 +71,11 @@ Controller v3.2 adds a ten-second stationary hold to enter/exit learning and bou
 Following successful upload by switching laptop USB ports, the user supplied v3.2 monitor output showing USB maintenance running but repeated “Twist unavailable; retrying in 2s”. The controller keeps outputs disabled. Comparing v3 with v3.2 shows no changes to I2C pin selection or Twist initialization. This does not establish a hardware versus firmware cause.
 
 Controller v3.2.1 separates discovery failures: library begin/address response (including a follow-up I2C return code, instantaneous SDA/SCL levels and timeout flag), register-pointer write, short snapshot, unexpected device ID, color setup and count-limit setup. Pin levels are diagnostic observations, not proof of wiring continuity or power. No changed I2C timing, automatic bus scanning, or new recovery mechanism is introduced. The next hardware check is a full XIAO/Twist power cycle with Sony off; diagnosis remains pending.
+
+## Sony learning collision and endpoint-test request — 2026-11-06
+
+The user identified a loose Twist ground connector as the cause of its no-ACK initialization failure; USB intermittency is a separate observation. With the ground secured, knob-operated learning ran. Sony accepted Volume Down for a left turn but treated other gestures as that same command, reporting “Cannot overwrite steering button assignment” when learning another function.
+
+Loaded Input 1 measurements (H5 to H4, DC volts): idle **3.27 V**; ordinary right turn **3.19 V**; held-left initially reported 3.17 V, then corrected to **3.06 V** after allowing more settling time. The user noted that six seconds is barely enough for the meter to settle. The Sony still reported Volume Down. These observations support differing analog outputs but do not measure Sony's recognition thresholds.
+
+At the user's request, controller v3.3 enables only two steering codes at opposite endpoints: right/Volume Up 255, left/Volume Down 0. Other steering outputs are disabled for this test. Six-second holds are retained. Estimates and wiper-current constraints are documented in gestures.md; physical endpoint/current/recognition acceptance is pending. No wiring change is requested and the agent has not flashed the board.

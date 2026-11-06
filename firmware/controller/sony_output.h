@@ -3,16 +3,14 @@
 #include "gesture_engine.h"
 
 namespace knob {
-// Sony learns these five distinct resistances. Only 64/128/192 have been
-// measured so far; 96/160 are interpolated candidates, not receiver calibration.
+// Temporary two-command recognition test: use the full W-to-A code range.
+// PA is grounded, so higher codes produce lower resistance. Receiver values
+// are estimated from the measured pot; Sony recognition remains unverified.
 inline bool sonyCode(Action action, uint8_t &code) {
   switch (action) {
-    case Action::VolumeUp: code = 64; return true;
-    case Action::VolumeDown: code = 96; return true;
-    case Action::MuteAtt: code = 128; return true;
-    case Action::NextTrack: code = 160; return true;
-    case Action::PreviousTrack: code = 192; return true;
-    default: return false;
+    case Action::VolumeUp: code = 255; return true;
+    case Action::VolumeDown: code = 0; return true;
+    default: return false;  // Mute and track outputs disabled for this test.
   }
 }
 

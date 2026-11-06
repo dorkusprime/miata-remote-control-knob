@@ -118,13 +118,13 @@ void heartbeat() {
 }
 
 void help() {
-  status("Gesture controller v3.2.1; USB maintenance: Picotool + boot command; Sony/camera hardware backend");
-  status("Turn=volume; click=mute/ATT; held turn=track; double click=camera preview; 10s still hold=learning toggle");
+  status("Gesture controller v3.3; USB maintenance: Picotool + boot command; Sony/camera hardware backend");
+  status("Two-command test: right=Volume Up code 255; left=Volume Down code 0; mute/track outputs disabled");
   status("Debounce=30ms; double click=300ms from first release to second press; long hold=700ms");
   status("Serial (Enter): help/h, status/s, release, enable, boot; outputs are real requests, receiver acceptance unverified");
   status("LED: full blue idle; purple held; white volume pulse; green click; amber camera-gesture pulse only");
   status("Hold still for 10s: toggle learning. Entry=3 amber flashes; exit=3 blue; assignment=2 green flashes");
-  status("Learning: learn volume_up / volume_down / mute_att / next_track / previous_track; hold 6s; enable resumes knob");
+  status("Learning: learn volume_up / volume_down; hold 6s; enable resumes knob");
   heartbeat();
 }
 
@@ -238,8 +238,7 @@ void serialCommand(const char *text) {
   else if (!strncmp(text, "learn ", 6)) {
     suspended = true; learningMode = false; serialLearning = true;
     feedback.setLearning(false, millis()); output.release(); gestures.cancel();
-    const knob::Action choices[] = {knob::Action::VolumeUp, knob::Action::VolumeDown,
-        knob::Action::MuteAtt, knob::Action::NextTrack, knob::Action::PreviousTrack};
+    const knob::Action choices[] = {knob::Action::VolumeUp, knob::Action::VolumeDown};
     for (const knob::Action action : choices) {
       if (!strcmp(text + 6, actionName(action)) && interfaceReady && connected) {
         output.enable();

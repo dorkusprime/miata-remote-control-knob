@@ -2,6 +2,10 @@
 
 Selected 2026-10-27; assembled and bench-tested through 2026-11-06. The user verified GPIO camera assertion/release, relay drive, and three output resistances. Controller v3 integrates gestures with this interface; physical testing of that build, Sony learning and power-transition acceptance remain pending. Supersedes the [AD8400 version](archive/sony-interface-ad8400.md) and earlier five-relay diagrams. Use the current pad map and learned-code table below.
 
+## Active firmware profile: two-command endpoint test
+
+Controller v3.3 temporarily replaces the five-code candidates below: Volume Up/right = **255**, Volume Down/left = **0**. Mute and track resistance outputs are disabled. See [test procedure and current estimates](gestures.md#active-two-command-test--controller-v33). The six-second learning holds and ten-second mode toggle remain. The board and fixed 2.7 kohm resistor are unchanged. Receiver endpoint recognition and actual low-end current are pending measurement.
+
 ## Complete prototype BOM
 
 | Part | Required | Notes |
@@ -121,7 +125,7 @@ The Sony learns the following five distinct candidate codes; do not assume its r
 | Held positive turn / Next Track | 160 | about 23.2 kohm, interpolated |
 | Held negative turn / Prev Track | 192 | 16.4 kohm measured |
 
-The end measurements imply about 54.6 kohm full pot resistance. At the measured minimum 16.4 kohm, a 3.3 V source would supply at most about 0.20 mA, ignoring its internal resistance. Even an ideal 5 V source would supply about 0.31 mA. These are steady-state estimates, not power-transition validation. No controller command writes outside the selected 64–192 range.
+The end measurements imply about 54.6 kohm full pot resistance. At the measured minimum 16.4 kohm, a 3.3 V source would supply at most about 0.20 mA, ignoring its internal resistance. Even an ideal 5 V source would supply about 0.31 mA. These are steady-state estimates, not power-transition validation. That earlier profile wrote codes 64–192; the active two-command endpoint test above supersedes it.
 
 For Sony Custom assignment, use [knob-operated learning mode](gestures.md#knob-operated-learning--controller-v32): ten-second stationary hold toggles the mode, and each mapped gesture holds its code for six seconds rather than sending normal short pulses. Each learning hold releases automatically and ignores intervening gestures. The first 55 ms learning attempt did not register; longer-hold acceptance remains pending.
 
