@@ -1,26 +1,31 @@
 # Gesture controller and live monitor
 
-Controller v3 connects the existing gesture engine and LED feedback to the assembled Sony interface. The original Twist diagnostic and the separate interface bench diagnostic remain available. The user uploaded v3.4 and reports all five Sony assignments working: Volume +, Volume -, Play/Pause, Next Track, and Previous Track. See [current code assignments](sony-interface.md#calibration-model-and-firmware-contract).
+Controller v3.5 provides the six requested audio controls plus Camera 1 through EXT IN 1. The user verified five physical steering gestures in v3.4 and taught Sony the separate Mute code through a serial probe. The new hold/release Mute gesture still needs user testing after upload. Original diagnostics remain available.
 
-## Active five-command calibration — controller v3.4
+## Current controls — controller v3.5
 
-Sony now distinguishes the two endpoint assignments, Volume + at code 255 and Volume - at code 0 (user observation, 2026-11-06). These endpoints stay unchanged. Three interior candidates are spaced by estimated **input voltage**, rather than evenly spaced pot codes, because the Sony input's voltage divider is nonlinear.
+| Gesture | Sony function | Pot code |
+| --- | --- | ---: |
+| Turn left | Volume - | 0 |
+| Turn right | Volume + | 255 |
+| Short single press | Play/Pause | 238 |
+| Hold and turn left | Previous Track | 215 |
+| Hold and turn right | Next Track | 248 |
+| Hold still for at least 700 ms, release before 10 s | Mute | 230 |
+| Double click | Toggle Camera 1 request through EXT IN 1 | Separate output |
+| Hold still for 10 s | Toggle local learning mode | Maintenance gesture |
 
-| Gesture / Sony assignment | Code | Estimated loaded Input 1 voltage |
-| --- | ---: | ---: |
-| Right turn / Volume + | 255 | 2.4 V |
-| Held right turn / Next Track | 248 | 2.6 V |
-| Single click / Play/Pause (user assignment) | 238 | 2.8 V |
-| Held left turn / Prev Track | 215 | 3.0 V |
-| Left turn / Volume - | 0 | 3.2 V |
+These are the final requested functions. Source, Voice, Answer Call and Hang Up are outside the requested scope; learning-capacity probing is stopped. The user-reported accepted and colliding probe results are preserved in the bench record. No additional gestures or hardware are needed.
 
-The user reports **all five assignments working** (2026-11-06), including Next Track at 248 and Previous Track at 215. These codes are therefore receiver-verified for this assembled interface and learned configuration. All voltages in the table remain estimates, not measured recognition thresholds. The firmware/console still calls the single-click action `mute_att`; that is a local name, while Sony learns the chosen function. Use `learn mute_att` or `set mute_att N` for this same single-click output. No firmware or wiring change is needed to assign it Play/Pause. Camera remains separate. The maximum distinct-command count is still unknown. A sixth candidate is raw code **230**, between Play/Pause 238 and Previous Track 215 (estimated voltage about 2.88 V). Select an unused Sony function such as Mute and send `probe 230` through the console. Wait for its six-second release; `enable` resumes the existing knob assignments. This probe does not change the five configured codes or add a gesture. Sony may accept it, collide with an existing assignment, or ignore it; record the response before another trial.
+Mute fires **on release**, once. It does not fire while waiting for the ten-second learning toggle. A ten-second stationary hold emits only the learning toggle, even if the first threshold sample is the release. Held rotation consumes the press and suppresses both Play/Pause and Mute. A double click emits only the camera request. Booting/reconnecting with the button held suppresses that press until released.
 
-The 64/192 resistance measurements fit `Rtotal_kohm ≈ 57.35 − 0.21328125 × code`. With the measured 3.27 V open input and an inferred 1.1–1.2 kohm source resistance, `Vinput ≈ 3.27 × Rtotal / (Rsource + Rtotal)`. Endpoint totals are approximately 3.0 and 57.4 kohm. Estimated low-end current is about 0.8 mA, below the MCP41050 ±1 mA limit but above the original conservative 0.5 mA prototype target. This estimate applies to this measured Sony input; keep R3 unchanged. Actual endpoint voltage/current and power-transition acceptance remain open.
+Sony already learned all six required codes, so the existing assignments can stay after v3.5 upload. `play_pause` now names code 238; `mute_att` now names code 230. In v3.4 the historical `mute_att` name referred to single-click code 238; do not use that older name/code relationship with v3.5. The monitor reports Play/Pause and Mute separately. Both give brief green feedback; no latched mute state is inferred from Sony.
+
+The accepted codes are spaced by estimated input voltage rather than uniform resistance. The measured resistance fit is `Rtotal_kohm ≈ 57.35 − 0.21328125 × code`, with a 3.27 V unloaded input and inferred 1.1–1.2 kohm Sony source resistance. These estimates do not measure recognition thresholds. The lowest endpoint is about 3.0 kohm total and 0.8 mA with this Sony source, below the MCP41050 ±1 mA limit. Keep R3 unchanged. Actual endpoint current and power transitions remain open.
 
 ### Live calibration console
 
-After the user builds/uploads controller v3.4, close other serial monitors and run:
+After the user builds/uploads controller v3.5, close other serial monitors and run:
 
 ```sh
 scripts/knob.sh console
@@ -30,14 +35,14 @@ The console displays translated gestures and sends commands typed with Enter. It
 
 | Command | Effect |
 | --- | --- |
-| `codes` | Show the five current assignments |
+| `codes` | Show the six current assignments |
 | `set mute_att 230` | Change Mute to code 230; release active outputs and discard queued pulses |
 | `learn mute_att` | Hold the configured Mute code for six seconds, then release |
 | `probe 230` | Hold raw code 230 for six seconds without changing any assignment |
 | `enable` | Exit serial calibration and resume normal knob control |
 | `release` | Release outputs and suspend normal control |
 
-`set` and `learn` accept `volume_up`, `volume_down`, `mute_att`, `next_track`, or `previous_track`. Codes must be decimal 0–255. Settings are **RAM-only**: reboot restores the table above. A `set` command releases active outputs but preserves the prior enabled/suspended state and the knob's local learning mode. `learn`/`probe` suspend normal gestures until `enable`; keep the console connected during their holds. A detected Twist failure releases outputs. No command reads Sony's recognition state.
+`set` and `learn` accept `volume_up`, `volume_down`, `play_pause`, `mute_att`, `next_track`, or `previous_track`. Codes must be decimal 0–255. Settings are **RAM-only**: reboot restores the table above. A `set` command releases active outputs but preserves the prior enabled/suspended state and the knob's local learning mode. `learn`/`probe` suspend normal gestures until `enable`; keep the console connected during their holds. A detected Twist failure releases outputs. No command reads Sony's recognition state.
 
 To find boundaries, leave the voltage probes fixed on H4/H5 if desired. Select an unassigned function in Sony's learning screen, then issue one `probe N`. Record the code, voltage if measured, and Sony's response (distinct assignment, collision with an existing assignment, or ignored). Wait for release before the next probe. Narrow intervals between different responses by testing intermediate codes. An accepted assignment changes Sony's learning table; record or clear that trial assignment before comparing later probes. This manual procedure maps behavior relative to the current learned assignments, not a guaranteed universal threshold. Do not automatically sweep codes or interpret the green LED as a Sony acknowledgment.
 
@@ -50,14 +55,14 @@ The Sony Custom assignment screen asks for a sustained button press. A normal 55
 1. Open Sony Custom steering-control learning.
 2. Hold the knob **without turning for ten seconds**. Three amber flashes acknowledge entry. Release the knob; steady amber identifies the local learning mode.
 3. Select Volume + on Sony, then turn one positive detent. Two green flashes acknowledge starting that command's six-second resistance hold. It releases automatically. Wait until it ends before assigning the next function.
-4. Repeat for Volume - (negative turn), Mute (single click), Next Track (held positive turn), Prev Track (held negative turn). A multi-detent event starts only one hold. Input during an active hold is ignored, so it cannot extend the hold or change resistance.
+4. Repeat for Volume - (negative turn), Play/Pause (single click), Mute (hold still >=700 ms then release before 10 s), Next Track (held positive turn), Prev Track (held negative turn). A multi-detent event starts only one hold. Input during an active hold is ignored, so it cannot extend the hold or change resistance.
 5. Hold still for ten seconds again. Three blue flashes acknowledge exit, outputs release, and normal operation resumes. Release the button before further gestures.
 
 A long hold fires once while still pressed and cannot also send Mute or a track command on release. Rotation earlier in the same press consumes it as a track gesture and prevents a mode toggle. Booting with the button held does not enter learning. Camera requests are released on entry and are not driven by learning gestures. On disconnect/reset learning mode ends and pending commands are dropped. There is no automatic learning-mode timeout; enter and exit with the ten-second hold as requested. Closing the serial monitor does not cancel knob-operated learning.
 
 Entry/exit flashes are three 150 ms on / 150 ms off cycles; assignment feedback is two green cycles. Idle learning is full-brightness amber; a held button shows purple after transient feedback. These colors acknowledge local mode/requests, never successful Sony learning. The heartbeat includes `learning_mode`; monitor displays LEARNING MODE when active.
 
-Serial fallback: `learn volume_up`, `learn volume_down`, `learn mute_att`, `learn next_track`, `learn previous_track` each release other outputs, hold the named code for six seconds and leave normal knob outputs suspended. `enable` resumes normal mode. `release`, invalid input, boot and detected Twist failures cancel learning. Serial-origin holds also cancel on serial disconnect.
+Serial fallback: `learn volume_up`, `learn volume_down`, `learn play_pause`, `learn mute_att`, `learn next_track`, `learn previous_track` each release other outputs, hold the named code for six seconds and leave normal knob outputs suspended. `enable` resumes normal mode. `release`, invalid input, boot and detected Twist failures cancel learning. Serial-origin holds also cancel on serial disconnect.
 
 ## Real output backend — 2026-11-06
 
@@ -69,7 +74,7 @@ Serial commands require Enter: `help`/`h`/`?`, `status`/`s`, `release`, `enable`
 
 The monitor labels accepted hardware intentions `[REQUEST]`, rejected/unassigned intentions `[DROPPED]`, and historical simulations `[SIM]`. Accepted means queued or locally requested, not Sony recognition. Later queue expiry is not separately acknowledged. Hardware heartbeats show whether outputs are enabled. Camera preview in the protocol means the local request only.
 
-Build with `scripts/knob.sh build controller`, then the user uploads with `scripts/knob.sh upload controller`. Use `scripts/knob.sh monitor` for translated events. First flash and test with Sony disconnected; then learn the five assignments from the current code table. Power the interface before the Sony and switch the Sony off first during controlled bench work. Installation approval still requires power-transition testing.
+Build with `scripts/knob.sh build controller`, then the user uploads with `scripts/knob.sh upload controller`. Use `scripts/knob.sh monitor` for translated events. First flash and test with Sony disconnected; then learn the six assignments from the current code table. Power the interface before the Sony and switch the Sony off first during controlled bench work. Installation approval still requires power-transition testing.
 
 ## Current mapping
 
@@ -78,10 +83,10 @@ Gesture recognition is user-verified. Sony distinguishes the volume endpoints; t
 | Input | Intention |
 | --- | --- |
 | Turn positive / negative | Volume up / down, one step per detent |
-| Short click | Mute / ATT request |
+| Short click | Play/Pause request |
 | Hold button and turn positive / negative | Next / previous track, one step per detent |
 | Double click | Toggle manual-camera request |
-| Hold for 700 ms to under 10 s, then release without turning | Ignored; reported as unassigned |
+| Hold for 700 ms to under 10 s, then release without turning | Mute, once on release |
 | Hold still for 10 s | Toggle learning mode; fires while held |
 
 Positive/negative follow the Twist's counter direction; check the feel in the final mounting. No volume acceleration or track-repeat timer is implemented. Multiple detents in one sample are reported with a step count.
@@ -90,7 +95,7 @@ Positive/negative follow the Twist's counter direction; check the feel in the fi
 
 - Button debounce: 30 ms of stable input. Rotation during press debounce is retained as held rotation; rotation during release debounce belongs to the held turn.
 - Double-click window: second press begins within 300 ms of the first release. A single click therefore fires after that window expires. Edge timestamps use the start of the stable transition, so debounce does not shorten the window.
-- Both clicks must be shorter than 700 ms and contain no held rotation. A valid double click emits only the camera request, never an intermediate mute.
+- Both clicks must be shorter than 700 ms and contain no held rotation. A valid double click emits only the camera request, never an intermediate Play/Pause or Mute.
 - Turning consumes pending clicks. Held rotation produces track intentions and suppresses a click when released. A long second press cancels the first pending click too.
 - A button held at startup/reconnect is ignored until released. Existing count is taken as the baseline, so reconnect does not replay old movement.
 - A checked I2C read failure cancels pending clicks, releases the camera request, and suspends input. Reconnect establishes a new baseline. Restart also starts with camera preview off.
@@ -107,12 +112,12 @@ The controller provides automatic RGB feedback for the opaque knob. Idle is full
 | Idle | Blue `(0, 0, 255)` | Continuous |
 | Debounced button held | Purple `(255, 0, 255)` | While held |
 | Volume turn | White `(255, 255, 255)` | 120 ms from latest turn |
-| Single click recognized | Green `(0, 255, 0)` | 180 ms |
+| Single click or Mute release recognized | Green `(0, 255, 0)` | 180 ms |
 | Camera gesture recognized, either toggle direction | Amber `(255, 96, 0)` | 200 ms |
 
-A pulse temporarily takes priority over held/idle color, then returns to the currently observed held/idle state. Track gestures retain the held-button purple; unassigned long holds add no pulse. Pulses are brief solid-color changes, without blocking delays. Repeated same-color input extends the pulse without repeatedly writing RGB registers. Feedback runs even with the serial monitor closed.
+A pulse temporarily takes priority over held/idle color, then returns to the currently observed held/idle state. Track gestures retain the held-button purple; Mute release adds a brief green pulse. Pulses are brief solid-color changes, without blocking delays. Repeated same-color input extends the pulse without repeatedly writing RGB registers. Feedback runs even with the serial monitor closed.
 
-There is no latched camera or mute LED state. Amber acknowledges the local gesture, not the Sony's actual camera view; green acknowledges click recognition, not a confirmed mute state. Neither color uses the local camera-preview toggle as persistent truth. Fault-triggered camera-preview cancellation produces no amber acknowledgement.
+There is no latched camera or mute LED state. Amber acknowledges the local gesture, not the Sony's actual camera view; green acknowledges Play/Pause or Mute input, not confirmed head-unit state. Neither color uses the local camera-preview toggle as persistent truth. Fault-triggered camera-preview cancellation produces no amber acknowledgement.
 
 On a read failure, software cancels LED pulses and attempts to switch the LED off once. If communication itself has failed, LED-off cannot be guaranteed and the Twist may retain its last color. LED-write failures suspend input and trigger reconnection too. Reconnect clears old pulses and writes the observed held/idle color again.
 
@@ -173,7 +178,7 @@ One JSON object per newline, protocol `v=1`; each record has `type`, `seq`, and 
 {"v":1,"type":"gesture","seq":12,"ms":2500,"action":"volume_up","steps":2,"simulated":true}
 ```
 
-Action names: `volume_up`, `volume_down`, `mute_att`, `next_track`, `previous_track`, `camera_on`, `camera_off`, `long_press_ignored`. The host renders the firmware's decisions; it does not independently infer gestures from raw input. Firmware keeps processing input if the monitor is closed but does not buffer/replay past commands to a later monitor.
+Action names: `volume_up`, `volume_down`, `play_pause`, `mute_att`, `next_track`, `previous_track`, `camera_on`, `camera_off`, `long_press_ignored`. The host renders the firmware's decisions; it does not independently infer gestures from raw input. Firmware keeps processing input if the monitor is closed but does not buffer/replay past commands to a later monitor.
 
 ## Historical simulation verification
 
@@ -222,3 +227,7 @@ The active two-command test profile is unchanged. The serial `boot` command now 
 ## Five-command calibration verification — 2026-11-06
 
 Controller v3.4 compiled for XIAO RP2040: full flash image **89,496 / 2,093,056 bytes (4.3%)**, static RAM **10,012 / 262,144 bytes (3.8%)**. Passed 24 gesture, 12 LED, 17 Sony-output and 3 USB-maintenance scenarios, plus 60 Python tests. New coverage checks runtime assignment changes, release/queue clearing on reconfiguration, strict code parsing, all five learning assignments, bounded raw probes without altering assignments, calibration rendering and interactive command transmission over a virtual serial port. `git diff --check` passed. The agent did not flash hardware. Interior-code recognition and physical repeat-upload reliability remain pending user observations.
+
+## Six-control profile verification — 2026-11-06
+
+Controller v3.5 compiled for XIAO RP2040: full flash image **89,584 / 2,093,056 bytes (4.3%)**, static RAM **10,016 / 262,144 bytes (3.8%)**. Passed 31 gesture scenarios, 13 LED scenarios, 18 Sony-output scenarios, 3 USB-maintenance scenarios and 63 Python tests. Coverage includes Play/Pause versus Mute code separation, Mute once on release at the 700 ms boundary, no Mute after held rotation, no extra Play/Pause on a long second click, cancellation on reconnect, timer wrap and ten-second learning suppression including release as the first threshold sample. The monitor's six-code calibration output and Play/Pause action are covered. `git diff --check` passed. The agent did not upload or reset hardware. The new Mute gesture remains pending user acceptance.

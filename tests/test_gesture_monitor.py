@@ -57,9 +57,9 @@ class MonitorTests(unittest.TestCase):
         self.assertIn("LEARNING MODE", renderer.render(json.dumps(data)))
 
     def test_calibration_table_and_request_code(self):
-        codes = dict(volume_up=255, volume_down=0, mute_att=238, next_track=248, previous_track=215)
+        codes = dict(volume_up=255, volume_down=0, play_pause=238, mute_att=230, next_track=248, previous_track=215)
         line = json.dumps(dict(v=1, type="calibration", codes=codes))
-        self.assertIn("mute_att=238", monitor.Renderer().render(line))
+        self.assertIn("play_pause=238", monitor.Renderer().render(line))
         codes["mute_att"] = 256
         self.assertEqual(monitor.Renderer().render(json.dumps(dict(v=1, type="calibration", codes=codes))),
                          "Invalid calibration message.")
@@ -142,7 +142,7 @@ class MonitorTests(unittest.TestCase):
             process.stdin.write(b"set mute_att 230\n"); process.stdin.flush()
             self.assertTrue(select.select([master], [], [], 3)[0], "No calibration command")
             self.assertEqual(os.read(master, 1024), b"set mute_att 230\n")
-            codes = dict(volume_up=255, volume_down=0, mute_att=230, next_track=248, previous_track=215)
+            codes = dict(volume_up=255, volume_down=0, play_pause=238, mute_att=230, next_track=248, previous_track=215)
             os.write(master, (json.dumps(dict(v=1, type="calibration", codes=codes)) + "\n").encode())
             collected = b""
             deadline = time.monotonic() + 3

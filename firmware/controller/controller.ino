@@ -66,6 +66,7 @@ const char *actionName(knob::Action action) {
   switch (action) {
     case knob::Action::VolumeUp: return "volume_up";
     case knob::Action::VolumeDown: return "volume_down";
+    case knob::Action::PlayPause: return "play_pause";
     case knob::Action::MuteAtt: return "mute_att";
     case knob::Action::NextTrack: return "next_track";
     case knob::Action::PreviousTrack: return "previous_track";
@@ -123,10 +124,10 @@ void heartbeat() {
 }
 
 void help() {
-  status("Gesture controller v3.4; USB maintenance: Picotool + boot command; Sony/camera hardware backend");
-  status("Voltage-spaced learning test: volume=255/0; mute=238; next=248; previous=215");
+  status("Gesture controller v3.5; USB maintenance: Picotool + boot command; Sony/camera hardware backend");
+  status("Turn=volume; click=play/pause; held turn=track; hold/release >=0.7s=mute; double click=Camera 1");
   status("Debounce=30ms; double click=300ms from first release to second press; long hold=700ms");
-  status("Serial (Enter): help/h, status/s, release, enable, boot; outputs are real requests, receiver acceptance unverified");
+  status("Sony codes: volume=255/0; play/pause=238; mute=230; next=248; previous=215");
   status("LED: full blue idle; purple held; white volume pulse; green click; amber camera-gesture pulse only");
   status("Hold still for 10s: toggle learning. Entry=3 amber flashes; exit=3 blue; assignment=2 green flashes");
   status("Calibration: codes; set ACTION 0..255; probe 0..255; learn ACTION; RAM-only settings; holds 6s");
@@ -236,13 +237,13 @@ void maintenanceStatus() {
 }
 
 void reportCodes() {
-  char fields[170];
+  char fields[190];
   uint8_t values[knob::kCommandCount] = {};
   for (uint8_t i = 0; i < knob::kCommandCount; ++i)
     output.codeFor(knob::kDefaultCommands[i].action, values[i]);
   snprintf(fields, sizeof(fields),
-      ",\"codes\":{\"volume_up\":%u,\"volume_down\":%u,\"mute_att\":%u,\"next_track\":%u,\"previous_track\":%u},\"persistent\":false",
-      values[0], values[1], values[2], values[3], values[4]);
+      ",\"codes\":{\"volume_up\":%u,\"volume_down\":%u,\"play_pause\":%u,\"mute_att\":%u,\"next_track\":%u,\"previous_track\":%u},\"persistent\":false",
+      values[0], values[1], values[2], values[3], values[4], values[5]);
   emitEvent("calibration", fields);
 }
 

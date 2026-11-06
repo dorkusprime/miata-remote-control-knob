@@ -30,6 +30,7 @@ class LedFeedback {
     switch (event.action) {
       case Action::VolumeUp:
       case Action::VolumeDown: pulse(kVolumeWhite, now, 120); break;
+      case Action::PlayPause:
       case Action::MuteAtt: pulse(kClickGreen, now, 180); break;
       case Action::CameraOn:
       case Action::CameraOff: pulse(kCameraAmber, now, 200); break;

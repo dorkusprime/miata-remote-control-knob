@@ -58,5 +58,8 @@ int main() {
   { LedFeedback led; led.setLearning(true, 0xfffffff0u);
     assert(led.colorAt(134, false, true) == kOff);
     led.clear(); assert(led.colorAt(200, false, true) == kIdleBlue); }
-  std::cout << "12 LED feedback scenarios passed\n";
+  { LedFeedback led; led.onGesture({Action::PlayPause, 1}, 100);
+    assert(led.colorAt(279, false, true) == kClickGreen);
+    assert(led.colorAt(280, false, true) == kIdleBlue); }
+  std::cout << "13 LED feedback scenarios passed\n";
 }

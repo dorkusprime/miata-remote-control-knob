@@ -97,3 +97,21 @@ This establishes at least three distinguishable commands on this assembled inter
 The user subsequently taught both **Next Track** and **Previous Track** and confirmed all commands work. With the uploaded defaults, the accepted assignments are Volume - 0, Previous Track 215, Play/Pause 238, Next Track 248, and Volume + 255. This supersedes the pending Next/Previous status above and establishes **at least five** working distinct codes on this board and Sony learning configuration. No firmware update or wiring change was needed for these two assignments. This does not measure window boundaries, establish the maximum command count, or complete USB/power-transition acceptance.
 
 Proposed next boundary/capacity trial: select an unassigned Sony function (Mute), then use console `probe 230` for a six-second raw hold, followed after release by `enable`. Code 230 lies between the accepted 215 and 238 codes, estimated near 2.88 V. This sixth code has not been tested and is not added to the gesture map.
+
+## Learning exploration concluded; final scope — 2026-11-06
+
+The user reported these additional learning results, after the original five working commands:
+
+| Probe code | Sony assignment attempted | User result |
+| ---: | --- | --- |
+| 230 | Mute | Accepted |
+| 252 | Source | Accepted |
+| 244 | Voice | Accepted |
+| 223 | Answer Call | Cannot overwrite |
+| 128 | Answer Call | Cannot overwrite |
+| 234 | Answer Call | Cannot overwrite |
+| 180 | Answer Call | Accepted |
+
+Nine distinct codes were accepted in total. Code 241/Hang Up was suggested but no result was reported. Collisions do not identify which existing assignment matched. This establishes sufficient capacity for the user's request; maximum capacity and universal recognition thresholds were not determined. The user stopped further capacity exploration.
+
+Final scope: Previous Track, Play/Pause, Next Track, Mute, Volume +, Volume -, plus Camera 1 through EXT IN 1. Controller v3.5 preserves the five proven physical mappings and assigns accepted Mute code 230 to stationary hold/release >=700 ms and <10 s. A ten-second hold remains learning-only. Existing Sony learning need not be erased. The separate `play_pause` name replaces v3.4's misleading single-click `mute_att` name; `mute_att` now means actual Mute. No new parts/wiring. The user must upload and test the added Mute gesture; agent did not flash hardware.

@@ -9,17 +9,19 @@
 - Opaque knob: use full-brightness idle blue. Gesture colors are temporary acknowledgements; do not treat a local toggle as authoritative Sony camera/mute state.
 - Hardware I2C preferred over software I2C.
 - Removable wiring and USB access.
-- Volume, mute/ATT, track control.
+- Volume, Play/Pause, Mute and previous/next track control.
 - Manual rear view without guidelines, actual reverse with guidelines. Camera 1 control is required: [circuit, harness and firmware plan](camera-control.md).
 
-## Implemented gesture defaults — user bench-verified
+## Current gestures — controller v3.5
 
 - Turn: volume.
-- Short press: Sony Mute (observed learning-screen label).
+- Short single press: Play/Pause.
 - Press and turn: previous/next track.
-- Double press: toggle manual camera.
+- Hold still >=700 ms, release before ten seconds: Mute.
+- Double press: toggle Camera 1 through EXT IN 1.
+- Ten-second stationary hold: maintenance learning-mode toggle, with no Mute on release.
 
-Controller v3 connects these intentions to the assembled interface through a bounded, nonblocking driver. Initial timing: 30 ms debounce, 300 ms double-click window, 700 ms long-hold threshold (unassigned). Held rotation suppresses clicks; a double click does not emit mute. See [gesture rules and monitor workflow](gestures.md). The user reports all gestures functional in the serial simulation. Exact Sony command behavior remains untested. Arbitrary CarPlay menu navigation is not promised.
+The six audio codes have been accepted by Sony; the five original physical gestures are user-verified. The new hold/release Mute gesture is host-tested and pending user upload. Timing remains 30 ms debounce and a 300 ms double-click window. Held turns suppress click/Mute outputs; camera and mute indications are local feedback only. See [current controls and workflow](gestures.md#current-controls--controller-v35). Arbitrary CarPlay navigation and more capacity exploration are outside the requested scope.
 
 ## Sony interface evidence
 
@@ -64,4 +66,4 @@ The current placement includes Camera 1 control using U2 channel 4, R8/R9 on the
 
 ## Observed steering-remote learning menu
 
-User confirmed: Prev Track, Play/Pause, Next Track, Source, Mute, Volume -, Volume +, Voice, Answer Call, Hang Up. See [bench record](bench-results-2026-10-28.md#user-observed-steering-remote-learning-options). No camera assignment is listed; retain separate EXT IN 1 camera output. Initial five-command mapping is unchanged. Additional menu functions have no assigned gestures or validated resistance values yet. Menu availability does not establish successful command learning. The current controller uses five distinct learnable codes in the 64–192 range instead of the historical external resistance targets. Actual recognition is pending.
+Sony offers Prev Track, Play/Pause, Next Track, Source, Mute, Volume -, Volume +, Voice, Answer Call and Hang Up. The user accepted nine distinct codes during exploratory learning, then stopped the search after confirming ample capacity. The final requested scope is six audio functions (Volume +/-, Play/Pause, Mute, Next/Previous) and Camera 1 via EXT IN 1. See the [bench record](bench-results-2026-11-05.md) for accepted/colliding trial codes; they are not additional gesture assignments.

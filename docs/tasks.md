@@ -123,4 +123,11 @@ This current status supersedes older pending endpoint and initial learning-mode 
 
 - [x] User confirms v3.4 loaded and three commands functional: Volume - (0), Play/Pause via single press (238), Volume + (255).
 - [x] User taught Next Track via held right turn (248) and Previous Track via held left turn (215); all five commands work.
-- [ ] Establish learning-window limits beyond the five accepted commands; maximum command count remains unknown.
+- [x] Stop capacity exploration at user request: nine codes accepted, ample capacity for six requested audio commands. Maximum remains unknown.
+
+## Final requested controls — controller v3.5
+
+- [x] Preserve Volume +/-, Play/Pause, Next/Previous and separate Camera 1 double-click output.
+- [x] Add stationary hold/release Mute using Sony-accepted code 230; distinguish `play_pause` from `mute_att` in firmware and monitor.
+- [ ] User uploads v3.5 and verifies hold/release Mute, other gestures and Camera 1 operation. Existing Sony assignments can remain.
+- [ ] Complete reliable software upload and power-transition acceptance before installation.

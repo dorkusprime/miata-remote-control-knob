@@ -45,7 +45,8 @@ int main() {
   { uint8_t code = 0;
     assert(sonyCode(Action::VolumeUp, code) && code == 255);
     assert(sonyCode(Action::VolumeDown, code) && code == 0);
-    assert(sonyCode(Action::MuteAtt, code) && code == 238);
+    assert(sonyCode(Action::MuteAtt, code) && code == 230);
+    assert(sonyCode(Action::PlayPause, code) && code == 238);
     assert(sonyCode(Action::NextTrack, code) && code == 248);
     assert(sonyCode(Action::PreviousTrack, code) && code == 215);
     assert(!sonyCode(Action::CameraOn, code));
@@ -116,6 +117,15 @@ int main() {
     assert(!out.learnCode(256, 0)); assert(out.learnCode(230, 0));
     assert(codes.back() == 230); out.tick(1); assert(relay);
     out.tick(6001); assert(!relay);
-    uint8_t code; assert(out.codeFor(Action::MuteAtt, code) && code == 238); }
-  std::cout << "17 Sony output scenarios passed\n";
+    uint8_t code; assert(out.codeFor(Action::PlayPause, code) && code == 238); }
+  { auto out = makeOutput(); out.enable();
+    Gestures gestures([](const Event &e, void *ctx) {
+      static_cast<SonyOutput *>(ctx)->submit(e, 1000);
+    }, &out);
+    gestures.begin(0, 0, false);
+    gestures.update(100, 0, true); gestures.update(130, 0, true);
+    gestures.update(800, 0, false); gestures.update(830, 0, false);
+    out.tick(1000); assert(codes.back() == 230); out.tick(1001); assert(relay);
+    out.tick(1056); assert(!relay); } // physical long release drives accepted Mute code
+  std::cout << "18 Sony output scenarios passed\n";
 }

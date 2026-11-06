@@ -13,7 +13,8 @@ MAX_LINE = 4096
 LABELS = {
     "volume_up": "Volume up",
     "volume_down": "Volume down",
-    "mute_att": "Mute / ATT requested",
+    "play_pause": "Play / pause requested",
+    "mute_att": "Mute requested",
     "next_track": "Next track",
     "previous_track": "Previous track",
     "camera_on": "Manual camera request: ON",
@@ -88,7 +89,9 @@ class Renderer:
             return prefix + label
         if kind == "calibration":
             codes = event.get("codes")
-            names = ("volume_up", "volume_down", "mute_att", "next_track", "previous_track")
+            names = ("volume_up", "volume_down", "play_pause", "mute_att", "next_track", "previous_track")
+            if isinstance(codes, dict) and "play_pause" not in codes:
+                names = tuple(n for n in names if n != "play_pause")  # v3.4 console compatibility
             if not isinstance(codes, dict) or any(type(codes.get(n)) is not int or not 0 <= codes[n] <= 255 for n in names):
                 return "Invalid calibration message."
             return "Codes (RAM only): " + ", ".join(f"{n}={codes[n]}" for n in names)

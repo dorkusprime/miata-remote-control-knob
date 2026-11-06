@@ -23,12 +23,12 @@ struct Test {
 int main() {
   { Test t; t.tick(10, 3); t.tick(20, 1); t.expect({Action::VolumeUp, Action::VolumeDown});
     assert(t.events[0].steps == 3 && t.events[1].steps == 2); }
-  { Test t; t.tap(100); t.tick(479); t.expect({}); t.tick(480); t.expect({Action::MuteAtt});
-    t.tick(1000); t.expect({Action::MuteAtt}); }
+  { Test t; t.tap(100); t.tick(479); t.expect({}); t.tick(480); t.expect({Action::PlayPause});
+    t.tick(1000); t.expect({Action::PlayPause}); }
   { Test t; t.tap(100); t.tap(300); t.tick(1000); t.expect({Action::CameraOn});
     assert(t.engine.cameraRequested()); t.tap(1100); t.tap(1300); t.expect({Action::CameraOn, Action::CameraOff}); }
   { Test t; t.tap(100); t.press(500); t.release(580); t.tick(880);
-    t.expect({Action::MuteAtt, Action::MuteAtt}); }
+    t.expect({Action::PlayPause, Action::PlayPause}); }
   { Test t; t.tap(100); t.press(480); t.release(560); t.tick(1000);
     t.expect({Action::CameraOn}); }  // second press at exact 300ms boundary
   { Test t; t.press(100); assert(t.engine.buttonHeld()); t.tick(150, 2, true); t.tick(180, 1, true);
@@ -39,8 +39,8 @@ int main() {
   { Test t; t.press(100); t.tick(200, 0, false); t.tick(210, 1, false); t.tick(230, 1, false); t.tick(1000, 1);
     t.expect({Action::NextTrack}); }  // rotation during release debounce belongs to held turn
   { Test t; t.tick(100, 0, true); t.tick(110); t.tick(120, 0, true); t.tick(130); t.tick(1000); t.expect({}); }
-  { Test t; t.press(100); t.release(800); t.tick(1500); t.expect({Action::LongPressIgnored}); }
-  { Test t; t.tap(100); t.press(300); t.release(1000); t.tick(1500); t.expect({Action::LongPressIgnored}); }
+  { Test t; t.press(100); t.release(800); t.tick(1500); t.expect({Action::MuteAtt}); }
+  { Test t; t.tap(100); t.press(300); t.release(1000); t.tick(1500); t.expect({Action::MuteAtt}); }
   { Test t; t.tap(100); t.tick(250, 1); t.tick(1000, 1); t.expect({Action::VolumeUp}); }
   { Test t; t.tap(100); t.press(300); t.tick(350, 1, true); t.release(400, 1); t.tick(1000, 1);
     t.expect({Action::NextTrack}); }  // second click becomes held turn, never camera
@@ -53,7 +53,7 @@ int main() {
   { Test t; t.tap(100); t.tap(300); t.engine.cancel(); t.expect({Action::CameraOn, Action::CameraOff});
     assert(!t.engine.cameraRequested()); }
   { Test t(0xFFFFFF00u); t.press(0xFFFFFF60u); t.release(0xFFFFFFE0u); t.tick(267);
-    t.expect({}); t.tick(268); t.expect({Action::MuteAtt}); }  // millis wrap
+    t.expect({}); t.tick(268); t.expect({Action::PlayPause}); }  // millis wrap
   { Test t; t.press(100); t.tick(10099, 0, true); t.expect({});
     t.tick(10100, 0, true); t.tick(25000, 0, true);
     t.tick(25010, 1, true); t.release(26000, 1); t.tick(27000, 1);
@@ -69,5 +69,19 @@ int main() {
   { Test t; t.tap(100); t.tap(300); t.press(500); t.tick(10500, 0, true);
     t.expect({Action::CameraOn, Action::CameraOff, Action::LearningToggle});
     assert(!t.engine.cameraRequested()); }
-  std::cout << "24 gesture scenarios passed\n";
+  { Test t; t.press(100); t.tick(799, 0, true); t.expect({});
+    t.release(799); t.tick(1099); t.expect({Action::PlayPause}); } // 699ms is a click
+  { Test t; t.press(100); t.tick(800, 0, true); t.expect({});
+    t.release(801); t.tick(5000); t.expect({Action::MuteAtt}); } // mute only on release, once
+  { Test t; t.press(100); t.tick(10099, 0, true); t.release(10099);
+    t.expect({Action::MuteAtt}); } // release just before learning threshold
+  { Test t; t.press(100); t.tick(900, 1, true); t.release(1000, 1);
+    t.tick(5000, 1); t.expect({Action::NextTrack}); } // long held turn never mutes
+  { Test t(0xfffffff0u); t.press(0xfffffff5u); t.release(695);
+    t.expect({Action::MuteAtt}); } // mute threshold across millis wrap
+  { Test t; t.press(100); t.engine.cancel(); t.engine.begin(900, 0, true);
+    t.release(2000); t.tick(5000); t.expect({}); } // reset cancels held mute
+  { Test t; t.press(100); t.release(10100); t.tick(20000);
+    t.expect({Action::LearningToggle}); } // release at 10s never becomes Mute
+  std::cout << "31 gesture scenarios passed\n";
 }

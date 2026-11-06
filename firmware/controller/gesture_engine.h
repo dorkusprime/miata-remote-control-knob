@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 namespace knob {
-enum class Action { VolumeUp, VolumeDown, MuteAtt, NextTrack, PreviousTrack,
+enum class Action { VolumeUp, VolumeDown, PlayPause, MuteAtt, NextTrack, PreviousTrack,
                     CameraOn, CameraOff, LongPressIgnored, LearningToggle };
 struct Event { Action action; uint32_t steps; };
 struct Timing {
@@ -75,15 +75,12 @@ class Gestures {
     }
     if (stableDown_ && rawDown_ && !usedPress_ && !holdFired_ &&
         elapsed(now, pressedAt_) >= timing_.learningHoldMs) {
-      pendingClick_ = secondClick_ = false;
-      usedPress_ = holdFired_ = true;
-      if (camera_) { camera_ = false; emit(Action::CameraOff); }
-      emit(Action::LearningToggle);
+      toggleLearning();
     }
     if (pendingClick_ && !rawDown_ && !stableDown_ &&
         elapsed(now, releasedAt_) >= timing_.doubleClickMs) {
       pendingClick_ = false;
-      emit(Action::MuteAtt);
+      emit(Action::PlayPause);
     }
   }
 
@@ -94,16 +91,18 @@ class Gestures {
   }
   void press(uint32_t when) {
     secondClick_ = pendingClick_ && elapsed(when, releasedAt_) <= timing_.doubleClickMs;
-    if (pendingClick_ && !secondClick_) emit(Action::MuteAtt);
+    if (pendingClick_ && !secondClick_) emit(Action::PlayPause);
     pendingClick_ = false;
     usedPress_ = holdFired_ = false;
     pressedAt_ = when;
   }
   void release(uint32_t when) {
     if (usedPress_) { secondClick_ = false; return; }
-    if (elapsed(when, pressedAt_) >= timing_.longPressMs) {
+    if (elapsed(when, pressedAt_) >= timing_.learningHoldMs) {
+      toggleLearning();  // Also reserve the threshold if release is the first sample at 10s.
+    } else if (elapsed(when, pressedAt_) >= timing_.longPressMs) {
       secondClick_ = false;
-      emit(Action::LongPressIgnored);
+      emit(Action::MuteAtt);
     } else if (secondClick_) {
       secondClick_ = false;
       camera_ = !camera_;
@@ -113,9 +112,15 @@ class Gestures {
       releasedAt_ = when;
     }
   }
+  void toggleLearning() {
+    pendingClick_ = secondClick_ = false;
+    usedPress_ = holdFired_ = true;
+    if (camera_) { camera_ = false; emit(Action::CameraOff); }
+    emit(Action::LearningToggle);
+  }
   void turn(int32_t delta, bool down) {
     if (!delta || holdFired_) return;
-    // Turning consumes a pending click; held turns never also trigger mute/camera.
+    // Turning consumes a pending click; held turns never also trigger play/pause, mute or camera.
     pendingClick_ = secondClick_ = false;
     if (down) usedPress_ = true;
     const uint32_t steps = delta > 0 ? delta : -delta;

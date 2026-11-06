@@ -2,9 +2,11 @@
 
 Selected 2026-10-27; assembled and bench-tested through 2026-11-06. The user verified GPIO camera assertion/release, relay drive, and three output resistances. Controller v3 integrates gestures with this interface; the user verified all five gesture/Sony assignments. Additional learning-window limits and power-transition acceptance remain pending. Supersedes the [AD8400 version](archive/sony-interface-ad8400.md) and earlier five-relay diagrams. Use the current pad map and learned-code table below.
 
-## Active firmware profile: five-command calibration
+## Active firmware profile: six audio commands plus Camera 1
 
-Controller v3.4 preserves Sony-verified Volume Up/right = **255** and Volume Down/left = **0**. The user assigned single-click code **238** to **Play/Pause**, held right **248** to **Next Track**, and held left **215** to **Prev Track**, and reports **all five functions working**. These codes were chosen for approximately separated input voltages; actual threshold boundaries remain unknown. The local single-click action/serial name remains `mute_att`; Sony determines its learned function. See the [current table and live calibration console](gestures.md#active-five-command-calibration--controller-v34). Six-second learning holds and the ten-second mode toggle remain. The board and fixed 2.7 kohm resistor are unchanged.
+Controller v3.5 uses the user's accepted codes: Volume + **255**, Volume - **0**, Play/Pause **238**, Previous Track **215**, Next Track **248**, and Mute **230**. The five original physical gestures are user-verified; Mute 230 was accepted through serial probing and is now assigned to a >=700 ms stationary hold released before ten seconds. Its new physical gesture remains pending user upload/test. Existing Sony assignments can stay. Camera 1 uses the separate EXT IN 1 circuit and double-click gesture. See [current controls](gestures.md#current-controls--controller-v35).
+
+The firmware/console now calls the single-click action `play_pause`; `mute_att` refers to the distinct Mute code. Six-second learning holds and the ten-second learning-mode toggle remain. The board, R3 and all other wiring are unchanged. Further capacity probing is outside the requested scope.
 
 ## Complete prototype BOM
 

@@ -4,12 +4,12 @@
 #include "gesture_engine.h"
 
 namespace knob {
-// Voltage-spaced candidates derived from this assembled pot/Sony measurements.
-// Only endpoint recognition is user-verified; intermediate learning is pending.
+// Six user-learned Sony codes. Mute 230 was accepted through a serial probe;
+// the remaining five codes were also verified with their physical gestures.
 struct CommandSetting { Action action; const char *name; uint8_t code; };
 constexpr CommandSetting kDefaultCommands[] = {
   {Action::VolumeUp, "volume_up", 255}, {Action::VolumeDown, "volume_down", 0},
-  {Action::MuteAtt, "mute_att", 238}, {Action::NextTrack, "next_track", 248},
+  {Action::PlayPause, "play_pause", 238}, {Action::MuteAtt, "mute_att", 230}, {Action::NextTrack, "next_track", 248},
   {Action::PreviousTrack, "previous_track", 215}
 };
 constexpr uint8_t kCommandCount = sizeof(kDefaultCommands) / sizeof(kDefaultCommands[0]);
