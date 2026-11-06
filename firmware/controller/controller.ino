@@ -3,6 +3,8 @@
 #include "gesture_engine.h"
 #include "led_feedback.h"
 #include "sony_output.h"
+#include "usb_maintenance.h"
+#include <USB.h>
 #include <SPI.h>
 #include <hardware/watchdog.h>
 #include <hardware/gpio.h>
@@ -20,6 +22,7 @@ char serialLine[48];
 size_t serialLength = 0;
 bool serialOverflow = false, hadSerial = false;
 uint32_t startupAt = 0;
+knob::BootRequest bootRequest;
 
 void writePot(uint8_t code) {
   digitalWrite(kRelay, LOW);
@@ -118,7 +121,7 @@ void heartbeat() {
 }
 
 void help() {
-  status("Gesture controller v3.3; USB maintenance: Picotool + boot command; Sony/camera hardware backend");
+  status("Gesture controller v3.3.1; USB maintenance: Picotool + boot command; Sony/camera hardware backend");
   status("Two-command test: right=Volume Up code 255; left=Volume Down code 0; mute/track outputs disabled");
   status("Debounce=30ms; double click=300ms from first release to second press; long hold=700ms");
   status("Serial (Enter): help/h, status/s, release, enable, boot; outputs are real requests, receiver acceptance unverified");
@@ -232,7 +235,11 @@ void maintenanceStatus() {
 
 void serialCommand(const char *text) {
   if (!strcmp(text, "boot")) {
-    output.release(); watchdog_disable(); reset_usb_boot(0, 0);
+    suspended = true;
+    learningMode = serialLearning = false;
+    output.release(); watchdog_disable();
+    bootRequest.request(millis());
+    status("BOOTSEL requested; waiting for serial close, then disconnecting USB");
   } else if (!strcmp(text, "help") || !strcmp(text, "h") || !strcmp(text, "?")) help();
   else if (!strcmp(text, "status") || !strcmp(text, "s")) { maintenanceStatus(); heartbeat(); }
   else if (!strncmp(text, "learn ", 6)) {
@@ -280,6 +287,7 @@ void serviceSerial() {
     if (ch == '\r' || ch == '\n') {
       if (!serialOverflow && serialLength) {
         serialLine[serialLength] = '\0'; serialCommand(serialLine);
+        if (bootRequest.pending()) { serialLength = 0; return; }
       }
       serialLength = 0; serialOverflow = false;
     } else if (!serialOverflow) {
@@ -307,7 +315,17 @@ void setup() {
 
 void loop() {
   if (interfaceReady) watchdog_update();
-  serviceSerial();
+  if (!bootRequest.pending()) serviceSerial();
+  if (bootRequest.pending()) {
+    if (bootRequest.ready(millis(), static_cast<bool>(Serial))) {
+      // Core API signals USB detach and allows host detection before ROM reset.
+      // Run in loop context, with outputs released and the watchdog disabled.
+      USB.disconnect();
+      reset_usb_boot(0, 0);
+    }
+    delay(1);
+    return;
+  }
   uint32_t now = millis();
   if (!interfaceReady) {
     if (now - startupAt < 2000) { delay(1); return; }

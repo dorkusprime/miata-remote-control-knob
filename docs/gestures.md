@@ -183,3 +183,7 @@ At the user's request, learning holds are now six seconds for both knob and seri
 ## Endpoint-test build verification — 2026-11-06
 
 Controller v3.3 compiles for the XIAO (Arduino section summary 71,236 bytes; static RAM 10,000 bytes). Passed 24 gesture, 12 LED, 13 output-driver scenarios and 57 Python tests. Driver coverage checks exact 0/255 volume assignments and rejection of Mute/Next/Previous in both ordinary and learning paths, plus pulse/hold release behavior. `git diff --check` passed. User upload and physical receiver endpoint validation remain pending.
+
+## Controller v3.3.1 USB maintenance change
+
+The active two-command test profile is unchanged. The serial `boot` command now releases outputs and schedules a USB detach followed by ROM entry after allowing the uploader to close its serial handle. No gesture processing resumes once boot is pending. See [upload recovery details](interface-diagnostic.md#explicit-usb-detach-before-controller-bootsel--2026-11-06). This change is intended to improve software update reliability; actual repeat-upload acceptance remains pending.

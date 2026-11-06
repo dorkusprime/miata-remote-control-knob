@@ -62,6 +62,18 @@ class UploadTests(unittest.TestCase):
                          [b"status\n", b"status\n", b"boot\n"])
         self.assertNotEqual(connection.baudrate, 1200)
 
+    @patch.object(uploader.time, "sleep")
+    @patch.object(uploader.subprocess, "run")
+    def test_fragmented_status_response_identifies_firmware(self, run, sleep):
+        serial, ports = MagicMock(), MagicMock()
+        ports.comports.return_value = [MagicMock(device="/dev/cu.usbmodem1", vid=0x2E8A, pid=0x000A)]
+        connection = serial.Serial.return_value.__enter__.return_value
+        connection.readline.side_effect = [b"ready=1 pot_requ", b"ested=128 relay_requ", b"ested=0\n"]
+        run.return_value = subprocess.CompletedProcess([], 0, "loaded", "")
+        self.assertEqual(uploader.upload("tool", "file.uf2", serial, ports), 0)
+        self.assertEqual(connection.write.call_args_list[-1].args, (b"boot\n",))
+        self.assertNotEqual(connection.baudrate, 1200)
+
     @patch.object(uploader.subprocess, "run")
     def test_ambiguous_devices_do_not_reset(self, run):
         serial, ports = MagicMock(), MagicMock()

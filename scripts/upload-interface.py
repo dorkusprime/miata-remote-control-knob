@@ -22,22 +22,26 @@ def upload(picotool, firmware, serial, ports):
             with serial.Serial(port=None, baudrate=115200, timeout=0.1,
                                write_timeout=1, exclusive=True) as connection:
                 connection.port = port
-                connection.open()
                 connection.dtr = True
+                connection.rts = True
+                connection.open()
+                time.sleep(0.25)  # Let CDC line-state changes reach the firmware.
                 connection.write(b"status\n")
                 identified = False
-                for attempt in range(20):
-                    if attempt in (5, 10, 15):
+                received = b""
+                for attempt in range(40):
+                    if attempt and attempt % 5 == 0:
                         connection.write(b"status\n")
-                    response = connection.readline()
-                    if b"pot_requested=" in response and b"relay_requested=" in response:
+                    received = (received + connection.readline())[-4096:]
+                    if b"pot_requested=" in received and b"relay_requested=" in received:
                         identified = True
                         break
                 if identified:
                     print("Knob firmware identified; requesting watchdog-safe boot.", flush=True)
                     connection.write(b"boot\n")
                     connection.flush()
-                    time.sleep(0.3)
+                    # Close the host serial handle now. New controller firmware
+                    # waits for this, then explicitly detaches USB before ROM boot.
                 else:
                     print("No interface response; trying 1200-baud reset.", flush=True)
                     connection.baudrate = 1200

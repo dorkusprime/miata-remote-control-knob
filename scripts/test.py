@@ -21,7 +21,7 @@ if platform.system() == "Darwin":
     elif compatible.is_dir():
         command += ["-isysroot", str(compatible)]
 command += ["-std=c++17", "-Wall", "-Wextra", "-Werror", "-fsanitize=address,undefined"]
-for name in ("gesture_engine", "led_feedback", "sony_output"):
+for name in ("gesture_engine", "led_feedback", "sony_output", "usb_maintenance"):
     binary = BUILD / name
     subprocess.run(command + [str(ROOT / "tests" / (name + "_test.cpp")), "-o", str(binary)], cwd=ROOT, check=True)
     subprocess.run([str(binary)], cwd=ROOT, check=True)
