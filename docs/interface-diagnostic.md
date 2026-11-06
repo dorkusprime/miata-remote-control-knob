@@ -125,3 +125,11 @@ The user's first standard-CLI attempt exposed an implementation error: although 
 Changed the override to **`--upload-property cmd=...`**, preserving the core-provided upload pattern. The [Arduino platform specification](https://docs.arduino.cc/arduino-cli/platform-specification/) documents that selected tool properties are available without their `tools.TOOL_ID.` prefix. More importantly, the correction was verified against the **actual installed Arduino CLI and core**, using its supported hidden `--dry-run` switch and a nonexistent port. The resolved command now points to `.tools/picotool-host/picotool`, followed by `load <controller.ino.uf2> -f -x`. No uploader process or attached-board reset was executed. The wrapper exposes `--dry-run` for repeatable inspection.
 
 Added a real-CLI regression test asserting the resolved executable is the pinned host bundle and that the obsolete bundled-tool directory is absent. Earlier fake-CLI wrapper tests only checked argument forwarding, which did not catch the property-scope mistake. User hardware upload with this corrected command remains pending.
+
+## Corrected standard upload: USB device absent — 2026-11-06
+
+The user's next attempt printed the correct `.tools/picotool-host/picotool` executable path and ran the standard `load ... -f -x` recipe. Arduino CLI found no matching serial port, and Picotool reported no accessible BOOTSEL device without reporting a runtime device or issuing a reboot request. No firmware transfer occurred.
+
+Immediate read-only inspection confirmed that Arduino CLI listed only Bluetooth/debug ports; macOS `SPUSBHostDataType` contained no XIAO/RP-series device, `/dev/cu.usb*` had no nodes, and no RPI BOOTSEL volume was mounted. This is broader than an unanswered application serial command: the device is absent from host USB enumeration. These observations do not distinguish a failed transition/host USB state from a physical disconnection or loss of board power. No cable fault is established.
+
+Next controlled recovery: disconnect/reconnect at the accessible laptop USB end normally, without pressing BOOT, then retry the same standard upload. The purpose is fresh USB attachment; if the board has another power source this does not necessarily reset its processor. Agent performed no hardware reset or upload. Reliable software-only updating remains unverified.
