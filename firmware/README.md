@@ -2,7 +2,7 @@
 
 Three sketches are available: the preserved [Twist diagnostic](diagnostic/diagnostic.ino), the [interface bench diagnostic](interface/interface.ino), and the integrated [gesture controller](controller/controller.ino). Build/upload defaults to `controller`; uploading is always explicit and performed by the user.
 
-Controller v3.5 drives the assembled board: turn=volume, click=Play/Pause, held turn=track, stationary hold/release >=700 ms=Mute, double click=Camera 1 request, ten-second stationary hold=learning toggle. It preserves USB maintenance and diagnostics. Sony has accepted the six required audio codes; user testing of the new Mute gesture after upload remains pending. See [current controls](../docs/gestures.md#current-controls--controller-v35).
+Controller v3.7 drives the assembled board: turn=volume, click=Play/Pause, held turn=track, stationary hold/release >=700 ms=Mute, double click=Camera 1 request, ten-second stationary hold=learning toggle. It preserves USB maintenance and diagnostics. Sony has accepted the six required audio codes; user testing of the new Mute gesture after upload remains pending. See [current controls](../docs/gestures.md#current-controls--controller-v35).
 
 ## Current upload workflow — Arduino CLI
 

@@ -125,3 +125,11 @@ The user reports about three seconds for volume-down activity to finish after a 
 The v3.5.1 user trace establishes the firmware queue was dropping fast-turn inputs: a Volume Up burst requested 33 detents; 10 were accepted and 23 rejected, then only eight were transmitted before the remaining two expired. The last release was 742 ms after the last observed turn. The user subsequently clarified that “three seconds” was a rough mental estimate; the actionable issue is that the knob lag is too high to use.
 
 The user uploaded the locally built v3.6 while workspace verification was interrupted. Their new trace shows **17 requested Volume Down detents, all 17 transmitted**, with no dropped entries. Press starts were about 111 ms apart, matching the 55/55 ms default plus settling. The final release occurred at device timestamp 29,524 ms, 1,725 ms after the last input at 27,799 ms. Volume retention now works for this burst; output serialization still causes significant lag. No shorter-pulse Sony recognition result has been reported. Next trial is live `timing 25 25`, one detent first. The host suite and compile were verified after workspace restoration; no agent flash occurred.
+
+## Faster pulses and held-repeat result — 2026-11-06
+
+At live timing **55/10 ms**, the user supplied a trace with 19 requested volume-down detents in approximately 110 ms and all 19 GPIO pulses serialized afterward; final release was 1,140 ms after the last observed input. They still found lag unusable. At **25/10 ms**, the user reported only a few commands recognized out of dozens. That is a receiver observation without a matching posted trace; no exact minimum pulse width is established.
+
+The user restored 55/55 and ran the existing six-second `learn volume_down` hold outside Sony's learning screen. They reported: held command worked well, volume reached zero. This supports trying Sony's own volume repeat for continuous motion. It does not measure initial repeat delay or confirm that a short flick will repeat quickly.
+
+Controller v3.7 implements a candidate hybrid: isolated taps, promotion to a live hold for rapid turns, 100 ms idle release, and immediate old-direction release/gapped reversal. Six controls and Camera 1 mapping are unchanged. User upload and responsiveness testing remain pending. No agent flash occurred.

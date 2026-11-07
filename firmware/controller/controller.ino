@@ -144,21 +144,21 @@ void status(const char *message) {
 void heartbeat() {
   char fields[195];
   snprintf(fields, sizeof(fields),
-      ",\"connected\":%s,\"camera_preview\":%s,\"simulated\":false,\"outputs_enabled\":%s,\"relay_requested\":%s,\"learning_mode\":%s",
+      ",\"connected\":%s,\"camera_preview\":%s,\"simulated\":false,\"outputs_enabled\":%s,\"relay_requested\":%s,\"learning_mode\":%s,\"volume_hold\":%s",
       connected ? "true" : "false", gestures.cameraRequested() ? "true" : "false",
-      output.enabled() ? "true" : "false", output.relayOn() ? "true" : "false", learningMode ? "true" : "false");
+      output.enabled() ? "true" : "false", output.relayOn() ? "true" : "false", learningMode ? "true" : "false", output.volumeHolding() ? "true" : "false");
   emitEvent("heartbeat", fields);
 }
 
 void help() {
-  status("Gesture controller v3.6; USB maintenance: Picotool + boot command; Sony/camera hardware backend");
+  status("Gesture controller v3.7; USB maintenance: Picotool + boot command; Sony/camera hardware backend");
   status("Turn=volume; click=play/pause; held turn=track; hold/release >=0.7s=mute; double click=Camera 1");
   status("Debounce=30ms; double click=300ms from first release to second press; long hold=700ms");
   status("Sony codes: volume=255/0; play/pause=238; mute=230; next=248; previous=215");
   status("LED: full blue idle; purple held; white volume pulse; green click; amber camera-gesture pulse only");
   status("Hold still for 10s: toggle learning. Entry=3 amber flashes; exit=3 blue; assignment=2 green flashes");
   status("Calibration: codes; set ACTION 0..255; probe 0..255; learn ACTION; RAM-only settings; holds 6s");
-  status("Volume runs retain detents; timing PRESS GAP adjusts normal pulses in RAM; defaults 55 55 ms");
+  status("Volume: slow detents=taps, rapid turns=held command, release after 100ms idle; defaults 55/55 ms");
   reportTiming();
   heartbeat();
 }

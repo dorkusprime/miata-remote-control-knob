@@ -138,3 +138,10 @@ This current status supersedes older pending endpoint and initial learning-mode 
 - [x] Preserve consecutive volume detents using counted runs; user trace confirms all 17 steps transmitted.
 - [x] Add RAM-only normal pulse/gap timing adjustment and retain output timestamp diagnostics.
 - [ ] Test shorter pulses against Sony, starting with `timing 25 25` and one detent, then tune for usable fast-roll response. Default remains 55/55 until a faster rate is validated.
+
+## Live-volume candidate — v3.7
+
+- [x] Record unacceptable counted-FIFO lag at 55/10 and missed Sony commands at 25/10.
+- [x] User verifies Sony repeats volume during a six-second held command.
+- [x] Implement slow-detent taps plus rapid-turn holds with 100 ms idle release and reversal cancellation; host tests and build pass.
+- [ ] User verifies slow-step precision, short fast-roll usefulness, prompt stopping and reversals on Sony. Initial receiver repeat delay remains unmeasured.

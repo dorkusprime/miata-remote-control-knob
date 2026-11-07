@@ -66,11 +66,12 @@ class SonyOutput {
   }
   static constexpr uint32_t kSettleMs = 1, kPulseMs = 55, kGapMs = 55;
   static constexpr uint32_t kMaxAgeMs = 750, kLearnMs = 6000;
+  static constexpr uint32_t kRapidMs = 80, kVolumeIdleMs = 100;
   static constexpr uint8_t kCapacity = 8;
 
   void enable() { release(); enabled_ = true; }
   void release() {
-    enabled_ = learning_ = activeVolume_ = false;
+    enabled_ = learning_ = activeVolume_ = volumeHold_ = volumeSeen_ = false;
     pulseMs_ = normalPulseMs_;
     size_ = head_ = 0;
     phase_ = Phase::Idle;
@@ -128,20 +129,28 @@ class SonyOutput {
     if (!codeFor(event.action, code)) return false;
     if (event.steps > 65536 || event.steps > UINT32_MAX - pending()) return false;
     const bool volume = event.action == Action::VolumeUp || event.action == Action::VolumeDown;
-    // Compress consecutive same-direction volume into a counted run: a quick
-    // spin consumes one slot, retaining every detent rather than eight only.
+    // Rapid rotation is live motion, not a backlog of button presses.
     if (volume) {
-      if (size_) {
-        Pending &tail = queue_[(head_ + size_ - 1) % kCapacity];
-        if (tail.volume && tail.code == code) { tail.steps += event.steps; return true; }
+      const bool rapid = event.steps > 1 ||
+          (volumeSeen_ && lastVolumeCode_ == code && now - lastVolumeAt_ < kRapidMs);
+      const bool reversed = volumeSeen_ && lastVolumeCode_ != code;
+      volumeSeen_ = true; lastVolumeCode_ = code; lastVolumeAt_ = now;
+      if (rapid || reversed) removeQueuedVolume();
+      if (reversed && activeVolume_ && (phase_ == Phase::Pulse || phase_ == Phase::Settle)) {
+        relay_(false); relayOn_ = false; volumeHold_ = activeVolume_ = false;
+        phase_ = Phase::Gap; at_ = now;
+      }
+      if (rapid && activeVolume_ && code_ == code &&
+          (phase_ == Phase::Pulse || phase_ == Phase::Settle)) {
+        volumeHold_ = true; return true;
       }
       if (size_ == kCapacity) return false;
-      queue_[(head_ + size_) % kCapacity] = {code, now, event.steps, true};
+      queue_[(head_ + size_) % kCapacity] = {code, now, 1, true, rapid};
       ++size_;
     } else {
       if (event.steps > static_cast<uint32_t>(kCapacity - size_)) return false;
       for (uint32_t i = 0; i < event.steps; ++i) {
-        queue_[(head_ + size_) % kCapacity] = {code, now, 1, false};
+        queue_[(head_ + size_) % kCapacity] = {code, now, 1, false, false};
         ++size_;
       }
     }
@@ -156,7 +165,8 @@ class SonyOutput {
       }
       relay_(true); relayOn_ = true;
       phase_ = Phase::Pulse; at_ = now;
-    } else if (phase_ == Phase::Pulse && now - at_ >= pulseMs_) {
+    } else if (phase_ == Phase::Pulse && now - at_ >= pulseMs_ &&
+               (!volumeHold_ || now - lastVolumeAt_ >= kVolumeIdleMs)) {
       if (learning_) { release(); return; }
       relay_(false); relayOn_ = false;
       phase_ = Phase::Gap; at_ = now;
@@ -166,16 +176,18 @@ class SonyOutput {
     if (phase_ != Phase::Idle) return;
     while (size_) {
       const Pending item = queue_[head_];
-      if (!item.volume && now - item.at >= kMaxAgeMs) {
+      if ((!item.volume && now - item.at >= kMaxAgeMs) ||
+          (item.hold && now - lastVolumeAt_ >= kVolumeIdleMs)) {
         head_ = (head_ + 1) % kCapacity; --size_; continue;
       }
       if (--queue_[head_].steps == 0) { head_ = (head_ + 1) % kCapacity; --size_; }
       relay_(false); relayOn_ = false;
-      pot_(item.code); code_ = item.code; activeAt_ = item.at; activeVolume_ = item.volume;
+      pot_(item.code); code_ = item.code; activeAt_ = item.at; activeVolume_ = item.volume; volumeHold_ = item.hold;
       phase_ = Phase::Settle; at_ = now;
       break;
     }
   }
+  bool volumeHolding() const { return volumeHold_ && activeVolume_ && relayOn_; }
   bool enabled() const { return enabled_; }
   bool relayOn() const { return relayOn_; }
   bool cameraOn() const { return cameraOn_; }
@@ -187,12 +199,25 @@ class SonyOutput {
   }
  private:
   enum class Phase { Idle, Settle, Pulse, Gap };
-  struct Pending { uint8_t code; uint32_t at, steps; bool volume; };
+  struct Pending { uint8_t code; uint32_t at, steps; bool volume, hold; };
+  void removeQueuedVolume() {
+    Pending retained[kCapacity];
+    uint8_t count = 0;
+    for (uint8_t i = 0; i < size_; ++i) {
+      const Pending &item = queue_[(head_ + i) % kCapacity];
+      if (!item.volume) retained[count++] = item;
+    }
+    for (uint8_t i = 0; i < count; ++i) queue_[i] = retained[i];
+    head_ = 0; size_ = count;
+  }
   Pot pot_;
   Switch relay_, camera_;
   Pending queue_[kCapacity] = {};
   uint8_t codes_[kCommandCount] = {};
   uint8_t size_ = 0, head_ = 0, code_ = 128;
+  bool volumeHold_ = false, volumeSeen_ = false;
+  uint8_t lastVolumeCode_ = 0;
+  uint32_t lastVolumeAt_ = 0;
   bool activeVolume_ = false, enabled_ = false, learning_ = false, relayOn_ = false, cameraOn_ = false;
   Phase phase_ = Phase::Idle;
   uint32_t at_ = 0, activeAt_ = 0, normalPulseMs_ = kPulseMs, normalGapMs_ = kGapMs, pulseMs_ = kPulseMs;

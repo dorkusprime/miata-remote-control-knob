@@ -18,11 +18,12 @@ int main() {
     out.tick(101); assert(relay); out.tick(155); assert(relay);
     out.tick(156); assert(!relay); out.tick(10000); assert(!relay); }
   { auto out = makeOutput(); out.enable();
-    assert(out.submit({Action::VolumeDown, 2}, 0));
+    assert(out.submit({Action::VolumeDown, 1}, 0));
     out.tick(0); out.tick(1); out.tick(56); assert(!relay && codes.size() == 1);
-    out.tick(110); assert(codes.size() == 1); out.tick(111);
-    assert(codes.size() == 2 && codes.back() == 0 && !relay);
-    out.tick(112); assert(relay); }
+    out.tick(111); assert(codes.size() == 1);
+    assert(out.submit({Action::VolumeDown, 1}, 200));
+    out.tick(200); out.tick(201); assert(relay && codes.size() == 2);
+    out.tick(256); assert(!relay); } // isolated detents remain discrete taps
   { auto out = makeOutput(); out.enable();
     assert(out.submit({Action::NextTrack, 8}, 0));
     assert(!out.submit({Action::PreviousTrack, 1}, 0));
@@ -135,22 +136,23 @@ int main() {
       out.tick(now); now += 10;
     }
     for (; now < 5000; ++now) out.tick(now);
-    assert(codes.size() == 33 && out.pending() == 0 && !relay);
-    for (int code : codes) assert(code == 255); } // measured fast-spin batches, no capacity/expiry loss
+    assert(codes.size() == 1 && out.pending() == 0 && !relay);
+    for (int code : codes) assert(code == 255); } // same measured fast spin becomes one live hold, with no detent backlog
   { auto out = makeOutput(); out.enable();
-    assert(out.submit({Action::VolumeDown, 20}, 0));
-    assert(out.submit({Action::VolumeUp, 10}, 10));
-    for (uint32_t now = 0; now < 4000; ++now) out.tick(now);
-    assert(codes.size() == 30);
-    for (unsigned i = 0; i < codes.size(); ++i) assert(codes[i] == (i < 20 ? 0 : 255)); }
+    assert(out.submit({Action::VolumeDown, 20}, 0)); out.tick(0); out.tick(1); assert(relay);
+    assert(out.submit({Action::VolumeUp, 10}, 10)); assert(!relay);
+    out.tick(64); assert(!relay); out.tick(65); out.tick(66); assert(relay);
+    out.tick(121); assert(!relay && out.pending() == 0);
+    assert(codes.size() == 2 && codes[0] == 0 && codes[1] == 255); } // no old-direction backlog
   { auto out = makeOutput(); out.enable();
     out.submit({Action::VolumeUp, 100}, 0); out.tick(0); out.tick(1); assert(relay);
     assert(out.setTiming(25, 25)); assert(!relay && !out.pending() && out.enabled());
     assert(out.pressMs() == 25 && out.gapMs() == 25);
-    out.submit({Action::VolumeDown, 2}, 100);
+    out.submit({Action::VolumeDown, 1}, 100);
     out.tick(100); out.tick(101); assert(relay);
     out.tick(125); assert(relay); out.tick(126); assert(!relay);
-    out.tick(150); assert(codes.size() == 2); out.tick(151); assert(codes.size() == 3);
+    out.tick(150); assert(codes.size() == 2);
+    assert(out.submit({Action::VolumeDown, 1}, 151)); out.tick(151); assert(codes.size() == 3);
     out.tick(152); assert(relay);
     assert(!out.setTiming(0, 25)); assert(!out.setTiming(25, 251));
     assert(out.learn(Action::MuteAtt, 200)); out.tick(201); out.tick(6200); assert(relay);
@@ -161,10 +163,34 @@ int main() {
     for (const char *bad : {"", "4 25", "25 251", "25", "25 25 extra", "-1 25", "25  25", "999999 25"})
       assert(!parsePulseTiming(bad, press, gap)); }
   { auto out = makeOutput(); out.enable();
-    for (unsigned i = 0; i < 8; ++i)
-      assert(out.submit({i % 2 ? Action::VolumeDown : Action::VolumeUp, 100}, i));
-    assert(!out.submit({Action::VolumeUp, 1}, 10)); // bounded distinct runs, no heap allocation
-    assert(out.submit({Action::VolumeDown, 100}, 11)); // merge allowed even when slots full
-    assert(out.pending() == 900); out.release(); assert(!out.pending()); }
-  std::cout << "23 Sony output scenarios passed\n";
+    assert(out.submit({Action::NextTrack, 8}, 0));
+    assert(!out.submit({Action::VolumeUp, 10}, 10));
+    assert(out.pending() == 8); out.release(); assert(!out.pending()); }
+  { auto out = makeOutput(); out.enable();
+    out.submit({Action::VolumeUp, 1}, 0); out.tick(0); out.tick(1); assert(relay);
+    out.submit({Action::VolumeUp, 1}, 10); assert(out.volumeHolding());
+    out.tick(56); assert(relay); out.submit({Action::VolumeUp, 5}, 70);
+    out.tick(169); assert(relay); out.tick(170); assert(!relay && !out.pending());
+    out.tick(5000); assert(codes.size() == 1); } // 100ms tail, no queued replay
+  { auto out = makeOutput(); out.enable();
+    out.submit({Action::VolumeDown, 5}, 0); out.tick(0); out.tick(1);
+    out.submit({Action::MuteAtt, 1}, 10);
+    out.submit({Action::VolumeDown, 9}, 20);
+    out.tick(120); assert(!relay); out.tick(175); out.tick(176);
+    assert(relay && codes.back() == 230); } // fast input preserves queued non-volume commands
+  { auto out = makeOutput(); out.enable();
+    out.submit({Action::VolumeDown, 10}, 0); // motion becomes stale while loop is not serviced
+    out.tick(100); out.tick(101); assert(!relay && codes.empty() && !out.pending()); }
+  { auto out = makeOutput(); out.enable();
+    out.submit({Action::VolumeDown, 5}, 0xfffffff0u); out.tick(0xfffffff0u); out.tick(0xfffffff1u);
+    out.tick(83); assert(relay); out.tick(84); assert(!relay); } // idle release across timestamp rollover
+  { auto out = makeOutput(); out.enable(); out.submit({Action::VolumeUp, 20}, 0);
+    out.tick(0); out.tick(1); assert(out.volumeHolding()); out.release();
+    assert(!relay && !out.volumeHolding() && !out.pending());
+    out.enable(); out.tick(1000); assert(codes.size() == 1); }
+  { auto out = makeOutput(); out.enable(); out.submit({Action::VolumeUp, 10}, 0);
+    out.tick(0); out.tick(1); out.submit({Action::VolumeUp, 1}, 10);
+    assert(out.learn(Action::VolumeDown, 20)); out.tick(21); out.tick(121); assert(relay);
+    out.tick(6021); assert(!relay); } // short idle watchdog does not truncate explicit learning holds
+  std::cout << "29 Sony output scenarios passed\n";
 }
