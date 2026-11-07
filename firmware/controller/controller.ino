@@ -28,6 +28,7 @@ knob::OutputTrace outputTrace;
 uint32_t lastAudioInputAt = 0;
 bool audioInputSeen = false;
 void recordRelayEdge(bool on);
+void reportTiming();
 
 void writePot(uint8_t code) {
   digitalWrite(kRelay, LOW);
@@ -78,8 +79,8 @@ void serviceOutputTrace() {
   if (!edge) return;
   char fields[180];
   snprintf(fields, sizeof(fields),
-      ",\"edge_ms\":%lu,\"on\":%s,\"code\":%u,\"pending\":%u,\"input_age_ms\":%lu,\"trace_lost\":%lu",
-      static_cast<unsigned long>(edge->at), edge->on ? "true" : "false", edge->code, edge->pending,
+      ",\"edge_ms\":%lu,\"on\":%s,\"code\":%u,\"pending\":%lu,\"input_age_ms\":%lu,\"trace_lost\":%lu",
+      static_cast<unsigned long>(edge->at), edge->on ? "true" : "false", edge->code, static_cast<unsigned long>(edge->pending),
       static_cast<unsigned long>(edge->inputAge), static_cast<unsigned long>(outputTrace.lost()));
   if (emitEvent("output", fields)) outputTrace.pop();
 }
@@ -150,13 +151,15 @@ void heartbeat() {
 }
 
 void help() {
-  status("Gesture controller v3.5.1; USB maintenance: Picotool + boot command; Sony/camera hardware backend");
+  status("Gesture controller v3.6; USB maintenance: Picotool + boot command; Sony/camera hardware backend");
   status("Turn=volume; click=play/pause; held turn=track; hold/release >=0.7s=mute; double click=Camera 1");
   status("Debounce=30ms; double click=300ms from first release to second press; long hold=700ms");
   status("Sony codes: volume=255/0; play/pause=238; mute=230; next=248; previous=215");
   status("LED: full blue idle; purple held; white volume pulse; green click; amber camera-gesture pulse only");
   status("Hold still for 10s: toggle learning. Entry=3 amber flashes; exit=3 blue; assignment=2 green flashes");
   status("Calibration: codes; set ACTION 0..255; probe 0..255; learn ACTION; RAM-only settings; holds 6s");
+  status("Volume runs retain detents; timing PRESS GAP adjusts normal pulses in RAM; defaults 55 55 ms");
+  reportTiming();
   heartbeat();
 }
 
@@ -273,6 +276,13 @@ void reportCodes() {
   emitEvent("calibration", fields);
 }
 
+void reportTiming() {
+  char fields[100];
+  snprintf(fields, sizeof(fields), ",\"press_ms\":%lu,\"gap_ms\":%lu,\"persistent\":false",
+      static_cast<unsigned long>(output.pressMs()), static_cast<unsigned long>(output.gapMs()));
+  emitEvent("timing", fields);
+}
+
 void serialCommand(const char *text) {
   if (!strcmp(text, "boot")) {
     suspended = true;
@@ -283,6 +293,17 @@ void serialCommand(const char *text) {
   } else if (!strcmp(text, "help") || !strcmp(text, "h") || !strcmp(text, "?")) help();
   else if (!strcmp(text, "status") || !strcmp(text, "s")) { maintenanceStatus(); heartbeat(); }
   else if (!strcmp(text, "codes")) reportCodes();
+  else if (!strcmp(text, "timing")) reportTiming();
+  else if (!strncmp(text, "timing ", 7)) {
+    uint8_t press, gap;
+    if (knob::parsePulseTiming(text + 7, press, gap)) {
+      output.setTiming(press, gap); serialLearning = false; reportTiming();
+    } else {
+      suspended = true; learningMode = serialLearning = false;
+      feedback.clear(); output.release(); gestures.cancel();
+      status("Invalid timing; use timing PRESS GAP, each 5..250 ms. Outputs suspended; enable resumes");
+    }
+  }
   else if (!strncmp(text, "set ", 4)) {
     knob::Action action; uint8_t value;
     if (knob::parseCodeSetting(text + 4, action, value)) {

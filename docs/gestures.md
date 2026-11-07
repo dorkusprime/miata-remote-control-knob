@@ -1,6 +1,6 @@
 # Gesture controller and live monitor
 
-Controller v3.5 provides the six requested audio controls plus Camera 1 through EXT IN 1. The user verified five physical steering gestures in v3.4 and taught Sony the separate Mute code through a serial probe. The new hold/release Mute gesture still needs user testing after upload. Original diagnostics remain available.
+Controller v3.6 provides the six requested audio controls plus Camera 1 through EXT IN 1. The user verified five physical steering gestures in v3.4 and taught Sony the separate Mute code through a serial probe. The new hold/release Mute gesture still needs user testing after upload. Original diagnostics remain available.
 
 ## Current controls — controller v3.5
 
@@ -41,6 +41,8 @@ The console displays translated gestures and sends commands typed with Enter. It
 | `probe 230` | Hold raw code 230 for six seconds without changing any assignment |
 | `enable` | Exit serial calibration and resume normal knob control |
 | `release` | Release outputs and suspend normal control |
+| `timing` | Show current normal press and release-gap durations |
+| `timing 25 25` | Set normal presses/gaps to 25 ms each, in RAM only; clear pending output first |
 
 `set` and `learn` accept `volume_up`, `volume_down`, `play_pause`, `mute_att`, `next_track`, or `previous_track`. Codes must be decimal 0–255. Settings are **RAM-only**: reboot restores the table above. A `set` command releases active outputs but preserves the prior enabled/suspended state and the knob's local learning mode. `learn`/`probe` suspend normal gestures until `enable`; keep the console connected during their holds. A detected Twist failure releases outputs. No command reads Sony's recognition state.
 
@@ -66,7 +68,7 @@ Serial fallback: `learn volume_up`, `learn volume_down`, `learn play_pause`, `le
 
 ## Real output backend — 2026-11-06
 
-Each steering detent queues one 55 ms relay pulse, with a 1 ms pot settling interval and 55 ms minimum release gap. The queue holds eight pending detents; an oversized event is rejected in full, and queued work older than 750 ms is discarded. Camera on/off uses D2/GPIO28 separately and persists until the opposite request, reset, explicit release, or a detected input fault. The LED only acknowledges gestures and does not claim Sony state.
+Each steering detent produces one relay pulse, with a 1 ms pot settling interval. Normal press and release-gap defaults are 55 ms each; live `timing PRESS GAP` settings replace those durations until reboot. Consecutive same-code volume detents are stored as one counted run, preserving their step count. Volume runs no longer expire after 750 ms. Eight queue slots bound distinct runs/other commands rather than detents: a same-direction fast roll can retain many steps, while eight alternating runs or other commands can still exhaust the slots. Non-volume queued commands retain their 750 ms age limit. Runs preserve ordering, including direction changes; retaining every volume step can create backlog until the pulse rate is tuned. Camera on/off uses D2/GPIO28 separately and persists until the opposite request, reset, explicit release, or a detected input fault. The LED only acknowledges gestures and does not claim Sony state.
 
 Normal operation starts automatically after a two-second USB maintenance window and successful Twist connection. GPIO outputs start low, pot CS high; initialization selects code 128 with the relay open. A five-second watchdog runs after initialization, and I2C has a 25 ms timeout. USB reporting is skipped unless there is space for a complete bounded record. Monitor closure does not suspend standalone operation. A Twist failure releases outputs/queue; reconnect establishes a new gesture baseline and resumes unless explicitly suspended.
 
@@ -247,3 +249,21 @@ Each actual change written by the relay GPIO callback is captured with its origi
 Test: make one quick left roll, release the knob and wait until volume stops. Compare the final RELEASE/input-age against the observed Sony tail; share the trace around that roll. If output edges themselves run late, inspect the controller/input timeline. If GPIO activity ends promptly while Sony continues, investigate the remaining electrical/receiver path. No timing reduction, queue-policy change or Sony-delay diagnosis is claimed from this instrumentation alone.
 
 Verification: 31 gesture, 13 LED, 18 output-driver, 3 USB-maintenance and 3 trace-buffer scenarios passed, plus 64 Python tests. The XIAO build uses 90,040 bytes flash (4.3%) and 10,412 bytes static RAM (4.0%). Two existing USB.cpp initializer warnings remain; no sketch warning. `git diff --check` passed. Agent did not upload or reset hardware.
+
+## Fast-roll retention and pulse-rate tuning — controller v3.6
+
+The user's v3.5.1 trace showed a 33-detent Volume Up roll: 10 steps accepted, 23 rejected at the eight-detent queue limit, eight pulses transmitted, and two accepted steps lost to expiry. The user clarified that the initial “three seconds” was a rough estimate; the concern is unacceptable knob lag, not reproducing that exact duration. Firmware debounce was not responsible for these drops.
+
+v3.6 replaces consecutive volume detents with counted queue runs and removes age expiry for those runs. No heap allocation is used. Individual event counts are bounded to 65,536 (beyond the encoder's actual per-sample delta), total queued steps to uint32 range, and distinct queue entries to eight. Non-volume commands retain their prior bounded/age-limited policy. Reset, fault, maintenance, learning entry and explicit release still clear pending work. The change prevents the measured same-direction overflow pattern; it does not promise that arbitrary mixed-command workloads can never overflow or that all retained steps can be sent instantly.
+
+The user uploaded v3.6 and supplied a normal-mode trace with **17 detents requested and 17 GPIO press/release pairs**, with no drops. The final release was 1,725 ms after the final observed turn. GPIO edges remained spaced about 111 ms apart: the configured 55 ms press + 55 ms gap + settling, rather than a mysterious three-second debounce. This verifies retention for that burst and demonstrates intentional pacing/backlog. It does not measure Sony's own processing delay or establish a usable final rate.
+
+Next test, with no further firmware upload required:
+
+```sh
+scripts/knob.sh console --outputs
+```
+
+Enter `timing 25 25`, then test a single left detent to see whether Sony accepts one shorter command. Only after recognition is confirmed should a fast roll be compared. Settings may be shortened further if the receiver distinguishes pulses reliably; 25/25 is a trial, not an asserted solution. Enter `timing 55 55` to restore defaults. Each value must be 5–250 ms. Setting timing releases active outputs and clears pending commands while preserving prior enabled/suspended state; it can also release a manual camera request. Six-second learning holds and gesture debounce are unchanged. Timing is RAM-only, so reboot restores 55/55. At 25/25 the nominal rate is about 20 steps/s rather than nine; even this may leave unacceptable lag after a very fast roll. The usability goal is prompt response and stopping after the hand stops, not merely retaining a long backlog.
+
+Verification after the interrupted workspace session was restored: 31 gesture, 13 LED, 23 driver, 3 USB-maintenance and 3 trace-buffer scenarios passed, plus 65 Python tests. Driver tests replay all 33 measured fast-roll steps without overflow/expiry loss, verify direction ordering, bounded mixed-run overflow, full-queue tail merging, adjustable timing, release/cancellation and unchanged six-second learning holds. XIAO compile passed: **91,056 bytes flash (4.4%)**, **10,740 bytes static RAM (4.1%)**. Agent did not flash or reset hardware. Faster timing remains pending user receiver testing.

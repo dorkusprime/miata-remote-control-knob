@@ -45,6 +45,16 @@ inline bool parseCodeSetting(const char *text, Action &action, uint8_t &code) {
   return false;
 }
 
+// Parse the payload after "timing "; no trailing tokens or implicit clamping.
+inline bool parsePulseTiming(const char *text, uint8_t &press, uint8_t &gap) {
+  const char *space = strchr(text, ' ');
+  if (!space || space == text || space - text > 3) return false;
+  char first[4] = {};
+  memcpy(first, text, space - text);
+  return parsePotCode(first, press) && parsePotCode(space + 1, gap) &&
+         press >= 5 && press <= 250 && gap >= 5 && gap <= 250;
+}
+
 // Hardware callbacks keep timing/queue tests independent of Arduino.
 class SonyOutput {
  public:
@@ -60,8 +70,8 @@ class SonyOutput {
 
   void enable() { release(); enabled_ = true; }
   void release() {
-    enabled_ = learning_ = false;
-    pulseMs_ = kPulseMs;
+    enabled_ = learning_ = activeVolume_ = false;
+    pulseMs_ = normalPulseMs_;
     size_ = head_ = 0;
     phase_ = Phase::Idle;
     relayOn_ = cameraOn_ = false;
@@ -81,6 +91,16 @@ class SonyOutput {
     enabled_ = wasEnabled;
     return true;
   }
+  bool setTiming(unsigned press, unsigned gap) {
+    if (press < 5 || press > 250 || gap < 5 || gap > 250) return false;
+    const bool wasEnabled = enabled_;
+    release();
+    normalPulseMs_ = pulseMs_ = press; normalGapMs_ = gap;
+    enabled_ = wasEnabled;
+    return true;
+  }
+  uint32_t pressMs() const { return normalPulseMs_; }
+  uint32_t gapMs() const { return normalGapMs_; }
   bool learn(Action action, uint32_t now) {
     uint8_t code;
     if (!enabled_ || !codeFor(action, code)) return false;
@@ -106,19 +126,31 @@ class SonyOutput {
     }
     uint8_t code;
     if (!codeFor(event.action, code)) return false;
-    // Bound backlog; reject the whole event if it cannot fit. Never replay
-    // old detents indefinitely or allocate memory in the input callback.
-    if (event.steps > static_cast<uint32_t>(kCapacity - size_)) return false;
-    for (uint32_t i = 0; i < event.steps; ++i) {
-      queue_[(head_ + size_) % kCapacity] = {code, now};
+    if (event.steps > 65536 || event.steps > UINT32_MAX - pending()) return false;
+    const bool volume = event.action == Action::VolumeUp || event.action == Action::VolumeDown;
+    // Compress consecutive same-direction volume into a counted run: a quick
+    // spin consumes one slot, retaining every detent rather than eight only.
+    if (volume) {
+      if (size_) {
+        Pending &tail = queue_[(head_ + size_ - 1) % kCapacity];
+        if (tail.volume && tail.code == code) { tail.steps += event.steps; return true; }
+      }
+      if (size_ == kCapacity) return false;
+      queue_[(head_ + size_) % kCapacity] = {code, now, event.steps, true};
       ++size_;
+    } else {
+      if (event.steps > static_cast<uint32_t>(kCapacity - size_)) return false;
+      for (uint32_t i = 0; i < event.steps; ++i) {
+        queue_[(head_ + size_) % kCapacity] = {code, now, 1, false};
+        ++size_;
+      }
     }
     return true;
   }
   void tick(uint32_t now) {
     if (!enabled_) return;
     if (phase_ == Phase::Settle && now - at_ >= kSettleMs) {
-      if (now - activeAt_ >= kMaxAgeMs) {
+      if (!activeVolume_ && now - activeAt_ >= kMaxAgeMs) {
         if (learning_) { release(); return; }
         phase_ = Phase::Gap; at_ = now; return;
       }
@@ -128,16 +160,18 @@ class SonyOutput {
       if (learning_) { release(); return; }
       relay_(false); relayOn_ = false;
       phase_ = Phase::Gap; at_ = now;
-    } else if (phase_ == Phase::Gap && now - at_ >= kGapMs) {
+    } else if (phase_ == Phase::Gap && now - at_ >= normalGapMs_) {
       phase_ = Phase::Idle;
     }
     if (phase_ != Phase::Idle) return;
     while (size_) {
       const Pending item = queue_[head_];
-      head_ = (head_ + 1) % kCapacity; --size_;
-      if (now - item.at >= kMaxAgeMs) continue;
+      if (!item.volume && now - item.at >= kMaxAgeMs) {
+        head_ = (head_ + 1) % kCapacity; --size_; continue;
+      }
+      if (--queue_[head_].steps == 0) { head_ = (head_ + 1) % kCapacity; --size_; }
       relay_(false); relayOn_ = false;
-      pot_(item.code); code_ = item.code; activeAt_ = item.at;
+      pot_(item.code); code_ = item.code; activeAt_ = item.at; activeVolume_ = item.volume;
       phase_ = Phase::Settle; at_ = now;
       break;
     }
@@ -146,17 +180,21 @@ class SonyOutput {
   bool relayOn() const { return relayOn_; }
   bool cameraOn() const { return cameraOn_; }
   uint8_t code() const { return code_; }
-  uint8_t pending() const { return size_; }
+  uint32_t pending() const {
+    uint32_t count = 0;
+    for (uint8_t i = 0; i < size_; ++i) count += queue_[(head_ + i) % kCapacity].steps;
+    return count;
+  }
  private:
   enum class Phase { Idle, Settle, Pulse, Gap };
-  struct Pending { uint8_t code; uint32_t at; };
+  struct Pending { uint8_t code; uint32_t at, steps; bool volume; };
   Pot pot_;
   Switch relay_, camera_;
   Pending queue_[kCapacity] = {};
   uint8_t codes_[kCommandCount] = {};
   uint8_t size_ = 0, head_ = 0, code_ = 128;
-  bool enabled_ = false, learning_ = false, relayOn_ = false, cameraOn_ = false;
+  bool activeVolume_ = false, enabled_ = false, learning_ = false, relayOn_ = false, cameraOn_ = false;
   Phase phase_ = Phase::Idle;
-  uint32_t at_ = 0, activeAt_ = 0, pulseMs_ = kPulseMs;
+  uint32_t at_ = 0, activeAt_ = 0, normalPulseMs_ = kPulseMs, normalGapMs_ = kGapMs, pulseMs_ = kPulseMs;
 };
 }  // namespace knob

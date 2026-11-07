@@ -79,6 +79,15 @@ class MonitorTests(unittest.TestCase):
         event["on"] = "false"
         self.assertEqual(monitor.Renderer(outputs=True).render(json.dumps(event)), "Invalid output trace.")
 
+    def test_timing_and_large_pending_trace(self):
+        line = json.dumps(dict(v=1, type="timing", press_ms=25, gap_ms=25))
+        self.assertIn("press=25ms, release gap=25ms", monitor.Renderer().render(line))
+        self.assertEqual(monitor.Renderer().render(json.dumps(dict(v=1, type="timing", press_ms=0, gap_ms=25))),
+                         "Invalid timing message.")
+        event = dict(v=1, type="output", edge_ms=2000, on=True, code=0,
+                     pending=32, input_age_ms=1500, trace_lost=0)
+        self.assertIn("pending=32", monitor.Renderer(outputs=True).render(json.dumps(event)))
+
     def test_unknown_action(self):
         data = json.loads(gesture()); data["action"] = ["bad"]
         self.assertEqual(monitor.Renderer().render(json.dumps(data)), "Unknown gesture action.")

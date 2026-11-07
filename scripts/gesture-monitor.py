@@ -97,13 +97,17 @@ class Renderer:
             fields = ("edge_ms", "code", "pending", "input_age_ms", "trace_lost")
             if (type(event.get("on")) is not bool or
                     any(type(event.get(n)) is not int or not 0 <= event[n] <= 0xffffffff for n in fields) or
-                    event["code"] > 255 or event["pending"] > 8):
+                    event["code"] > 255):
                 return "Invalid output trace."
             age = event["input_age_ms"]
             age_text = "no audio gesture yet" if age == 0xffffffff else f"{age}ms since last audio gesture"
             return (f"[OUTPUT @{event['edge_ms']}ms] " + ("PRESS" if event["on"] else "RELEASE") +
                     f" code={event['code']} pending={event['pending']}; {age_text}" +
                     (f"; LOST {event['trace_lost']} trace edges" if event["trace_lost"] else ""))
+        if kind == "timing":
+            if any(type(event.get(n)) is not int or not 5 <= event[n] <= 250 for n in ("press_ms", "gap_ms")):
+                return "Invalid timing message."
+            return f"Pulse timing (RAM only): press={event['press_ms']}ms, release gap={event['gap_ms']}ms"
         if kind == "calibration":
             codes = event.get("codes")
             names = ("volume_up", "volume_down", "play_pause", "mute_att", "next_track", "previous_track")
@@ -188,7 +192,7 @@ def monitor(args):
                 output(f"Connected to {port}; awaiting firmware status. Ctrl+C exits.")
                 connection.write(b"h\n")
                 if args.interactive:
-                    output("Enter commands: codes; set ACTION 0..255; probe 0..255; learn ACTION; enable; release. Ctrl+C exits.")
+                    output("Enter commands: codes; set ACTION 0..255; probe 0..255; timing PRESS GAP; learn ACTION; enable; release. Ctrl+C exits.")
                 renderer, lines = Renderer(args.raw, args.outputs), Lines()
                 while True:
                     if args.interactive and select.select([sys.stdin], [], [], 0)[0]:

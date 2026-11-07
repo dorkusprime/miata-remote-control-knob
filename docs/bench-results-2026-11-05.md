@@ -119,3 +119,9 @@ Final scope: Previous Track, Play/Pause, Next Track, Mute, Volume +, Volume -, p
 ## Fast-turn volume tail observation — 2026-11-06
 
 The user reports about three seconds for volume-down activity to finish after a fast left roll and explicitly confirms the device is not in learning mode. This is an approximate user-observed duration, not a captured timing measurement. Controller v3.5.1 adds opt-in monitor display of timestamped relay GPIO changes and pending queue depth to distinguish queued output/loop delays from subsequent electrical/receiver behavior. The six-command profile, 55/55 ms pulse/gap and 750 ms expiry remain unchanged. Physical trace capture is pending the user's upload and fast-roll test; no cause is established.
+
+## Fast-roll trace results — 2026-11-06
+
+The v3.5.1 user trace establishes the firmware queue was dropping fast-turn inputs: a Volume Up burst requested 33 detents; 10 were accepted and 23 rejected, then only eight were transmitted before the remaining two expired. The last release was 742 ms after the last observed turn. The user subsequently clarified that “three seconds” was a rough mental estimate; the actionable issue is that the knob lag is too high to use.
+
+The user uploaded the locally built v3.6 while workspace verification was interrupted. Their new trace shows **17 requested Volume Down detents, all 17 transmitted**, with no dropped entries. Press starts were about 111 ms apart, matching the 55/55 ms default plus settling. The final release occurred at device timestamp 29,524 ms, 1,725 ms after the last input at 27,799 ms. Volume retention now works for this burst; output serialization still causes significant lag. No shorter-pulse Sony recognition result has been reported. Next trial is live `timing 25 25`, one detent first. The host suite and compile were verified after workspace restoration; no agent flash occurred.

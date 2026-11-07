@@ -4,7 +4,8 @@
 namespace knob {
 struct OutputEdge {
   uint32_t at, inputAge;
-  uint8_t code, pending;
+  uint8_t code;
+  uint32_t pending;
   bool on;
 };
 // Diagnostic storage only. Recording never performs USB I/O or delays output.

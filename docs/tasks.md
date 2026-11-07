@@ -131,3 +131,10 @@ This current status supersedes older pending endpoint and initial learning-mode 
 - [x] Add stationary hold/release Mute using Sony-accepted code 230; distinguish `play_pause` from `mute_att` in firmware and monitor.
 - [ ] User uploads v3.5 and verifies hold/release Mute, other gestures and Camera 1 operation. Existing Sony assignments can remain.
 - [ ] Complete reliable software upload and power-transition acceptance before installation.
+
+## Knob responsiveness — v3.6
+
+- [x] Identify measured fast-roll drops as firmware queue-capacity and age-expiry policy, not button debounce.
+- [x] Preserve consecutive volume detents using counted runs; user trace confirms all 17 steps transmitted.
+- [x] Add RAM-only normal pulse/gap timing adjustment and retain output timestamp diagnostics.
+- [ ] Test shorter pulses against Sony, starting with `timing 25 25` and one detent, then tune for usable fast-roll response. Default remains 55/55 until a faster rate is validated.

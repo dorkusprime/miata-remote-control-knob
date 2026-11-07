@@ -24,11 +24,11 @@ int main() {
     assert(codes.size() == 2 && codes.back() == 0 && !relay);
     out.tick(112); assert(relay); }
   { auto out = makeOutput(); out.enable();
-    assert(out.submit({Action::VolumeUp, 8}, 0));
-    assert(!out.submit({Action::VolumeDown, 1}, 0));
+    assert(out.submit({Action::NextTrack, 8}, 0));
+    assert(!out.submit({Action::PreviousTrack, 1}, 0));
     assert(out.pending() == 8); out.tick(750); assert(codes.empty());
     assert(out.pending() == 0 && !relay); }
-  { auto out = makeOutput(); out.enable(); out.submit({Action::VolumeUp, 1}, 0);
+  { auto out = makeOutput(); out.enable(); out.submit({Action::NextTrack, 1}, 0);
     out.tick(0); out.tick(800); assert(!relay); }
   { auto out = makeOutput(); out.enable(); out.submit({Action::VolumeUp, 8}, 0);
     out.tick(0); out.tick(1); out.submit({Action::CameraOn, 1}, 2);
@@ -127,5 +127,44 @@ int main() {
     gestures.update(800, 0, false); gestures.update(830, 0, false);
     out.tick(1000); assert(codes.back() == 230); out.tick(1001); assert(relay);
     out.tick(1056); assert(!relay); } // physical long release drives accepted Mute code
-  std::cout << "18 Sony output scenarios passed\n";
+  { auto out = makeOutput(); out.enable();
+    const uint32_t samples[] = {1,1,2,4,5,4,3,3,2,2,2,1,1,1,1};
+    uint32_t now = 0;
+    for (uint32_t steps : samples) {
+      assert(out.submit({Action::VolumeUp, steps}, now));
+      out.tick(now); now += 10;
+    }
+    for (; now < 5000; ++now) out.tick(now);
+    assert(codes.size() == 33 && out.pending() == 0 && !relay);
+    for (int code : codes) assert(code == 255); } // measured fast-spin batches, no capacity/expiry loss
+  { auto out = makeOutput(); out.enable();
+    assert(out.submit({Action::VolumeDown, 20}, 0));
+    assert(out.submit({Action::VolumeUp, 10}, 10));
+    for (uint32_t now = 0; now < 4000; ++now) out.tick(now);
+    assert(codes.size() == 30);
+    for (unsigned i = 0; i < codes.size(); ++i) assert(codes[i] == (i < 20 ? 0 : 255)); }
+  { auto out = makeOutput(); out.enable();
+    out.submit({Action::VolumeUp, 100}, 0); out.tick(0); out.tick(1); assert(relay);
+    assert(out.setTiming(25, 25)); assert(!relay && !out.pending() && out.enabled());
+    assert(out.pressMs() == 25 && out.gapMs() == 25);
+    out.submit({Action::VolumeDown, 2}, 100);
+    out.tick(100); out.tick(101); assert(relay);
+    out.tick(125); assert(relay); out.tick(126); assert(!relay);
+    out.tick(150); assert(codes.size() == 2); out.tick(151); assert(codes.size() == 3);
+    out.tick(152); assert(relay);
+    assert(!out.setTiming(0, 25)); assert(!out.setTiming(25, 251));
+    assert(out.learn(Action::MuteAtt, 200)); out.tick(201); out.tick(6200); assert(relay);
+    out.tick(6201); assert(!relay); } // tuning does not shorten learning holds
+  { uint8_t press, gap;
+    assert(parsePulseTiming("25 25", press, gap) && press == 25 && gap == 25);
+    assert(parsePulseTiming("5 250", press, gap));
+    for (const char *bad : {"", "4 25", "25 251", "25", "25 25 extra", "-1 25", "25  25", "999999 25"})
+      assert(!parsePulseTiming(bad, press, gap)); }
+  { auto out = makeOutput(); out.enable();
+    for (unsigned i = 0; i < 8; ++i)
+      assert(out.submit({i % 2 ? Action::VolumeDown : Action::VolumeUp, 100}, i));
+    assert(!out.submit({Action::VolumeUp, 1}, 10)); // bounded distinct runs, no heap allocation
+    assert(out.submit({Action::VolumeDown, 100}, 11)); // merge allowed even when slots full
+    assert(out.pending() == 900); out.release(); assert(!out.pending()); }
+  std::cout << "23 Sony output scenarios passed\n";
 }
