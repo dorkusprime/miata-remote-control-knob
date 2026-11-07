@@ -144,21 +144,21 @@ void status(const char *message) {
 void heartbeat() {
   char fields[195];
   snprintf(fields, sizeof(fields),
-      ",\"connected\":%s,\"camera_preview\":%s,\"simulated\":false,\"outputs_enabled\":%s,\"relay_requested\":%s,\"learning_mode\":%s,\"volume_boost\":%s",
+      ",\"connected\":%s,\"camera_preview\":%s,\"simulated\":false,\"outputs_enabled\":%s,\"relay_requested\":%s,\"learning_mode\":%s",
       connected ? "true" : "false", gestures.cameraRequested() ? "true" : "false",
-      output.enabled() ? "true" : "false", output.relayOn() ? "true" : "false", learningMode ? "true" : "false", output.volumeBoosting() ? "true" : "false");
+      output.enabled() ? "true" : "false", output.relayOn() ? "true" : "false", learningMode ? "true" : "false");
   emitEvent("heartbeat", fields);
 }
 
 void help() {
-  status("Gesture controller v3.8; USB maintenance: Picotool + boot command; Sony/camera hardware backend");
+  status("Gesture controller v3.9; USB maintenance: Picotool + boot command; Sony/camera hardware backend");
   status("Turn=volume; click=play/pause; held turn=track; hold/release >=0.7s=mute; double click=Camera 1");
   status("Debounce=30ms; double click=300ms from first release to second press; long hold=700ms");
   status("Sony codes: volume=255/0; play/pause=238; mute=230; next=248; previous=215");
   status("LED: full blue idle; purple held; white volume pulse; green click; amber camera-gesture pulse only");
   status("Hold still for 10s: toggle learning. Entry=3 amber flashes; exit=3 blue; assignment=2 green flashes");
   status("Calibration: codes; set ACTION 0..255; probe 0..255; learn ACTION; RAM-only settings; holds 6s");
-  status("Volume: slow detents=1 step, fast flick=coarse burst; timing PRESS GAP [BOOST_STEPS] adjusts settings");
+  status("Volume: one pulse per detent at any speed; timing PRESS GAP adjusts settings; defaults 30/30 ms");
   reportTiming();
   heartbeat();
 }
@@ -278,9 +278,9 @@ void reportCodes() {
 
 void reportTiming() {
   char fields[150];
-  snprintf(fields, sizeof(fields), ",\"press_ms\":%lu,\"gap_ms\":%lu,\"boost_steps\":%u,\"outputs_enabled\":%s,\"persistent\":false",
+  snprintf(fields, sizeof(fields), ",\"press_ms\":%lu,\"gap_ms\":%lu,\"outputs_enabled\":%s,\"persistent\":false",
       static_cast<unsigned long>(output.pressMs()), static_cast<unsigned long>(output.gapMs()),
-      output.boostSteps(), output.enabled() ? "true" : "false");
+      output.enabled() ? "true" : "false");
   emitEvent("timing", fields);
 }
 
@@ -296,11 +296,11 @@ void serialCommand(const char *text) {
   else if (!strcmp(text, "codes")) reportCodes();
   else if (!strcmp(text, "timing")) reportTiming();
   else if (!strncmp(text, "timing ", 7)) {
-    uint8_t press, gap, boost = output.boostSteps();
-    if (knob::parseTiming(text + 7, press, gap, boost)) {
-      output.setTiming(press, gap, boost); serialLearning = false; reportTiming();
+    uint8_t press, gap;
+    if (knob::parsePulseTiming(text + 7, press, gap)) {
+      output.setTiming(press, gap); serialLearning = false; reportTiming();
     } else {
-      status("Invalid timing; use timing PRESS GAP [BOOST_STEPS], ms 5..250, steps 1..20. Settings/state unchanged");
+      status("Invalid timing; use timing PRESS GAP, each 5..250 ms. Settings/state unchanged");
     }
   }
   else if (!strncmp(text, "set ", 4)) {

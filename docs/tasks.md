@@ -152,3 +152,9 @@ This current status supersedes older pending endpoint and initial learning-mode 
 - [x] Implement fine one-step turns and coarse ten-step fast flicks without repeated-burst accumulation.
 - [x] Support `timing PRESS GAP [BOOST_STEPS]`; invalid values preserve output state and timing report includes enabled/suspended state.
 - [ ] User uploads v3.8 and tests `timing 55 10 10`, then tunes coarse size and timing. Full-burst recognition and desired feel remain pending.
+
+## Proportional response — v3.9
+
+- [x] Record user-reported 30/30 recognition and rejection of fixed ten-step bursts for small fast turns.
+- [x] Restore one output pulse per detent, counted volume runs and two-number timing configuration, with 30/30 defaults.
+- [ ] User verifies a fast three-detent turn produces three Sony steps and assesses larger rolls at tuned timing. Physical recognition and acceptable tail remain hardware acceptance items.

@@ -8,7 +8,7 @@ std::vector<int> codes;
 void pot(uint8_t code) { assert(!relay); codes.push_back(code); }
 void setRelay(bool on) { relay = on; }
 void setCamera(bool on) { camera = on; }
-SonyOutput makeOutput() { codes.clear(); relay = camera = false; return SonyOutput(pot, setRelay, setCamera); }
+SonyOutput makeOutput() { codes.clear(); relay = camera = false; SonyOutput out(pot, setRelay, setCamera); out.setTiming(55, 55); return out; }
 int main() {
   { auto out = makeOutput(); assert(!out.submit({Action::VolumeUp, 1}, 0));
     out.tick(100); assert(codes.empty() && !relay); }
@@ -18,12 +18,11 @@ int main() {
     out.tick(101); assert(relay); out.tick(155); assert(relay);
     out.tick(156); assert(!relay); out.tick(10000); assert(!relay); }
   { auto out = makeOutput(); out.enable();
-    assert(out.submit({Action::VolumeDown, 1}, 0));
+    assert(out.submit({Action::VolumeDown, 2}, 0));
     out.tick(0); out.tick(1); out.tick(56); assert(!relay && codes.size() == 1);
-    out.tick(111); assert(codes.size() == 1);
-    assert(out.submit({Action::VolumeDown, 1}, 200));
-    out.tick(200); out.tick(201); assert(relay && codes.size() == 2);
-    out.tick(256); assert(!relay); } // isolated detents remain discrete taps
+    out.tick(110); assert(codes.size() == 1); out.tick(111);
+    assert(codes.size() == 2 && codes.back() == 0 && !relay);
+    out.tick(112); assert(relay); }
   { auto out = makeOutput(); out.enable();
     assert(out.submit({Action::NextTrack, 8}, 0));
     assert(!out.submit({Action::PreviousTrack, 1}, 0));
@@ -136,25 +135,22 @@ int main() {
       out.tick(now); now += 10;
     }
     for (; now < 5000; ++now) out.tick(now);
-    assert(codes.size() == 10 && out.pending() == 0 && !relay);
-    for (int code : codes) assert(code == 255); } // same measured fast spin becomes exactly one ten-step coarse burst
+    assert(codes.size() == 33 && out.pending() == 0 && !relay);
+    for (int code : codes) assert(code == 255); } // measured fast-spin batches, no capacity/expiry loss
   { auto out = makeOutput(); out.enable();
-    assert(out.submit({Action::VolumeDown, 20}, 0)); out.tick(0); out.tick(1); assert(relay);
-    assert(out.submit({Action::VolumeUp, 10}, 10)); assert(!relay);
-    out.tick(64); assert(!relay); out.tick(65); out.tick(66); assert(relay);
-    out.tick(121); assert(!relay && out.pending() == 9);
-    for (uint32_t now = 122; now < 1500; ++now) out.tick(now);
-    assert(codes.size() == 11 && codes[0] == 0);
-    for (unsigned i = 1; i < codes.size(); ++i) assert(codes[i] == 255); } // old direction cancelled
+    assert(out.submit({Action::VolumeDown, 20}, 0));
+    assert(out.submit({Action::VolumeUp, 10}, 10));
+    for (uint32_t now = 0; now < 4000; ++now) out.tick(now);
+    assert(codes.size() == 30);
+    for (unsigned i = 0; i < codes.size(); ++i) assert(codes[i] == (i < 20 ? 0 : 255)); }
   { auto out = makeOutput(); out.enable();
     out.submit({Action::VolumeUp, 100}, 0); out.tick(0); out.tick(1); assert(relay);
     assert(out.setTiming(25, 25)); assert(!relay && !out.pending() && out.enabled());
     assert(out.pressMs() == 25 && out.gapMs() == 25);
-    out.submit({Action::VolumeDown, 1}, 100);
+    out.submit({Action::VolumeDown, 2}, 100);
     out.tick(100); out.tick(101); assert(relay);
     out.tick(125); assert(relay); out.tick(126); assert(!relay);
-    out.tick(150); assert(codes.size() == 2);
-    assert(out.submit({Action::VolumeDown, 1}, 151)); out.tick(151); assert(codes.size() == 3);
+    out.tick(150); assert(codes.size() == 2); out.tick(151); assert(codes.size() == 3);
     out.tick(152); assert(relay);
     assert(!out.setTiming(0, 25)); assert(!out.setTiming(25, 251));
     assert(out.learn(Action::MuteAtt, 200)); out.tick(201); out.tick(6200); assert(relay);
@@ -165,54 +161,32 @@ int main() {
     for (const char *bad : {"", "4 25", "25 251", "25", "25 25 extra", "-1 25", "25  25", "999999 25"})
       assert(!parsePulseTiming(bad, press, gap)); }
   { auto out = makeOutput(); out.enable();
-    assert(out.submit({Action::NextTrack, 8}, 0));
-    assert(!out.submit({Action::VolumeUp, 10}, 10));
-    assert(out.pending() == 8); out.release(); assert(!out.pending()); }
-  { auto out = makeOutput(); out.enable(); out.setTiming(55, 10, 10);
-    out.submit({Action::VolumeUp, 1}, 0); out.tick(0); out.tick(1); assert(relay);
-    out.submit({Action::VolumeUp, 1}, 10); assert(out.volumeBoosting() && out.pending() == 9);
-    out.tick(56); assert(!relay); out.tick(66); out.tick(67); assert(relay);
-    for (uint32_t now = 68; now < 700; ++now) out.tick(now);
-    assert(!relay && !out.pending() && codes.size() == 10); } // first tap included, bounded burst
-  { auto out = makeOutput(); out.enable();
-    out.submit({Action::VolumeDown, 5}, 0); out.tick(0); out.tick(1);
-    out.submit({Action::MuteAtt, 1}, 10); assert(!relay && out.pending() == 1);
-    out.tick(65); out.tick(66); assert(relay && codes.back() == 230);
-    for (uint32_t now = 67; now < 2000; ++now) out.tick(now);
-    assert(codes.size() == 2 && !out.pending()); } // deliberate audio command cancels remaining sweep
-  { auto out = makeOutput(); out.enable();
-    out.submit({Action::VolumeDown, 17}, 0); out.tick(100); out.tick(101); assert(relay);
-    for (uint32_t now = 102; now < 2000; ++now) out.tick(now);
-    assert(codes.size() == 10 && !out.pending()); } // a coarse request is not an idle-expiring hold
-  { auto out = makeOutput(); out.enable(); out.setTiming(55, 10, 3);
-    out.submit({Action::VolumeDown, 5}, 0xfffffff0u); out.tick(0xfffffff0u); out.tick(0xfffffff1u);
-    out.tick(40); assert(!relay); out.tick(50); out.tick(51); assert(relay);
-    out.tick(106); assert(!relay); } // burst timing across timestamp rollover
-  { auto out = makeOutput(); out.enable(); out.submit({Action::VolumeUp, 20}, 0);
-    out.tick(0); out.tick(1); assert(out.volumeBoosting()); out.release();
-    assert(!relay && !out.volumeBoosting() && !out.pending());
-    out.enable(); out.tick(1000); assert(codes.size() == 1); }
-  { auto out = makeOutput(); out.enable(); out.submit({Action::VolumeUp, 10}, 0);
-    out.tick(0); out.tick(1); out.submit({Action::VolumeUp, 1}, 10);
-    assert(out.learn(Action::VolumeDown, 20)); out.tick(21); out.tick(121); assert(relay);
-    out.tick(6021); assert(!relay); } // short idle watchdog does not truncate explicit learning holds
-  { auto out = makeOutput(); out.enable();
-    assert(out.setTiming(55, 10, 14)); assert(out.boostSteps() == 14);
-    assert(out.setTiming(55, 20)); assert(out.boostSteps() == 14);
-    assert(!out.setTiming(55, 10, 21)); assert(out.boostSteps() == 14 && out.enabled());
-    uint8_t press = 0, gap = 0, boost = 14;
-    assert(parseTiming("55 10", press, gap, boost) && boost == 14);
-    assert(parseTiming("55 10 12", press, gap, boost) && boost == 12);
-    for (const char *bad : {"55 10 0", "55 10 21", "55 10 10 10", "55  10", "55 10 ", "55 10 x"})
-      assert(!parseTiming(bad, press, gap, boost)); }
-  { auto out = makeOutput(); out.enable(); out.setTiming(55, 10, 10);
-    out.submit({Action::VolumeUp, 2}, 0);
-    for (uint32_t now = 0; now < 1200; ++now) {
-      if (now && now % 10 == 0) out.submit({Action::VolumeUp, 5}, now);
-      out.tick(now);
-      assert(out.pending() <= 10);
+    for (unsigned i = 0; i < 8; ++i)
+      assert(out.submit({i % 2 ? Action::VolumeDown : Action::VolumeUp, 100}, i));
+    assert(!out.submit({Action::VolumeUp, 1}, 10)); // bounded distinct runs, no heap allocation
+    assert(out.submit({Action::VolumeDown, 100}, 11)); // merge allowed even when slots full
+    assert(out.pending() == 900); out.release(); assert(!out.pending()); }
+  { for (Action action : {Action::VolumeUp, Action::VolumeDown}) {
+      auto out = makeOutput(); out.enable(); out.setTiming(30, 30);
+      assert(out.submit({action, 3}, 0));
+      for (uint32_t now = 0; now < 500; ++now) out.tick(now);
+      assert(codes.size() == 3 && !relay && !out.pending());
+      for (int code : codes) assert(code == (action == Action::VolumeUp ? 255 : 0));
+    } } // fast three-detent packet yields exactly three presses in either direction
+  { SonyOutput out(pot, setRelay, setCamera);
+    assert(out.pressMs() == 30 && out.gapMs() == 30);
+    codes.clear(); relay = camera = false; out.enable();
+    assert(out.submit({Action::VolumeUp, 2}, 0));
+    out.tick(0); out.tick(1); assert(relay);
+    out.tick(30); assert(relay); out.tick(31); assert(!relay);
+    out.tick(60); assert(codes.size() == 1); out.tick(61); out.tick(62);
+    assert(relay && codes.size() == 2); out.tick(92); assert(!relay); }
+  { auto out = makeOutput(); out.enable(); out.setTiming(30, 30);
+    uint32_t now = 0;
+    for (unsigned i = 0; i < 3; ++i) {
+      assert(out.submit({Action::VolumeDown, 1}, now)); out.tick(now); now += 10;
     }
-    for (uint32_t now = 1200; now < 1400; ++now) out.tick(now);
-    assert(!relay && !out.pending()); assert(codes.size() > 10 && codes.size() < 25); }
-  std::cout << "31 Sony output scenarios passed\n";
+    for (; now < 500; ++now) out.tick(now);
+    assert(codes.size() == 3 && !out.pending()); } // three quick single samples also remain three
+  std::cout << "26 Sony output scenarios passed\n";
 }

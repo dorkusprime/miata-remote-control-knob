@@ -45,29 +45,14 @@ inline bool parseCodeSetting(const char *text, Action &action, uint8_t &code) {
   return false;
 }
 
-// timing PRESS GAP [BOOST_STEPS]; strict decimal values and no extra tokens.
-inline bool parseTiming(const char *text, uint8_t &press, uint8_t &gap, uint8_t &boost) {
-  uint8_t values[3] = {}; unsigned count = 0;
-  const char *p = text;
-  while (*p) {
-    if (count == 3) return false;
-    char token[4] = {}; unsigned length = 0;
-    while (*p && *p != ' ') {
-      if (length == 3) return false;
-      token[length++] = *p++;
-    }
-    if (!parsePotCode(token, values[count++])) return false;
-    if (*p == ' ' && !*++p) return false;
-  }
-  if (count < 2 || values[0] < 5 || values[0] > 250 || values[1] < 5 || values[1] > 250 ||
-      (count == 3 && (values[2] < 1 || values[2] > 20))) return false;
-  press = values[0]; gap = values[1];
-  if (count == 3) boost = values[2];
-  return true;
-}
+// Parse the payload after "timing "; no trailing tokens or implicit clamping.
 inline bool parsePulseTiming(const char *text, uint8_t &press, uint8_t &gap) {
-  uint8_t boost = 10;
-  return parseTiming(text, press, gap, boost);
+  const char *space = strchr(text, ' ');
+  if (!space || space == text || space - text > 3) return false;
+  char first[4] = {};
+  memcpy(first, text, space - text);
+  return parsePotCode(first, press) && parsePotCode(space + 1, gap) &&
+         press >= 5 && press <= 250 && gap >= 5 && gap <= 250;
 }
 
 // Hardware callbacks keep timing/queue tests independent of Arduino.
@@ -79,14 +64,13 @@ class SonyOutput {
       : pot_(pot), relay_(relay), camera_(camera) {
     for (uint8_t i = 0; i < kCommandCount; ++i) codes_[i] = kDefaultCommands[i].code;
   }
-  static constexpr uint32_t kSettleMs = 1, kPulseMs = 55, kGapMs = 55;
+  static constexpr uint32_t kSettleMs = 1, kPulseMs = 30, kGapMs = 30;
   static constexpr uint32_t kMaxAgeMs = 750, kLearnMs = 6000;
-  static constexpr uint32_t kRapidMs = 80, kFlickIdleMs = 150;
   static constexpr uint8_t kCapacity = 8;
 
   void enable() { release(); enabled_ = true; }
   void release() {
-    enabled_ = learning_ = activeVolume_ = fastSession_ = volumeSeen_ = false;
+    enabled_ = learning_ = activeVolume_ = false;
     pulseMs_ = normalPulseMs_;
     size_ = head_ = 0;
     phase_ = Phase::Idle;
@@ -107,16 +91,14 @@ class SonyOutput {
     enabled_ = wasEnabled;
     return true;
   }
-  bool setTiming(unsigned press, unsigned gap, unsigned boost = 0) {
-    if (press < 5 || press > 250 || gap < 5 || gap > 250 || boost > 20) return false;
+  bool setTiming(unsigned press, unsigned gap) {
+    if (press < 5 || press > 250 || gap < 5 || gap > 250) return false;
     const bool wasEnabled = enabled_;
     release();
     normalPulseMs_ = pulseMs_ = press; normalGapMs_ = gap;
-    if (boost) boostSteps_ = static_cast<uint8_t>(boost);
     enabled_ = wasEnabled;
     return true;
   }
-  uint8_t boostSteps() const { return boostSteps_; }
   uint32_t pressMs() const { return normalPulseMs_; }
   uint32_t gapMs() const { return normalGapMs_; }
   bool learn(Action action, uint32_t now) {
@@ -146,52 +128,17 @@ class SonyOutput {
     if (!codeFor(event.action, code)) return false;
     if (event.steps > 65536 || event.steps > UINT32_MAX - pending()) return false;
     const bool volume = event.action == Action::VolumeUp || event.action == Action::VolumeDown;
+    // Compress consecutive same-direction volume into a counted run: a quick
+    // spin consumes one slot, retaining every detent rather than eight only.
     if (volume) {
-      const uint32_t age = now - lastVolumeAt_;
-      const bool sameDirection = volumeSeen_ && lastVolumeCode_ == code;
-      const bool newFlick = !sameDirection || age >= kFlickIdleMs;
-      const bool rapid = event.steps > 1 || (sameDirection && age < kRapidMs);
-      const bool wasFast = fastSession_;
-      if (newFlick) fastSession_ = false;
-      volumeSeen_ = true; lastVolumeCode_ = code; lastVolumeAt_ = now;
-      // A new direction or deliberate new fine adjustment supersedes old coarse work.
-      if (!sameDirection || (newFlick && wasFast)) {
-        removeQueuedVolume();
-        if (activeVolume_) {
-          if (phase_ == Phase::Pulse || phase_ == Phase::Settle) {
-            relay_(false); relayOn_ = false; phase_ = Phase::Gap; at_ = now;
-          }
-          activeVolume_ = false;
-        }
+      if (size_) {
+        Pending &tail = queue_[(head_ + size_ - 1) % kCapacity];
+        if (tail.volume && tail.code == code) { tail.steps += event.steps; return true; }
       }
-      if (rapid && fastSession_) {
-        // One coarse request per flick. Keep moving at the output rate during a
-        // sustained roll, without accumulating another burst for each sample.
-        if (queuedVolume() || (activeVolume_ && (phase_ == Phase::Pulse || phase_ == Phase::Settle)))
-          return true;
-        if (size_ == kCapacity) return false;
-        queue_[(head_ + size_) % kCapacity] = {code, now, 1, true};
-        ++size_; return true;
-      }
-      uint32_t steps = 1;
-      if (rapid) {
-        removeQueuedVolume();
-        if (size_ == kCapacity) return false;
-        const bool firstTapIncluded = !newFlick && activeVolume_ && code_ == code &&
-            (phase_ == Phase::Pulse || phase_ == Phase::Settle || phase_ == Phase::Gap);
-        steps = boostSteps_ - (firstTapIncluded ? 1 : 0);
-        fastSession_ = true;
-      }
-      if (!steps) return true;
       if (size_ == kCapacity) return false;
-      queue_[(head_ + size_) % kCapacity] = {code, now, steps, true};
+      queue_[(head_ + size_) % kCapacity] = {code, now, event.steps, true};
       ++size_;
     } else {
-      removeQueuedVolume(); fastSession_ = volumeSeen_ = false;
-      if (activeVolume_ && (phase_ == Phase::Pulse || phase_ == Phase::Settle)) {
-        relay_(false); relayOn_ = false; phase_ = Phase::Gap; at_ = now;
-      }
-      activeVolume_ = false;
       if (event.steps > static_cast<uint32_t>(kCapacity - size_)) return false;
       for (uint32_t i = 0; i < event.steps; ++i) {
         queue_[(head_ + size_) % kCapacity] = {code, now, 1, false};
@@ -229,7 +176,6 @@ class SonyOutput {
       break;
     }
   }
-  bool volumeBoosting() const { return fastSession_ && ((activeVolume_ && (phase_ == Phase::Pulse || phase_ == Phase::Settle)) || queuedVolume()); }
   bool enabled() const { return enabled_; }
   bool relayOn() const { return relayOn_; }
   bool cameraOn() const { return cameraOn_; }
@@ -242,29 +188,11 @@ class SonyOutput {
  private:
   enum class Phase { Idle, Settle, Pulse, Gap };
   struct Pending { uint8_t code; uint32_t at, steps; bool volume; };
-  bool queuedVolume() const {
-    for (uint8_t i = 0; i < size_; ++i) if (queue_[(head_ + i) % kCapacity].volume) return true;
-    return false;
-  }
-  void removeQueuedVolume() {
-    Pending retained[kCapacity];
-    uint8_t count = 0;
-    for (uint8_t i = 0; i < size_; ++i) {
-      const Pending &item = queue_[(head_ + i) % kCapacity];
-      if (!item.volume) retained[count++] = item;
-    }
-    for (uint8_t i = 0; i < count; ++i) queue_[i] = retained[i];
-    head_ = 0; size_ = count;
-  }
   Pot pot_;
   Switch relay_, camera_;
   Pending queue_[kCapacity] = {};
   uint8_t codes_[kCommandCount] = {};
   uint8_t size_ = 0, head_ = 0, code_ = 128;
-  bool fastSession_ = false, volumeSeen_ = false;
-  uint8_t boostSteps_ = 10;
-  uint8_t lastVolumeCode_ = 0;
-  uint32_t lastVolumeAt_ = 0;
   bool activeVolume_ = false, enabled_ = false, learning_ = false, relayOn_ = false, cameraOn_ = false;
   Phase phase_ = Phase::Idle;
   uint32_t at_ = 0, activeAt_ = 0, normalPulseMs_ = kPulseMs, normalGapMs_ = kGapMs, pulseMs_ = kPulseMs;

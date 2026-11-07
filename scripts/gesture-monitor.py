@@ -200,7 +200,7 @@ def monitor(args):
                 output(f"Connected to {port}; awaiting firmware status. Ctrl+C exits.")
                 connection.write(b"h\n")
                 if args.interactive:
-                    output("Enter commands: codes; set ACTION 0..255; probe 0..255; timing PRESS GAP [BOOST_STEPS]; learn ACTION; enable; release. Ctrl+C exits.")
+                    output("Enter commands: codes; set ACTION 0..255; probe 0..255; timing PRESS GAP; learn ACTION; enable; release. Ctrl+C exits.")
                 renderer, lines = Renderer(args.raw, args.outputs), Lines()
                 while True:
                     if args.interactive and select.select([sys.stdin], [], [], 0)[0]:

@@ -1,6 +1,6 @@
 # Gesture controller and live monitor
 
-Controller v3.8 provides the six requested audio controls plus Camera 1 through EXT IN 1. The user verified five physical steering gestures in v3.4 and taught Sony the separate Mute code through a serial probe. The new hold/release Mute gesture still needs user testing after upload. Original diagnostics remain available.
+Controller v3.9 provides the six requested audio controls plus Camera 1 through EXT IN 1. The user verified five physical steering gestures in v3.4 and taught Sony the separate Mute code through a serial probe. The new hold/release Mute gesture still needs user testing after upload. Original diagnostics remain available.
 
 ## Current controls — controller v3.5
 
@@ -42,8 +42,7 @@ The console displays translated gestures and sends commands typed with Enter. It
 | `enable` | Exit serial calibration and resume normal knob control |
 | `release` | Release outputs and suspend normal control |
 | `timing` | Show current normal press and release-gap durations |
-| `timing 55 10` | Set press/gap durations, retaining current fast-flick size |
-| `timing 55 10 10` | Set press=55 ms, gap=10 ms, fast flick=10 steps |
+| `timing 30 30` | Set press=30 ms and release gap=30 ms |
 
 `set` and `learn` accept `volume_up`, `volume_down`, `play_pause`, `mute_att`, `next_track`, or `previous_track`. Codes must be decimal 0–255. Settings are **RAM-only**: reboot restores the table above. A `set` command releases active outputs but preserves the prior enabled/suspended state and the knob's local learning mode. `learn`/`probe` suspend normal gestures until `enable`; keep the console connected during their holds. A detected Twist failure releases outputs. No command reads Sony's recognition state.
 
@@ -69,7 +68,7 @@ Serial fallback: `learn volume_up`, `learn volume_down`, `learn play_pause`, `le
 
 ## Real output backend — 2026-11-06
 
-Volume uses fine/coarse control in v3.8. Isolated detents request one step. A multi-detent sample, or a same-direction input within 80 ms, promotes the flick to a coarse request of ten steps by default. The first tap counts toward that target. The remainder is one counted run: more input samples from the same flick do not add more coarse runs. A sustained fast roll continues at the output pulse rate after the initial burst; it does not accumulate an unbounded detent backlog. After 150 ms without input, subsequent motion is a new flick. New deliberate input, reversal or a different audio command cancels superseded coarse work. Press and gap durations use `timing PRESS GAP [BOOST_STEPS]`; at 55/10 a ten-step request takes approximately 650 ms to transmit. This starts promptly but is not instantaneous, and Sony recognition of the full burst remains pending. Other audio commands retain bounded queuing and age expiry; the six-command mapping and camera circuit are unchanged. Camera on/off uses D2/GPIO28 separately and persists until the opposite request, reset, explicit release, or a detected input fault. The LED only acknowledges gestures and does not claim Sony state.
+Volume is proportional in v3.9: each detent requests one output pulse at any rotation speed. Three fast detents request three steps, not ten. Same-direction volume steps are stored as counted runs, preserving the count without using one queue slot per detent. There is no speed-triggered fixed burst and no short live-hold conversion. Press and release-gap defaults are **30/30 ms**, reflecting the user's current recognition-producing setting, and `timing PRESS GAP` adjusts them in RAM. Counted volume work has no age expiry; eight distinct queue entries still bound mixed runs and other commands, and non-volume commands retain their 750 ms age limit. Runs preserve order, including changes of direction. Large rolls can still require a drain tail because Sony must receive separate presses; the nominal 30/30 plus 1 ms settling rate is about 16 steps/s. Camera on/off uses D2/GPIO28 separately and persists until the opposite request, reset, explicit release, or a detected input fault. The LED only acknowledges gestures and does not claim Sony state.
 
 Normal operation starts automatically after a two-second USB maintenance window and successful Twist connection. GPIO outputs start low, pot CS high; initialization selects code 128 with the relay open. A five-second watchdog runs after initialization, and I2C has a 25 ms timeout. USB reporting is skipped unless there is space for a complete bounded record. Monitor closure does not suspend standalone operation. A Twist failure releases outputs/queue; reconnect establishes a new gesture baseline and resumes unless explicitly suspended.
 
@@ -303,3 +302,13 @@ Press/gap range is 5–250 ms and coarse size 1–20 steps. These are RAM-only, 
 At 55/10 plus 1 ms settling, the nominal rate is about 15 steps/s and ten steps take about 650 ms. That rate is the user's previously recognition-producing setting, not a fully measured lossless Sony throughput limit. User confirmation that a whole ten-step burst is recognized and feels useful remains required. The current default gap remains the known 55 ms setting; enter the desired trial timing after upload. No relearning is required.
 
 Host verification passed 31 gesture, 13 LED, 31 driver, 3 USB-maintenance and 3 trace-buffer scenarios, plus 65 Python tests. Coverage checks exact coarse count for measured fast input batches, first-tap inclusion, bounded sustained movement, cancellation on reversal or another audio command, both timing syntax forms, parameter bounds and preserving coarse size with two parameters. XIAO build passed: 91,696 bytes flash (4.4%), 10,752 bytes static RAM (4.1%). Agent did not flash hardware.
+
+## Proportional volume restored — controller v3.9
+
+The user reports that 30/30 timing appears to work well but rejects the fixed-burst response: three quickly spun detents should not request ten steps. v3.9 removes that behavior and restores one pulse per detent for both slow and fast turns, with counted same-direction runs rather than the old eight-detent FIFO. The brief hold strategy is also removed. The six audio assignments, gestures and Camera 1 control are unchanged.
+
+Defaults are now **30 ms press / 30 ms release**, based on the user's trial. Use `timing PRESS GAP` to tune; `timing` reports both values and output state. The optional third burst-size parameter is retired: it produces an error without changing settings or disabling output. Settings remain RAM-only, resetting to 30/30 on reboot. The monitor can still interpret old-version timing records for diagnostic compatibility, but current firmware does not emit a burst size.
+
+This intentionally restores proportionality, not instantaneous delivery of arbitrary counts. At 30/30 plus settling the nominal output rate is about 16 steps/s; three pulses take about 153 ms from first press to final release. Large input bursts can still outpace transmission and produce a tail. Volume runs do not expire; different directions remain ordered rather than automatically cancelling each other. Eight mixed-run/other-command entries remain a finite capacity limit. These are explicit limits of the candidate, not a claim that all prior responsiveness concerns are resolved.
+
+Host verification passed 31 gesture, 13 LED, 26 driver, 3 USB-maintenance and 3 trace-buffer scenarios plus 65 Python tests. New regression tests verify exactly three presses for a three-detent packet in either direction, exactly three for rapid single-detent samples, and actual default 30/30 timing. Prior run-counting tests verify all 33 measured fast-roll steps survive capacity/age handling, release clears pending work, direction order and pulse tuning. Build passed; agent did not flash hardware. User upload and proportional feel/recognition testing remain pending.

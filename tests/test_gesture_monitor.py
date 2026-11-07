@@ -80,9 +80,9 @@ class MonitorTests(unittest.TestCase):
         self.assertEqual(monitor.Renderer(outputs=True).render(json.dumps(event)), "Invalid output trace.")
 
     def test_timing_and_large_pending_trace(self):
-        line = json.dumps(dict(v=1, type="timing", press_ms=25, gap_ms=25, boost_steps=10, outputs_enabled=True))
-        self.assertIn("press=25ms, release gap=25ms", monitor.Renderer().render(line))
-        self.assertIn("fast flick=10 steps", monitor.Renderer().render(line))
+        line = json.dumps(dict(v=1, type="timing", press_ms=30, gap_ms=30, outputs_enabled=True))
+        self.assertIn("press=30ms, release gap=30ms", monitor.Renderer().render(line))
+        self.assertNotIn("fast flick", monitor.Renderer().render(line))
         self.assertIn("outputs enabled", monitor.Renderer().render(line))
         self.assertEqual(monitor.Renderer().render(json.dumps(dict(v=1, type="timing", press_ms=0, gap_ms=25))),
                          "Invalid timing message.")
