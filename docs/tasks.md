@@ -145,3 +145,10 @@ This current status supersedes older pending endpoint and initial learning-mode 
 - [x] User verifies Sony repeats volume during a six-second held command.
 - [x] Implement slow-detent taps plus rapid-turn holds with 100 ms idle release and reversal cancellation; host tests and build pass.
 - [ ] User verifies slow-step precision, short fast-roll usefulness, prompt stopping and reversals on Sony. Initial receiver repeat delay remains unmeasured.
+
+## Coarse fast-flick candidate — v3.8
+
+- [x] Record that a 188 ms live hold yielded one step and 25/55 timing failed recognition.
+- [x] Implement fine one-step turns and coarse ten-step fast flicks without repeated-burst accumulation.
+- [x] Support `timing PRESS GAP [BOOST_STEPS]`; invalid values preserve output state and timing report includes enabled/suspended state.
+- [ ] User uploads v3.8 and tests `timing 55 10 10`, then tunes coarse size and timing. Full-burst recognition and desired feel remain pending.

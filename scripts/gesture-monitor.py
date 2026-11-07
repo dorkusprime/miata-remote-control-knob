@@ -107,7 +107,15 @@ class Renderer:
         if kind == "timing":
             if any(type(event.get(n)) is not int or not 5 <= event[n] <= 250 for n in ("press_ms", "gap_ms")):
                 return "Invalid timing message."
-            return f"Pulse timing (RAM only): press={event['press_ms']}ms, release gap={event['gap_ms']}ms"
+            boost = event.get("boost_steps")
+            enabled = event.get("outputs_enabled")
+            if boost is not None and (type(boost) is not int or not 1 <= boost <= 20):
+                return "Invalid timing message."
+            if enabled is not None and type(enabled) is not bool:
+                return "Invalid timing message."
+            return (f"Pulse timing (RAM only): press={event['press_ms']}ms, release gap={event['gap_ms']}ms" +
+                    (f", fast flick={boost} steps" if boost is not None else "") +
+                    ("; outputs " + ("enabled" if enabled else "SUSPENDED (enter enable)") if enabled is not None else ""))
         if kind == "calibration":
             codes = event.get("codes")
             names = ("volume_up", "volume_down", "play_pause", "mute_att", "next_track", "previous_track")
@@ -192,7 +200,7 @@ def monitor(args):
                 output(f"Connected to {port}; awaiting firmware status. Ctrl+C exits.")
                 connection.write(b"h\n")
                 if args.interactive:
-                    output("Enter commands: codes; set ACTION 0..255; probe 0..255; timing PRESS GAP; learn ACTION; enable; release. Ctrl+C exits.")
+                    output("Enter commands: codes; set ACTION 0..255; probe 0..255; timing PRESS GAP [BOOST_STEPS]; learn ACTION; enable; release. Ctrl+C exits.")
                 renderer, lines = Renderer(args.raw, args.outputs), Lines()
                 while True:
                     if args.interactive and select.select([sys.stdin], [], [], 0)[0]:

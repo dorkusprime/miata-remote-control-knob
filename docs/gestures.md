@@ -1,6 +1,6 @@
 # Gesture controller and live monitor
 
-Controller v3.7 provides the six requested audio controls plus Camera 1 through EXT IN 1. The user verified five physical steering gestures in v3.4 and taught Sony the separate Mute code through a serial probe. The new hold/release Mute gesture still needs user testing after upload. Original diagnostics remain available.
+Controller v3.8 provides the six requested audio controls plus Camera 1 through EXT IN 1. The user verified five physical steering gestures in v3.4 and taught Sony the separate Mute code through a serial probe. The new hold/release Mute gesture still needs user testing after upload. Original diagnostics remain available.
 
 ## Current controls — controller v3.5
 
@@ -42,7 +42,8 @@ The console displays translated gestures and sends commands typed with Enter. It
 | `enable` | Exit serial calibration and resume normal knob control |
 | `release` | Release outputs and suspend normal control |
 | `timing` | Show current normal press and release-gap durations |
-| `timing 25 25` | Set normal presses/gaps to 25 ms each, in RAM only; clear pending output first |
+| `timing 55 10` | Set press/gap durations, retaining current fast-flick size |
+| `timing 55 10 10` | Set press=55 ms, gap=10 ms, fast flick=10 steps |
 
 `set` and `learn` accept `volume_up`, `volume_down`, `play_pause`, `mute_att`, `next_track`, or `previous_track`. Codes must be decimal 0–255. Settings are **RAM-only**: reboot restores the table above. A `set` command releases active outputs but preserves the prior enabled/suspended state and the knob's local learning mode. `learn`/`probe` suspend normal gestures until `enable`; keep the console connected during their holds. A detected Twist failure releases outputs. No command reads Sony's recognition state.
 
@@ -68,7 +69,7 @@ Serial fallback: `learn volume_up`, `learn volume_down`, `learn play_pause`, `le
 
 ## Real output backend — 2026-11-06
 
-Volume uses a hybrid policy in v3.7. An isolated detent sends one normal tap (1 ms settling, 55 ms press and 55 ms gap by default). A multi-detent sample, or a same-direction input arriving within 80 ms of the previous input, becomes live volume motion: an active same-code pulse is extended into a held command, and further motion refreshes its idle deadline. The hold releases after 100 ms without further volume input, subject to the normal minimum press length. The queued per-detent volume backlog is removed when rapid motion takes over. Sony's own hold-repeat behavior determines volume progression during the hold; fast turns are not one output pulse per detent. Reversal releases the old direction and starts the new one after a normal release gap. Explicit serial learning remains a separate six-second hold. The eight-entry queue and 750 ms age limit remain for non-volume commands. Camera on/off uses D2/GPIO28 separately and persists until the opposite request, reset, explicit release, or a detected input fault. The LED only acknowledges gestures and does not claim Sony state.
+Volume uses fine/coarse control in v3.8. Isolated detents request one step. A multi-detent sample, or a same-direction input within 80 ms, promotes the flick to a coarse request of ten steps by default. The first tap counts toward that target. The remainder is one counted run: more input samples from the same flick do not add more coarse runs. A sustained fast roll continues at the output pulse rate after the initial burst; it does not accumulate an unbounded detent backlog. After 150 ms without input, subsequent motion is a new flick. New deliberate input, reversal or a different audio command cancels superseded coarse work. Press and gap durations use `timing PRESS GAP [BOOST_STEPS]`; at 55/10 a ten-step request takes approximately 650 ms to transmit. This starts promptly but is not instantaneous, and Sony recognition of the full burst remains pending. Other audio commands retain bounded queuing and age expiry; the six-command mapping and camera circuit are unchanged. Camera on/off uses D2/GPIO28 separately and persists until the opposite request, reset, explicit release, or a detected input fault. The LED only acknowledges gestures and does not claim Sony state.
 
 Normal operation starts automatically after a two-second USB maintenance window and successful Twist connection. GPIO outputs start low, pot CS high; initialization selects code 128 with the relay open. A five-second watchdog runs after initialization, and I2C has a 25 ms timeout. USB reporting is skipped unless there is space for a complete bounded record. Monitor closure does not suspend standalone operation. A Twist failure releases outputs/queue; reconnect establishes a new gesture baseline and resumes unless explicitly suspended.
 
@@ -281,3 +282,24 @@ Reversal opens the relay immediately, removes queued volume motion, observes the
 User test after upload: isolated slow detents first, then a short fast roll and stop; compare Sony's response and stopping with `monitor --outputs`. If Sony's initial repeat delay prevents useful response to short flicks, this candidate will need further adjustment. No satisfactory feel or short-flick behavior is claimed before user observation. The user is not asked to relearn Sony assignments.
 
 Host verification: 31 gesture, 13 LED, 29 output-driver, 3 USB-maintenance and 3 trace-buffer scenarios plus 65 Python tests passed. Tests cover promotion of an existing tap to a hold, a replay of the measured fast-input batches producing one hold, idle release without backlog, direction reversal/gap, preservation of queued non-volume commands, stale motion, reset/cancellation, timestamp rollover and unchanged six-second learning holds. XIAO build passed: 91,504 bytes flash (4.4%) and 10,748 bytes static RAM (4.1%). No hardware flashed by the agent.
+
+## Coarse fast flicks and timing command — controller v3.8
+
+The user's v3.7 trace showed isolated 55 ms taps working and a 17-detent fast roll converted into a single **188 ms hold**. Sony responded with one step. Together with successful repetition during the earlier six-second hold, this shows the short live-hold approach does not deliver a useful large quick-flick change. The initial repeat delay itself was not measured. The user clarified that rapid turning should quickly change volume substantially, not preserve fine-grained detent counting. They also reported **25/55 ms did not register**; keep 55 ms presses for the next candidate.
+
+v3.8 replaces brief rapid-turn holds with coarse pulse bursts. Slow motion is one step; fast flicks default to ten steps. Repeated same-flick samples refresh classification without multiplying burst size. The first tap is counted toward ten when a slow tap becomes rapid movement. Sustained fast movement continues at the available pulse rate after the initial burst. Direction reversal cancels queued old-direction volume and releases an old-direction active pulse before the opposite code; deliberate Play/Pause, Mute or track input also cancels remaining coarse work. A new flick after 150 ms quiet supersedes the previous volume request. This is intentional coarse control, not a one-pulse-per-detent promise. Other queued commands are preserved by volume cleanup.
+
+The user asked for tuning through the existing `timing` command:
+
+| Command | Meaning |
+| --- | --- |
+| `timing` | Display press, release gap, fast-flick steps and enabled/suspended state |
+| `timing 55 10 10` | 55 ms press, 10 ms gap, ten-step coarse flick |
+| `timing 55 10` | Change press/gap while keeping current coarse size |
+| `timing 55 10 15` | Increase coarse flick target to fifteen steps |
+
+Press/gap range is 5–250 ms and coarse size 1–20 steps. These are RAM-only, resetting on reboot to **55/55 ms and ten steps**. Valid changes release active outputs and clear pending work while preserving the prior enabled/suspended state. Invalid `timing` values now report an error and leave settings/output state unchanged, rather than disabling the knob. `timing` explicitly reports suspension and suggests `enable` when applicable. Other maintenance/fault handling remains in place.
+
+At 55/10 plus 1 ms settling, the nominal rate is about 15 steps/s and ten steps take about 650 ms. That rate is the user's previously recognition-producing setting, not a fully measured lossless Sony throughput limit. User confirmation that a whole ten-step burst is recognized and feels useful remains required. The current default gap remains the known 55 ms setting; enter the desired trial timing after upload. No relearning is required.
+
+Host verification passed 31 gesture, 13 LED, 31 driver, 3 USB-maintenance and 3 trace-buffer scenarios, plus 65 Python tests. Coverage checks exact coarse count for measured fast input batches, first-tap inclusion, bounded sustained movement, cancellation on reversal or another audio command, both timing syntax forms, parameter bounds and preserving coarse size with two parameters. XIAO build passed: 91,696 bytes flash (4.4%), 10,752 bytes static RAM (4.1%). Agent did not flash hardware.

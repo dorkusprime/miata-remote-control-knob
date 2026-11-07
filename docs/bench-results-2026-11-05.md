@@ -133,3 +133,9 @@ At live timing **55/10 ms**, the user supplied a trace with 19 requested volume-
 The user restored 55/55 and ran the existing six-second `learn volume_down` hold outside Sony's learning screen. They reported: held command worked well, volume reached zero. This supports trying Sony's own volume repeat for continuous motion. It does not measure initial repeat delay or confirm that a short flick will repeat quickly.
 
 Controller v3.7 implements a candidate hybrid: isolated taps, promotion to a live hold for rapid turns, 100 ms idle release, and immediate old-direction release/gapped reversal. Six controls and Camera 1 mapping are unchanged. User upload and responsiveness testing remain pending. No agent flash occurred.
+
+## Short hold result and coarse-control intent — 2026-11-06
+
+The user's v3.7 trace showed six isolated detents, each producing a 55 ms tap. A subsequent fast roll reported 17 detents but emitted only one hold from **113,428 to 113,616 ms** (188 ms); the receiver changed one step. This confirms that the candidate's short hold did not engage useful repeat for that flick. The user separately reported that 25/55 timing did not recognize commands. No exact minimum pulse or repeat-start delay is established.
+
+The user clarified that a fast turn should quickly change volume by a large amount, rather than provide fine per-detent control. They requested timing adjustments via `timing` for independent tuning. v3.8 therefore implements a bounded coarse request, initially ten steps, with configurable press/gap and optional step count in that command. Multiple samples of one flick do not multiply the request; reversal and another deliberate audio action cancel the unfinished coarse work. At proposed 55/10 timing, ten pulses take about 650 ms; complete Sony recognition and usability remain unverified. Invalid timing values no longer suspend output. Source/tests/build were updated without an agent hardware upload.

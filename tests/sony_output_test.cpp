@@ -136,14 +136,16 @@ int main() {
       out.tick(now); now += 10;
     }
     for (; now < 5000; ++now) out.tick(now);
-    assert(codes.size() == 1 && out.pending() == 0 && !relay);
-    for (int code : codes) assert(code == 255); } // same measured fast spin becomes one live hold, with no detent backlog
+    assert(codes.size() == 10 && out.pending() == 0 && !relay);
+    for (int code : codes) assert(code == 255); } // same measured fast spin becomes exactly one ten-step coarse burst
   { auto out = makeOutput(); out.enable();
     assert(out.submit({Action::VolumeDown, 20}, 0)); out.tick(0); out.tick(1); assert(relay);
     assert(out.submit({Action::VolumeUp, 10}, 10)); assert(!relay);
     out.tick(64); assert(!relay); out.tick(65); out.tick(66); assert(relay);
-    out.tick(121); assert(!relay && out.pending() == 0);
-    assert(codes.size() == 2 && codes[0] == 0 && codes[1] == 255); } // no old-direction backlog
+    out.tick(121); assert(!relay && out.pending() == 9);
+    for (uint32_t now = 122; now < 1500; ++now) out.tick(now);
+    assert(codes.size() == 11 && codes[0] == 0);
+    for (unsigned i = 1; i < codes.size(); ++i) assert(codes[i] == 255); } // old direction cancelled
   { auto out = makeOutput(); out.enable();
     out.submit({Action::VolumeUp, 100}, 0); out.tick(0); out.tick(1); assert(relay);
     assert(out.setTiming(25, 25)); assert(!relay && !out.pending() && out.enabled());
@@ -166,31 +168,51 @@ int main() {
     assert(out.submit({Action::NextTrack, 8}, 0));
     assert(!out.submit({Action::VolumeUp, 10}, 10));
     assert(out.pending() == 8); out.release(); assert(!out.pending()); }
-  { auto out = makeOutput(); out.enable();
+  { auto out = makeOutput(); out.enable(); out.setTiming(55, 10, 10);
     out.submit({Action::VolumeUp, 1}, 0); out.tick(0); out.tick(1); assert(relay);
-    out.submit({Action::VolumeUp, 1}, 10); assert(out.volumeHolding());
-    out.tick(56); assert(relay); out.submit({Action::VolumeUp, 5}, 70);
-    out.tick(169); assert(relay); out.tick(170); assert(!relay && !out.pending());
-    out.tick(5000); assert(codes.size() == 1); } // 100ms tail, no queued replay
+    out.submit({Action::VolumeUp, 1}, 10); assert(out.volumeBoosting() && out.pending() == 9);
+    out.tick(56); assert(!relay); out.tick(66); out.tick(67); assert(relay);
+    for (uint32_t now = 68; now < 700; ++now) out.tick(now);
+    assert(!relay && !out.pending() && codes.size() == 10); } // first tap included, bounded burst
   { auto out = makeOutput(); out.enable();
     out.submit({Action::VolumeDown, 5}, 0); out.tick(0); out.tick(1);
-    out.submit({Action::MuteAtt, 1}, 10);
-    out.submit({Action::VolumeDown, 9}, 20);
-    out.tick(120); assert(!relay); out.tick(175); out.tick(176);
-    assert(relay && codes.back() == 230); } // fast input preserves queued non-volume commands
+    out.submit({Action::MuteAtt, 1}, 10); assert(!relay && out.pending() == 1);
+    out.tick(65); out.tick(66); assert(relay && codes.back() == 230);
+    for (uint32_t now = 67; now < 2000; ++now) out.tick(now);
+    assert(codes.size() == 2 && !out.pending()); } // deliberate audio command cancels remaining sweep
   { auto out = makeOutput(); out.enable();
-    out.submit({Action::VolumeDown, 10}, 0); // motion becomes stale while loop is not serviced
-    out.tick(100); out.tick(101); assert(!relay && codes.empty() && !out.pending()); }
-  { auto out = makeOutput(); out.enable();
+    out.submit({Action::VolumeDown, 17}, 0); out.tick(100); out.tick(101); assert(relay);
+    for (uint32_t now = 102; now < 2000; ++now) out.tick(now);
+    assert(codes.size() == 10 && !out.pending()); } // a coarse request is not an idle-expiring hold
+  { auto out = makeOutput(); out.enable(); out.setTiming(55, 10, 3);
     out.submit({Action::VolumeDown, 5}, 0xfffffff0u); out.tick(0xfffffff0u); out.tick(0xfffffff1u);
-    out.tick(83); assert(relay); out.tick(84); assert(!relay); } // idle release across timestamp rollover
+    out.tick(40); assert(!relay); out.tick(50); out.tick(51); assert(relay);
+    out.tick(106); assert(!relay); } // burst timing across timestamp rollover
   { auto out = makeOutput(); out.enable(); out.submit({Action::VolumeUp, 20}, 0);
-    out.tick(0); out.tick(1); assert(out.volumeHolding()); out.release();
-    assert(!relay && !out.volumeHolding() && !out.pending());
+    out.tick(0); out.tick(1); assert(out.volumeBoosting()); out.release();
+    assert(!relay && !out.volumeBoosting() && !out.pending());
     out.enable(); out.tick(1000); assert(codes.size() == 1); }
   { auto out = makeOutput(); out.enable(); out.submit({Action::VolumeUp, 10}, 0);
     out.tick(0); out.tick(1); out.submit({Action::VolumeUp, 1}, 10);
     assert(out.learn(Action::VolumeDown, 20)); out.tick(21); out.tick(121); assert(relay);
     out.tick(6021); assert(!relay); } // short idle watchdog does not truncate explicit learning holds
-  std::cout << "29 Sony output scenarios passed\n";
+  { auto out = makeOutput(); out.enable();
+    assert(out.setTiming(55, 10, 14)); assert(out.boostSteps() == 14);
+    assert(out.setTiming(55, 20)); assert(out.boostSteps() == 14);
+    assert(!out.setTiming(55, 10, 21)); assert(out.boostSteps() == 14 && out.enabled());
+    uint8_t press = 0, gap = 0, boost = 14;
+    assert(parseTiming("55 10", press, gap, boost) && boost == 14);
+    assert(parseTiming("55 10 12", press, gap, boost) && boost == 12);
+    for (const char *bad : {"55 10 0", "55 10 21", "55 10 10 10", "55  10", "55 10 ", "55 10 x"})
+      assert(!parseTiming(bad, press, gap, boost)); }
+  { auto out = makeOutput(); out.enable(); out.setTiming(55, 10, 10);
+    out.submit({Action::VolumeUp, 2}, 0);
+    for (uint32_t now = 0; now < 1200; ++now) {
+      if (now && now % 10 == 0) out.submit({Action::VolumeUp, 5}, now);
+      out.tick(now);
+      assert(out.pending() <= 10);
+    }
+    for (uint32_t now = 1200; now < 1400; ++now) out.tick(now);
+    assert(!relay && !out.pending()); assert(codes.size() > 10 && codes.size() < 25); }
+  std::cout << "31 Sony output scenarios passed\n";
 }
