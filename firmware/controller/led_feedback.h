@@ -23,6 +23,8 @@ class LedFeedback {
   void setLearning(bool on, uint32_t now) {
     learning_ = on; flash(on ? kCameraAmber : kIdleBlue, now, 3);
   }
+  void bulkCommand(uint32_t now) { flash(kHeldPurple, now, 2); }
+
   void learningCommand(uint32_t now) { flash(kClickGreen, now, 2); }
 
   void onGesture(const Event &event, uint32_t now) {

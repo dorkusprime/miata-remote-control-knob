@@ -21,6 +21,30 @@ def gesture(action="volume_up", steps=1, **changes):
 
 
 class MonitorTests(unittest.TestCase):
+    def test_flick_input_disposition(self):
+        renderer = monitor.Renderer()
+        for flag, label in (("flick_tail", "[FLICK TAIL]"), ("flick_trigger", "[FLICK TRIGGER]")):
+            event = dict(v=1, type="gesture", action="volume_up", steps=3, simulated=False,
+                         accepted=True, pot_code=255, **{flag: True})
+            self.assertTrue(renderer.render(json.dumps(event)).startswith(label))
+
+    def test_bulk_accounting(self):
+        event = dict(v=1, type="bulk", direction=-1, target_steps=10,
+                     sent_net=2, remaining_steps=-12, accepted=True)
+        self.assertEqual(monitor.Renderer().render(json.dumps(event)),
+                         "[BULK] Volume down: target=10 steps; sent net=2; remaining=-12; accepted")
+        event["accepted"] = False
+        self.assertIn("DROPPED", monitor.Renderer().render(json.dumps(event)))
+
+    def test_reject_malformed_bulk(self):
+        base = dict(v=1, type="bulk", direction=1, target_steps=10,
+                    sent_net=0, remaining_steps=10, accepted=True)
+        for key, value in (("direction", "left"), ("direction", True), ("direction", 0),
+                           ("target_steps", 101), ("sent_net", None),
+                           ("remaining_steps", "10"), ("accepted", 1)):
+            event = dict(base, **{key: value})
+            self.assertEqual(monitor.Renderer().render(json.dumps(event)), "Invalid bulk message.")
+
     def test_all_actions(self):
         for action in monitor.LABELS:
             with self.subTest(action=action):

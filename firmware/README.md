@@ -2,7 +2,7 @@
 
 Three sketches are available: the preserved [Twist diagnostic](diagnostic/diagnostic.ino), the [interface bench diagnostic](interface/interface.ino), and the integrated [gesture controller](controller/controller.ino). Build/upload defaults to `controller`; uploading is always explicit and performed by the user.
 
-Controller v3.9 drives the assembled board: turn=volume, click=Play/Pause, held turn=track, stationary hold/release >=700 ms=Mute, double click=Camera 1 request, ten-second stationary hold=learning toggle. It preserves USB maintenance and diagnostics. Sony has accepted the six required audio codes; user testing of the new Mute gesture after upload remains pending. See [current controls](../docs/gestures.md#current-controls--controller-v35).
+Controller v4.0 drives the assembled board: turn=volume, click=Play/Pause, held turn=track, stationary hold/release >=700 ms=Mute, double click=Camera 1 request, ten-second stationary hold=learning toggle. It preserves USB maintenance and diagnostics. Sony has accepted the six required audio codes; user testing of the new Mute gesture after upload remains pending. See [current controls](../docs/gestures.md#current-controls--controller-v35).
 
 ## Current upload workflow — Arduino CLI
 
@@ -127,3 +127,7 @@ On 2026-10-26 (client local date), the user reported that RGB worked after the r
 ## Assembled interface diagnostic
 
 Build with `scripts/knob.sh build interface`. The user uploads with `scripts/knob.sh upload interface`. See [bench commands and wiring](../docs/interface-diagnostic.md).
+
+## Bulk-volume tuning — v4.0
+
+Quick unpressed L–R–L targets −10 volume steps and R–L–R targets +10, compensating for pulses already sent. Recognition is immediate; final-flick tail input is consumed until a configurable quiet interval, while reversal interrupts immediately. Ordinary turns remain proportional at default 30/30 ms. Use `flick` in `scripts/knob.sh console` to show settings; detent limits, timeouts, quiet interval and target count are adjustable in RAM. See [settings and accounting](../docs/gestures.md#bulk-volume-gestures--controller-v40). Agent builds/tests only; user performs upload and hardware validation.

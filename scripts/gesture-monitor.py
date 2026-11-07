@@ -84,6 +84,10 @@ class Renderer:
             if action in ("volume_up", "volume_down", "next_track", "previous_track"):
                 label += f" × {steps}"
             prefix = "[SIM] " if simulated else ("[REQUEST] " if event["accepted"] else "[DROPPED] ")
+            if not simulated and event.get("flick_tail") is True:
+                prefix = "[FLICK TAIL] "
+            elif not simulated and event.get("flick_trigger") is True and event["accepted"]:
+                prefix = "[FLICK TRIGGER] "
             code = event.get("pot_code")
             if not simulated and type(code) is int and 0 <= code <= 255:
                 label += f" (code {code})"
@@ -104,6 +108,16 @@ class Renderer:
             return (f"[OUTPUT @{event['edge_ms']}ms] " + ("PRESS" if event["on"] else "RELEASE") +
                     f" code={event['code']} pending={event['pending']}; {age_text}" +
                     (f"; LOST {event['trace_lost']} trace edges" if event["trace_lost"] else ""))
+        if kind == "bulk":
+            if (type(event.get("direction")) is not int or event["direction"] not in (-1, 1) or
+                    type(event.get("target_steps")) is not int or not 1 <= event["target_steps"] <= 100 or
+                    any(type(event.get(n)) is not int for n in ("sent_net", "remaining_steps")) or
+                    type(event.get("accepted")) is not bool):
+                return "Invalid bulk message."
+            direction = "up" if event.get("direction", 0) > 0 else "down"
+            return (f"[BULK] Volume {direction}: target={event.get('target_steps')} steps; "
+                    f"sent net={event.get('sent_net')}; remaining={event.get('remaining_steps')}; "
+                    f"{'accepted' if event.get('accepted') else 'DROPPED'}")
         if kind == "timing":
             if any(type(event.get(n)) is not int or not 5 <= event[n] <= 250 for n in ("press_ms", "gap_ms")):
                 return "Invalid timing message."
@@ -200,7 +214,7 @@ def monitor(args):
                 output(f"Connected to {port}; awaiting firmware status. Ctrl+C exits.")
                 connection.write(b"h\n")
                 if args.interactive:
-                    output("Enter commands: codes; set ACTION 0..255; probe 0..255; timing PRESS GAP; learn ACTION; enable; release. Ctrl+C exits.")
+                    output("Enter commands: codes; set ACTION 0..255; probe 0..255; timing PRESS GAP; flick [first/second MIN MAX | third MIN | gap/window/quiet MS | steps N | on/off]; learn ACTION; enable; release. Ctrl+C exits.")
                 renderer, lines = Renderer(args.raw, args.outputs), Lines()
                 while True:
                     if args.interactive and select.select([sys.stdin], [], [], 0)[0]:

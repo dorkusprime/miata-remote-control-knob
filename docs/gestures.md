@@ -1,6 +1,6 @@
 # Gesture controller and live monitor
 
-Controller v3.9 provides the six requested audio controls plus Camera 1 through EXT IN 1. The user verified five physical steering gestures in v3.4 and taught Sony the separate Mute code through a serial probe. The new hold/release Mute gesture still needs user testing after upload. Original diagnostics remain available.
+Controller v4.0 provides the six requested audio controls plus Camera 1 through EXT IN 1. The user verified five physical steering gestures in v3.4 and taught Sony the separate Mute code through a serial probe. The new hold/release Mute gesture still needs user testing after upload. Original diagnostics remain available.
 
 ## Current controls — controller v3.5
 
@@ -8,6 +8,8 @@ Controller v3.9 provides the six requested audio controls plus Camera 1 through 
 | --- | --- | ---: |
 | Turn left | Volume - | 0 |
 | Turn right | Volume + | 255 |
+| Quick left–right–left | Net volume −10 from gesture start (configurable) | Compensated pulses |
+| Quick right–left–right | Net volume +10 from gesture start (configurable) | Compensated pulses |
 | Short single press | Play/Pause | 238 |
 | Hold and turn left | Previous Track | 215 |
 | Hold and turn right | Next Track | 248 |
@@ -15,7 +17,7 @@ Controller v3.9 provides the six requested audio controls plus Camera 1 through 
 | Double click | Toggle Camera 1 request through EXT IN 1 | Separate output |
 | Hold still for 10 s | Toggle local learning mode | Maintenance gesture |
 
-These are the final requested functions. Source, Voice, Answer Call and Hang Up are outside the requested scope; learning-capacity probing is stopped. The user-reported accepted and colliding probe results are preserved in the bench record. No additional gestures or hardware are needed.
+These are the requested functions, including the v4.0 bulk-volume gesture. Source, Voice, Answer Call and Hang Up are outside the requested scope; learning-capacity probing is stopped. The user-reported accepted and colliding probe results are preserved in the bench record. No additional hardware is needed.
 
 Mute fires **on release**, once. It does not fire while waiting for the ten-second learning toggle. A ten-second stationary hold emits only the learning toggle, even if the first threshold sample is the release. Held rotation consumes the press and suppresses both Play/Pause and Mute. A double click emits only the camera request. Booting/reconnecting with the button held suppresses that press until released.
 
@@ -68,7 +70,7 @@ Serial fallback: `learn volume_up`, `learn volume_down`, `learn play_pause`, `le
 
 ## Real output backend — 2026-11-06
 
-Volume is proportional in v3.9: each detent requests one output pulse at any rotation speed. Three fast detents request three steps, not ten. Same-direction volume steps are stored as counted runs, preserving the count without using one queue slot per detent. There is no speed-triggered fixed burst and no short live-hold conversion. Press and release-gap defaults are **30/30 ms**, reflecting the user's current recognition-producing setting, and `timing PRESS GAP` adjusts them in RAM. Counted volume work has no age expiry; eight distinct queue entries still bound mixed runs and other commands, and non-volume commands retain their 750 ms age limit. Runs preserve order, including changes of direction. Large rolls can still require a drain tail because Sony must receive separate presses; the nominal 30/30 plus 1 ms settling rate is about 16 steps/s. Camera on/off uses D2/GPIO28 separately and persists until the opposite request, reset, explicit release, or a detected input fault. The LED only acknowledges gestures and does not claim Sony state.
+Ordinary volume turns remain proportional: each detent requests one pulse at any speed. v4.0 additionally recognizes explicit alternating bulk gestures; see [bulk tuning](#bulk-volume-gestures--controller-v40). Three fast detents request three steps, not ten. Same-direction volume steps are stored as counted runs, preserving the count without using one queue slot per detent. There is no speed-triggered fixed burst and no short live-hold conversion. Press and release-gap defaults are **30/30 ms**, reflecting the user's current recognition-producing setting, and `timing PRESS GAP` adjusts them in RAM. Counted volume work has no age expiry; eight distinct queue entries still bound mixed runs and other commands, and non-volume commands retain their 750 ms age limit. Runs preserve order, including changes of direction. Large rolls can still require a drain tail because Sony must receive separate presses; the nominal 30/30 plus 1 ms settling rate is about 16 steps/s. Camera on/off uses D2/GPIO28 separately and persists until the opposite request, reset, explicit release, or a detected input fault. The LED only acknowledges gestures and does not claim Sony state.
 
 Normal operation starts automatically after a two-second USB maintenance window and successful Twist connection. GPIO outputs start low, pot CS high; initialization selects code 128 with the relay open. A five-second watchdog runs after initialization, and I2C has a 25 ms timeout. USB reporting is skipped unless there is space for a complete bounded record. Monitor closure does not suspend standalone operation. A Twist failure releases outputs/queue; reconnect establishes a new gesture baseline and resumes unless explicitly suspended.
 
@@ -312,3 +314,39 @@ Defaults are now **30 ms press / 30 ms release**, based on the user's trial. Use
 This intentionally restores proportionality, not instantaneous delivery of arbitrary counts. At 30/30 plus settling the nominal output rate is about 16 steps/s; three pulses take about 153 ms from first press to final release. Large input bursts can still outpace transmission and produce a tail. Volume runs do not expire; different directions remain ordered rather than automatically cancelling each other. Eight mixed-run/other-command entries remain a finite capacity limit. These are explicit limits of the candidate, not a claim that all prior responsiveness concerns are resolved.
 
 Host verification passed 31 gesture, 13 LED, 26 driver, 3 USB-maintenance and 3 trace-buffer scenarios plus 65 Python tests. New regression tests verify exactly three presses for a three-detent packet in either direction, exactly three for rapid single-detent samples, and actual default 30/30 timing. Prior run-counting tests verify all 33 measured fast-roll steps survive capacity/age handling, release clears pending work, direction order and pulse tuning. Build passed; agent did not flash hardware. User upload and proportional feel/recognition testing remain pending.
+
+
+## Bulk volume gestures — controller v4.0
+
+Unpressed **left–right–left** requests a net reduction of ten steps; **right–left–right** requests an increase of ten. Both directions share the settings below. A flick is a consecutive run of detents in one direction, not necessarily one detent. Only unpressed rotation participates; learning and serial probe modes bypass detection.
+
+Recognition is immediate when the third run reaches its minimum. There is **no recognition pause** and no third-run maximum: it cannot be enforced after triggering. The first two runs must each satisfy their minimum and maximum when their direction changes. An inactivity gap or whole-pattern timeout abandons the candidate. Failed patterns keep their ordinary detent commands; they are not retrospectively dropped. Normal turn latency is unchanged.
+
+On recognition, queued volume commands are cancelled and replaced with the correction needed to reach the target. The baseline is the transmitted signed volume ledger **plus any older outstanding volume intent when the first flick began**. This preserves older ordinary turns when replacing the queue. The driver counts a pulse when its relay closes; a pulse already started finishes at full width and retains its release gap. A selected-but-unstarted volume pulse is cancelled. The third triggering sample is consumed in full, even if it contains more than the minimum detents.
+
+Continued detents in the final direction are consumed as that flick's tail. Every tail sample restarts the quiet timer. Once there has been at least `quiet` milliseconds without motion, a same-direction turn cancels remaining bulk pulses and starts ordinary control. An opposite-direction turn interrupts immediately. Raw button press also interrupts immediately; track/click/mute/camera events end detection. Recognition consumes its pattern, preventing overlapping retriggers. An interrupt discards the unfinished bulk target; it does not compensate back to it. Ordinary unfinished volume queues are retained until recognition; they are not discarded merely because a candidate reversed once.
+
+`cancelVolume` preserves camera state and unrelated queued audio commands. Reset, faults, explicit release, learning entry and reconfiguration clear detection. Pulse timing and code reconfiguration retain their previous release behavior. No USB upload mechanism or hardware wiring changes.
+
+### Live tuning
+
+After uploading, run `scripts/knob.sh console`. Each command reports the full current configuration. These trial settings are **RAM-only** and revert to the defaults below on restart, just like `timing`. Keep the console output for settings you want retained in the final firmware defaults.
+
+| Command (default values shown) | Meaning | Accepted range |
+| --- | --- | --- |
+| `flick` | Show all settings | — |
+| `flick on` / `flick off` | Enable detection / ordinary proportional turns only | On by default |
+| `flick first 1 6` | Detent minimum and maximum for first run | 1–100; minimum ≤ maximum |
+| `flick second 1 6` | Detent minimum and maximum for second run | 1–100; minimum ≤ maximum |
+| `flick third 1` | Third-run minimum; trigger immediately | 1–100 |
+| `flick gap 250` | Maximum inactivity gap between motion samples during candidate | 10–5000 ms |
+| `flick window 700` | Maximum total time from first sample to recognition | 10–5000 ms |
+| `flick quiet 120` | Quiet interval separating final-flick tail from new same-direction input | 10–5000 ms |
+| `flick steps 10` | Bulk target magnitude, relative to baseline | 1–100 |
+| `timing 30 30` | Normal pulse press / release gap, unchanged | 5–250 ms each |
+
+For example, `flick first 2 5`, `flick second 2 5`, `flick third 2` requires at least two detents in each direction. Changing a flick setting cancels detection and any unfinished bulk queue, but preserves ordinary pending steps, enabled/suspended state, code assignments and camera request. Invalid flick settings leave state unchanged. Pattern duration and gap limits are independent; no extra delay is added by the quiet interval.
+
+Two purple flashes acknowledge recognition; they do not claim Sony accepted the pulses. The console prints `[BULK]` with target magnitude, signed transmitted net since the first flick (up positive), and signed remaining correction. With no older pending work: `remaining = signed target − sent net`. `[FLICK TRIGGER]` identifies the consumed triggering input and `[FLICK TAIL]` identifies subsequent consumed samples; these are not additional proportional output requests. `--outputs` still shows actual relay transitions.
+
+The ledger represents commanded changes, not absolute Sony volume. Receiver misses, volume limits and other volume controls can make physical results approximate. The 30/30 output timing remains unchanged, so ten steps take roughly 0.6 s; bulk recognition does not accelerate the receiver. The queue remains bounded; capacity failures are reported. No hardware recognition/feel testing of v4.0 has been performed by the agent.

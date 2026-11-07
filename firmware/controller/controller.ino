@@ -3,6 +3,7 @@
 #include "gesture_engine.h"
 #include "led_feedback.h"
 #include "sony_output.h"
+#include "bulk_volume.h"
 #include "usb_maintenance.h"
 #include "output_trace.h"
 #include <USB.h>
@@ -29,6 +30,7 @@ uint32_t lastAudioInputAt = 0;
 bool audioInputSeen = false;
 void recordRelayEdge(bool on);
 void reportTiming();
+void reportFlick();
 
 void writePot(uint8_t code) {
   digitalWrite(kRelay, LOW);
@@ -41,6 +43,7 @@ void writePot(uint8_t code) {
 void setRelay(bool on) { digitalWrite(kRelay, on ? HIGH : LOW); recordRelayEdge(on); }
 void setCamera(bool on) { digitalWrite(kCamera, on ? HIGH : LOW); }
 knob::SonyOutput output(writePot, setRelay, setCamera);
+knob::BulkVolume bulkVolume;
 void recordRelayEdge(bool on) {
   const uint32_t now = millis();
   outputTrace.record({now, audioInputSeen ? now - lastAudioInputAt : UINT32_MAX,
@@ -107,12 +110,13 @@ void gestureEvent(const knob::Event &event, void *) {
     lastAudioInputAt = millis(); audioInputSeen = true;
   }
   // Feedback must work with no serial monitor; fault-cancel events are not gestures.
-  if (connected) feedback.onGesture(event, millis());
+  // Bulk tail input must not overwrite its recognition flash.
+  if (connected && !bulkVolume.finishingFlick(event, millis())) feedback.onGesture(event, millis());
   bool accepted = false;
   if (event.action == knob::Action::LearningToggle && connected && interfaceReady) {
     learningMode = !learningMode;
     suspended = serialLearning = false;
-    output.release();
+    output.release(); bulkVolume.reset();
     if (!learningMode) output.enable();
     feedback.setLearning(learningMode, millis());
     accepted = true;
@@ -123,13 +127,25 @@ void gestureEvent(const knob::Event &event, void *) {
       accepted = output.learn(event.action, millis());
       if (accepted) feedback.learningCommand(millis());
     }
-  } else accepted = output.submit(event, millis());
+  } else {
+    accepted = bulkVolume.submit(event, millis(), output);
+    if (bulkVolume.recognized()) {
+      feedback.bulkCommand(millis());
+      char bulkFields[180];
+      snprintf(bulkFields, sizeof(bulkFields),
+          ",\"direction\":%d,\"target_steps\":%lu,\"sent_net\":%lld,\"remaining_steps\":%lld,\"accepted\":%s",
+          bulkVolume.direction(), static_cast<unsigned long>(bulkVolume.settings().steps),
+          static_cast<long long>(bulkVolume.sentDuring()), static_cast<long long>(bulkVolume.correction()), accepted ? "true" : "false");
+      emitEvent("bulk", bulkFields);
+    }
+  }
   uint8_t requestedCode = 0;
   const int code = output.codeFor(event.action, requestedCode) ? requestedCode : -1;
-  char fields[170];
+  char fields[195];
   snprintf(fields, sizeof(fields),
-      ",\"action\":\"%s\",\"steps\":%lu,\"simulated\":false,\"accepted\":%s,\"pot_code\":%d",
-      actionName(event.action), static_cast<unsigned long>(event.steps), accepted ? "true" : "false", code);
+      ",\"action\":\"%s\",\"steps\":%lu,\"simulated\":false,\"accepted\":%s,\"pot_code\":%d,\"flick_tail\":%s,\"flick_trigger\":%s",
+      actionName(event.action), static_cast<unsigned long>(event.steps), accepted ? "true" : "false", code,
+      bulkVolume.consumedTail() ? "true" : "false", bulkVolume.recognized() ? "true" : "false");
   emitEvent("gesture", fields);
 }
 knob::Gestures gestures(gestureEvent);
@@ -151,15 +167,16 @@ void heartbeat() {
 }
 
 void help() {
-  status("Gesture controller v3.9; USB maintenance: Picotool + boot command; Sony/camera hardware backend");
+  status("Gesture controller v4.0; USB maintenance: Picotool + boot command; Sony/camera hardware backend");
   status("Turn=volume; click=play/pause; held turn=track; hold/release >=0.7s=mute; double click=Camera 1");
   status("Debounce=30ms; double click=300ms from first release to second press; long hold=700ms");
   status("Sony codes: volume=255/0; play/pause=238; mute=230; next=248; previous=215");
   status("LED: full blue idle; purple held; white volume pulse; green click; amber camera-gesture pulse only");
   status("Hold still for 10s: toggle learning. Entry=3 amber flashes; exit=3 blue; assignment=2 green flashes");
   status("Calibration: codes; set ACTION 0..255; probe 0..255; learn ACTION; RAM-only settings; holds 6s");
-  status("Volume: one pulse per detent at any speed; timing PRESS GAP adjusts settings; defaults 30/30 ms");
+  status("Volume: one pulse/detent; L-R-L=bulk down, R-L-R=bulk up; timing PRESS GAP; defaults 30/30 ms");
   reportTiming();
+  reportFlick();
   heartbeat();
 }
 
@@ -194,7 +211,7 @@ void inputEvent(const Sample &sample) {
 }
 
 void loseTwist(const char *message, bool tryOff = true) {
-  output.release();
+  output.release(); bulkVolume.reset();
   learningMode = serialLearning = false;
   connected = false;
   feedback.clear();
@@ -284,21 +301,40 @@ void reportTiming() {
   emitEvent("timing", fields);
 }
 
+void reportFlick() {
+  const auto &s = bulkVolume.settings();
+  char message[190];
+  snprintf(message, sizeof(message),
+      "Flick (RAM only): %s; first=%lu..%lu second=%lu..%lu third>=%lu; gap=%lums window=%lums quiet=%lums steps=%lu",
+      s.enabled ? "ON" : "OFF", static_cast<unsigned long>(s.firstMin), static_cast<unsigned long>(s.firstMax),
+      static_cast<unsigned long>(s.secondMin), static_cast<unsigned long>(s.secondMax), static_cast<unsigned long>(s.thirdMin),
+      static_cast<unsigned long>(s.gapMs), static_cast<unsigned long>(s.windowMs),
+      static_cast<unsigned long>(s.quietMs), static_cast<unsigned long>(s.steps));
+  status(message);
+}
+
 void serialCommand(const char *text) {
   if (!strcmp(text, "boot")) {
     suspended = true;
     learningMode = serialLearning = false;
-    output.release(); watchdog_disable();
+    output.release(); bulkVolume.reset(); watchdog_disable();
     bootRequest.request(millis());
     status("BOOTSEL requested; waiting for serial close, then disconnecting USB");
   } else if (!strcmp(text, "help") || !strcmp(text, "h") || !strcmp(text, "?")) help();
   else if (!strcmp(text, "status") || !strcmp(text, "s")) { maintenanceStatus(); heartbeat(); }
   else if (!strcmp(text, "codes")) reportCodes();
+  else if (!strcmp(text, "flick")) reportFlick();
+  else if (!strncmp(text, "flick ", 6)) {
+    auto settings = bulkVolume.settings();
+    if (knob::parseFlickSetting(text + 6, settings)) {
+      bulkVolume.configure(settings, output, millis()); reportFlick();
+    } else status("Invalid flick setting; use first/second MIN MAX; third MIN; gap/window/quiet MS; steps N; on/off. State unchanged");
+  }
   else if (!strcmp(text, "timing")) reportTiming();
   else if (!strncmp(text, "timing ", 7)) {
     uint8_t press, gap;
     if (knob::parsePulseTiming(text + 7, press, gap)) {
-      output.setTiming(press, gap); serialLearning = false; reportTiming();
+      output.setTiming(press, gap); bulkVolume.reset(); serialLearning = false; reportTiming();
     } else {
       status("Invalid timing; use timing PRESS GAP, each 5..250 ms. Settings/state unchanged");
     }
@@ -306,18 +342,18 @@ void serialCommand(const char *text) {
   else if (!strncmp(text, "set ", 4)) {
     knob::Action action; uint8_t value;
     if (knob::parseCodeSetting(text + 4, action, value)) {
-      output.setCode(action, value);
+      output.setCode(action, value); bulkVolume.reset();
       serialLearning = false;
       reportCodes();
     } else {
       suspended = true; learningMode = serialLearning = false;
-      feedback.clear(); output.release(); gestures.cancel();
+      feedback.clear(); output.release(); bulkVolume.reset(); gestures.cancel();
       status("Invalid setting; use set ACTION 0..255. Outputs suspended; enable resumes");
     }
   }
   else if (!strncmp(text, "probe ", 6)) {
     suspended = true; learningMode = false; serialLearning = true;
-    output.release(); gestures.cancel(); feedback.setLearning(false, millis());
+    output.release(); bulkVolume.reset(); gestures.cancel(); feedback.setLearning(false, millis());
     uint8_t code;
     if (interfaceReady && connected && knob::parsePotCode(text + 6, code)) {
       output.enable(); output.learnCode(code, millis());
@@ -326,7 +362,7 @@ void serialCommand(const char *text) {
   }
   else if (!strncmp(text, "learn ", 6)) {
     suspended = true; learningMode = false; serialLearning = true;
-    feedback.setLearning(false, millis()); output.release(); gestures.cancel();
+    feedback.setLearning(false, millis()); output.release(); bulkVolume.reset(); gestures.cancel();
     for (const auto &entry : knob::kDefaultCommands) {
       const knob::Action action = entry.action;
       if (!strcmp(text + 6, entry.name) && interfaceReady && connected) {
@@ -340,19 +376,19 @@ void serialCommand(const char *text) {
   }
   else if (!strcmp(text, "release")) {
     suspended = true; learningMode = serialLearning = false;
-    feedback.clear(); output.release(); gestures.cancel();
+    feedback.clear(); output.release(); bulkVolume.reset(); gestures.cancel();
     status("Outputs released; enter enable to resume");
   } else if (!strcmp(text, "enable")) {
     suspended = learningMode = serialLearning = false;
     feedback.clear();
     if (connected && interfaceReady) {
       gestures.begin(millis(), lastSample.count, lastSample.down);
-      output.enable();
+      output.enable(); bulkVolume.reset();
     }
     heartbeat();
   } else {
     suspended = true; learningMode = serialLearning = false;
-    feedback.clear(); output.release(); gestures.cancel();
+    feedback.clear(); output.release(); bulkVolume.reset(); gestures.cancel();
     status("Unknown command; outputs released. Enter enable to resume");
   }
 }
@@ -360,7 +396,7 @@ void serialCommand(const char *text) {
 void serviceSerial() {
   if (!Serial) {
     // A learning hold requires the terminal; normal operation does not.
-    if (serialLearning && output.learning()) output.release();
+    if (serialLearning && output.learning()) { output.release(); bulkVolume.reset(); }
     serialLength = 0; serialOverflow = false; hadSerial = false; return;
   }
   if (!hadSerial) { hadSerial = true; status("Controller ready. Enter help or status."); }
@@ -377,7 +413,7 @@ void serviceSerial() {
         serialLine[serialLength++] = ch;
       else {
         suspended = true; learningMode = serialLearning = false;
-        feedback.clear(); output.release(); gestures.cancel();
+        feedback.clear(); output.release(); bulkVolume.reset(); gestures.cancel();
         serialLength = 0; serialOverflow = true;
         status("Invalid/oversized input; outputs released");
       }
@@ -429,6 +465,8 @@ void loop() {
     if (!readSample(sample)) {
       loseTwist("Twist read failed; pending gestures cancelled and camera preview released");
     } else {
+      // A raw press ends a flick immediately, without waiting for click/hold resolution.
+      if (sample.down && !lastSample.down) bulkVolume.interrupt(output, now);
       gestures.update(now, sample.count, sample.down);
       if (sample.count != lastSample.count || sample.down != lastSample.down) inputEvent(sample);
       lastSample = sample;

@@ -158,3 +158,14 @@ This current status supersedes older pending endpoint and initial learning-mode 
 - [x] Record user-reported 30/30 recognition and rejection of fixed ten-step bursts for small fast turns.
 - [x] Restore one output pulse per detent, counted volume runs and two-number timing configuration, with 30/30 defaults.
 - [ ] User verifies a fast three-detent turn produces three Sony steps and assesses larger rolls at tuned timing. Physical recognition and acceptable tail remain hardware acceptance items.
+
+
+## Explicit bulk gestures — v4.0
+
+- [x] Implement mirrored L–R–L / R–L–R detection with configurable first/second min/max detents, third minimum, gap, whole-pattern window, quiet interval and target magnitude.
+- [x] Trigger immediately; consume final-flick tail; reverse interrupts immediately and fresh same-direction motion interrupts after quiet.
+- [x] Replace volume queue using signed committed-pulse accounting; finish active pulse and preserve its gap, unrelated queued commands and camera state.
+- [x] Preserve ordinary proportional behavior for unsuccessful patterns and bypass detection for learning/held-track gestures.
+- [x] Add console tuning, recognition/tail reporting, purple recognition feedback and host tests. Tuning is RAM-only during trials.
+- [ ] User upload, tune natural thresholds, and validate counts/interruption on Sony. No physical v4.0 test performed by agent.
+- [ ] Retain selected tuning values across power cycles once settled (current trial values reset on reboot).
