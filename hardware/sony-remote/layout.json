@@ -1,5 +1,5 @@
 {
-  "status": "Complete proposed electrical pad allocation; unbuilt; fit and Sony acceptance unverified",
+  "status": "Checked pad allocation with bench-tested assembly; final enclosure fit and installed power transitions pending",
   "board": {
     "name": "ElectroCookie Mini",
     "width_mm": 38.1,

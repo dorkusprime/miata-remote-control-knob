@@ -5,7 +5,7 @@
 <text x="35" y="43" font-size="29" text-anchor="start" style="fill:#172033">Sony remote + Camera 1 · BOARD COMPONENTS</text>
 <text x="35" y="74" font-size="18" text-anchor="start" style="fill:#172033">MCP41050 + HCT125 + LCC110 · proposed no-cut ElectroCookie Mini layout</text>
 <rect x="35" y="94" width="1690" height="66" rx="8" fill="#fff3cd" stroke="none"/>
-<text x="52" y="120" font-size="18" text-anchor="start" style="fill:#92400e">ELECTRICAL PAD ALLOCATION CHECKED · PHYSICAL FIT / SOCKETS / MOUNTING STILL UNVERIFIED</text>
+<text x="52" y="120" font-size="18" text-anchor="start" style="fill:#92400e">CHECKED PAD ALLOCATION · VERIFY CLEARANCE IN THE FINAL ENCLOSURE</text>
 <text x="52" y="145" font-size="16" text-anchor="start" style="fill:#92400e">Components on top. Headers and 12 wire pieces underneath. Circles also show where opposite-face leads and wires land.</text>
 <text x="55" y="191" font-size="21" text-anchor="start" style="fill:#172033">TOP · component view</text>
 <rect x="55" y="220" width="571.5" height="762.0" rx="14" fill="#e6edf3" stroke="#94a3b8"/>
@@ -725,14 +725,14 @@
 <text x="1325" y="562" font-size="16" text-anchor="start" style="fill:#172033">W10–W13   four signal wires</text>
 <text x="1325" y="589" font-size="16" text-anchor="start" style="fill:#172033">12 pieces; 24 solder landings.</text>
 <text x="1325" y="616" font-size="16" text-anchor="start" style="fill:#172033">Crossings are insulated and have no joint.</text>
-<text x="1325" y="690" font-size="18" text-anchor="start" style="fill:#172033">J1 · eight-wire controller pigtail</text>
+<text x="1325" y="690" font-size="18" text-anchor="start" style="fill:#172033">J1 · seven controller jumpers</text>
 <text x="1325" y="710" font-size="16" text-anchor="start" style="fill:#172033">1 GND → B4</text>
 <text x="1325" y="733" font-size="16" text-anchor="start" style="fill:#172033">2 +5 V → I1</text>
 <text x="1325" y="756" font-size="16" text-anchor="start" style="fill:#172033">3 SCK → B10</text>
 <text x="1325" y="779" font-size="16" text-anchor="start" style="fill:#172033">4 MOSI → I11</text>
 <text x="1325" y="802" font-size="16" text-anchor="start" style="fill:#172033">5 CS → B7</text>
 <text x="1325" y="825" font-size="16" text-anchor="start" style="fill:#172033">6 ENABLE → B5</text>
-<text x="1325" y="848" font-size="16" text-anchor="start" style="fill:#172033">7 GND → B9</text>
+<text x="1325" y="848" font-size="16" text-anchor="start" style="fill:#172033">7 SPARE GND → B9</text>
 <text x="1325" y="871" font-size="16" text-anchor="start" style="fill:#172033">8 CAMERA → I8</text>
 <text x="1325" y="910" font-size="18" text-anchor="start" style="fill:#172033">J2 · Sony pigtail</text>
 <text x="1325" y="939" font-size="16" text-anchor="start" style="fill:#172033">1 Input 1 → H5</text>
@@ -745,5 +745,5 @@
 <text x="52" y="1148" font-size="16" text-anchor="start" style="fill:#172033">C1/C2 leads need careful forming. C3 negative stripe goes to J10 (GND). R10 1 kΩ is sleeved inline in the camera cable; it is not a board component.</text>
 <text x="52" y="1174" font-size="16" text-anchor="start" style="fill:#172033">Each underside wire has two through-hole ends. Sleeve the full span between joints.</text>
 <text x="52" y="1200" font-size="16" text-anchor="start" style="fill:#172033">Nominal body envelopes do not certify sockets, mounting holes or final height. Dry-fit the actual board before soldering.</text>
-<text x="52" y="1226" font-size="16" text-anchor="start" style="fill:#172033">See pad-map.md and layout.json for every pin, terminal and jumper. Electrical mapping is checked; hardware remains untested.</text>
+<text x="52" y="1226" font-size="16" text-anchor="start" style="fill:#172033">See pad-map.md for component terminals and internal-jumpers.svg for the seven wires to the XIAO breakout.</text>
 </svg>

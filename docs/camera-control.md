@@ -1,4 +1,4 @@
-# Camera 1 control — required, proposed
+# Camera 1 control
 
 Manual camera preview is an integral knob function, not an optional future peripheral. Double-click requests Camera 1 through EXT IN 1; the resistive steering-remote connection remains responsible for volume, ATT and track commands.
 
@@ -13,18 +13,18 @@ Sources:
 
 ## Selected compact hardware
 
-Reuse U2 SN74HCT125N channel 4. No K2 or Q2 is added. The earlier second-LCC110 proposal is superseded.
+U2 SN74HCT125N channel 4 drives the assembled camera output.
 
 | Connection | Wiring |
 | --- | --- |
-| U2 pin 13, active-low enable | GND (formerly +5 V; remove old connection) |
-| U2 pin 12, input | XIAO D2 / GPIO28, harness contact 8 (formerly GND; remove old connection) |
+| U2 pin 13, active-low enable | GND |
+| U2 pin 12, input | XIAO D2 / GPIO28 via breakout J7 and component-board J1.8 at I8 |
 | R8, 47 kohm | U2 pin 12 to GND; default request low during reset/unplug |
 | U2 pin 11, output | J2.3 camera pigtail through R10 1 kohm to EXT IN 1 |
 | R9, 47 kohm | U2 pin 11 to GND; holds buffer-side output down if high impedance |
 | R10, 1 kohm | Sleeved inline in camera output pigtail, off-board; strain-relieve both wire ends |
 
-R8/R9 fit on top of the same 38.1 × 50.8 mm ElectroCookie Mini. R10 lives in the cable, with insulated joints, rather than adding a chip or another board. No component bodies are added underneath. Current layout JSON/SVG/pad map include the camera nets and two board resistors. All 16 board bodies and all modeled lead routes pass the checker; actual socket/lead fit still requires dry-fitting. C2/C3 and power/ground bus taps changed; do not build from the previous diagram. J1.2 +5 V now lands I1; C3 positive J6 and negative J10.
+R8 and R9 are on the component board. R10 is sleeved in the cable. Use the [pad map](../hardware/sony-remote/pad-map.md) for physical placement.
 
 TI specifies 2 V minimum high input and 0.8 V maximum low input for this 5 V HCT buffer, so 3.3 V GPIO is suitable. At 4.5 V supply, output high is guaranteed at least 3.84 V at 6 mA over SN74 temperature range. With R10 at its 1% maximum of 1010 ohm, a measured Sony trigger load <=0.25 mA leaves a conservative output >=3.58 V after the series drop (total buffer load includes R9). Require >=3.5 V at EXT IN 1 under actual load and <=0.25 mA through R10 before acceptance. If input load exceeds this budget, this version fails acceptance and needs a different driver; do not bypass R10 blindly.
 
@@ -34,9 +34,7 @@ TI source: https://www.ti.com/lit/ds/symlink/sn74hct125.pdf (pinout, recommended
 
 ## Harness and placement
 
-J1 contacts 1–6 keep their electrical functions; contact 7 is second GND; contact 8 CAMERA_REQUEST from D2/GPIO28. Physical J1.2 board landing changes to I1. J2 gains contact 3: CAMERA_BUFFER from H9 through inline R10 to Sony EXT IN 1. Do not confuse EXT IN 1 with steering Input 1. Sony Input 2 and EXT IN 2 remain insulated.
-
-The current placement and pad map replace the remote-only layout. They include R8/R9; R10 is explicitly an off-board cable component. The underside uses 12 insulated through-hole jumpers with 24 distinct solder landings. Use the current pad map for endpoints.
+Use the [internal jumper image](../hardware/internal-jumpers.svg) for the XIAO-to-board request and the [P1 hookup table](wiring.md#8-pin-box-harness-p1) for the Sony end. Component-board J2.3 at H9 reaches Sony EXT IN 1 through P1.7 and the inline R10. Sony steering Input 1 has its own P1.5 path. Insulate the unused Sony Input 2 and EXT IN 2 leads.
 
 ## Firmware contract
 
@@ -46,7 +44,7 @@ The current placement and pad map replace the remote-only layout. They include R
 - LED provides a brief acknowledgement only, never a latched camera-state indication.
 - Real reverse goes directly to Sony REVERSE IN independently of the MCU. Sony supplies priority; no reverse GPIO or sensing circuit is required for that priority alone.
 - Whether Camera 1 resumes after leaving reverse is a bench acceptance question. No claim that firmware clears a request on reverse without a reverse-sensing input.
-- Controller v3 implements the real camera request separately from steering pulses. User upload, buffer-to-Sony recognition and power-transition acceptance remain pending.
+- The controller implements the camera request separately from steering pulses. Buffer-to-Sony recognition and power-transition acceptance remain pending.
 
 ## Video and camera power
 
@@ -54,14 +52,12 @@ Camera video feeds REAR CAMERA IN for actual reversing and CAMERA IN 1 for manua
 
 ## Acceptance and next work
 
-1. Dry-fit the revised placement and sleeved cable resistor before permanent assembly.
-2. With Sony disconnected, verify a controlled 0/5 V output and pull-down behavior; test reset, fault and both supply-loss orders.
-3. External-source Sony trigger recognition passed. Repeat loading and recognition with the assembled HCT125 output.
-4. External-source release returned to prior content. Repeat with buffer; test touchscreen Back and reassertion; keep local request distinct from actual screen state.
-5. Reverse priority and separate-input guidelines passed. Test reverse exit with a standing manual request, and installed camera power. Split-video quality and reverse/manual switching passed user testing on 2026-10-31.
-6. Implement/test nonblocking camera backend and release-on-fault; user performs flashing and energizing.
+The assembled board passed GPIO camera assertion and release with Sony disconnected. Independent Sony tests verified external-source assertion, release, reverse priority and the intended guideline split, including the passive RCA Y. The following checks remain open for the assembled installation.
 
-The buffer circuit is assembled and GPIO assertion/release passed with Sony disconnected; it has not been connected to Sony. The updated board netlist and nominal geometry pass software checks. Sony-side tests below used independent bench supplies, not the proposed buffer.
+1. Dry-fit the assembled board and sleeved R10 in the enclosure.
+2. With Sony disconnected, measure buffer low/high levels and verify pull-down behavior, reset, fault release and both supply-loss orders.
+3. Verify actual Sony input loading and recognition with the assembled buffer. Check return to prior content, touchscreen Back and reassertion.
+4. Verify reverse exit with a standing manual request and installed camera power.
 
 ## User-observed Sony bench results — 2026-10-28
 

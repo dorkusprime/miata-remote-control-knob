@@ -1,32 +1,24 @@
 # Current Sony interface hardware
 
-Selected: **MCP41050-I/P + SN74HCT125N + LCC110 + 2N3904**, all through-hole, shared logic/Sony ground. Parts ordered; not physically validated.
+The assembled board uses **MCP41050-I/P + SN74HCT125N + LCC110 + 2N3904**, with through-hole parts and shared logic/Sony ground. The [bench record](../../docs/bench-results-2026-11-05.md) lists verified results and pending acceptance checks.
 
-- [Circuit and complete pin-level connections](../../docs/sony-interface.md)
-- [Assembly, calibration and acceptance](../../docs/assembly-and-test.md)
-- [Project box hookup and XIAO breakout pin translation](../../docs/wiring.md)
-- [Exact purchased parts and spare quantities](../../docs/parts-sourcing.md)
-- [Per-controller BOM](bom.csv)
-- [All-component placement SVG](placement-full.svg) — top and mirrored underside
-- [Complete pad / jumper table](pad-map.md) and [checked layout model](layout.json)
-- [Earlier IC-only fit study](placement.svg) — subset reference
-
-The current all-component candidate places all 16 board component references, all eleven header pin locations and 12 underside jumpers (six ground, two power and four signal) without copper cuts or shared holes. The checker verifies connectivity against the current circuit and nominal same-face body separation. Physical fit, actual sockets, mounting holes, lead forming and height remain unverified. This is a complete proposed electrical pad map, not a physically accepted assembly.
-
-The former five-PhotoMOS JSON/SVG/BOM files are in [hardware/archive](../archive/sony-remote-photomos/README.md). Their generator and tests are retained for history and do not validate this circuit. Never build the current circuit using those drawings or connector allocations.
+- [Internal jumper image](../internal-jumpers.svg) and [project box hookup](../../docs/wiring.md)
+- [Circuit pin table](../../docs/sony-interface.md#physical-pin-wiring) and [assembly and acceptance](../../docs/assembly-and-test.md)
+- [BOM](bom.csv) and [ordered parts](../../docs/parts-sourcing.md)
+- [Complete pad map](pad-map.md) and [checked layout model](layout.json)
 
 ## Complete proposed placement
 
 ![All-component top and underside placement](placement-full.svg)
 
-All 16 board component bodies are now on top: R1 and the six 47 kohm resistors stand upright; R2/R3 lie along the outer edges. The underside contains only eight power and ground jumpers, four signal wires and solder joints. All component-lead and wire routes use horizontal/vertical segments. The drawing renderer and model checker reject diagonal segments. Wire pieces are 12, with 24 solder landings. The backside view is mirrored horizontally while retaining physical pad IDs.
+All 16 component bodies are on top. The 12 insulated underside jumpers have 24 distinct landings. The underside view mirrors columns while retaining the physical pad IDs. The SVG marks topside header joints in cyan and underside component joints in purple.
 
-Each underside jumper uses two distinct through-hole pads. Follow the current pad map and keep the insulation intact between joints. R1 now stands at C15, with its sleeved return routed through the U2/K1 gap to F13. The power-bus tap moves to G13. Q1 moves toward the lower-left corner, its emitter lands at B12, and R7 shifts to C12/C13. These are changed physical pad assignments: use the current table, not a previous image. Check socket clearance and untrimmed lead lengths before soldering; use an insulated extension if an actual lead cannot reach safely. Extended resistor leads must be sleeved.
-
-Install the header pins from underneath and solder their tails from the top. The SVG marks the topside header joints in cyan and the underside component joints in purple. Use separate pins at spaced pads and a two-pin header at H4–H5. Q1 requires formed leads and the ceramic capacitors require lead spreading. Socket/mounting interference and actual lead lengths must be dry-fitted before soldering. See [the pad map](pad-map.md) for every endpoint and assembly conditions.
+Install the header pins from underneath and solder their tails from the top. Use separate pins at spaced pads and a two-pin header at H4–H5. Use the [pad map](pad-map.md) for endpoints and formed-lead details. Check socket clearance, mounting and lead lengths against the actual parts.
 
 Generate with `python3 scripts/full-placement.py`; verify with `python3 scripts/full-placement.py --check`. The full host suite includes current-layout fault injection. The older `scripts/placement-study.py` still reproduces the IC-only image, but the all-component image above is the current placement proposal.
 
-## Camera included
+## Camera output
 
-The updated map uses HCT125 channel 4 for Camera 1. R8/R9 are on-board; R10 1 kohm is sleeved inline in the J2.3 camera cable. No second LCC110, Q2 or larger board. J1.2 now I1; C2 ground I10; C3 +J6/-J10; BV no longer taps G7. Consult [camera electrical acceptance](../../docs/camera-control.md) before Sony connection. The geometry checker excludes off-board R10 and actual socket/lead height.
+HCT125 channel 4 drives Camera 1 through R10, a sleeved 1 kohm resistor inline in the J2.3 cable. Check [camera electrical acceptance](../../docs/camera-control.md) before connecting Sony.
+
+The [earlier IC-only fit study](placement.svg) is a subset of this layout. The [five-PhotoMOS archive](../archive/sony-remote-photomos/README.md) documents a superseded circuit.

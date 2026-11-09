@@ -1,6 +1,6 @@
 # Interface bench diagnostic
 
-The interface sketch controls the assembled MCP41050/HCT125/LCC110 board through the existing eight-wire harness. Use it with the Sony and all external signal sources disconnected.
+The interface sketch controls the assembled MCP41050/HCT125/LCC110 board through the [seven internal jumpers](wiring.md#internal-jumper-wires). Use it with the Sony and all external signal sources disconnected.
 
 ## Build and upload
 
@@ -13,7 +13,7 @@ scripts/knob.sh upload interface
 
 The user performs the upload. Picotool maintenance and the upload size report use the same tooling as the existing sketches.
 
-For initial upload, leave the interface harness disconnected. Turn off and disconnect the bench supply from the interface. Then connect the harness per [wiring.md](wiring.md). Power the XIAO and interface together through laptop USB, with interface +5 V supplied from XIAO VBUS. Twist remains on 3V3. Use one 5 V supply path.
+For initial upload, leave the interface harness disconnected. Turn off and disconnect the bench supply from the interface. Then connect the internal jumpers per the [hookup guide](wiring.md#internal-jumper-wires). Power the XIAO and interface together through laptop USB, with interface +5 V supplied from XIAO VBUS. Twist remains on 3V3. Use one 5 V supply path.
 
 Open an interactive 115200-baud serial terminal. The existing raw monitor is available with the actual port:
 

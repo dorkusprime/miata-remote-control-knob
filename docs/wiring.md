@@ -2,27 +2,11 @@
 
 The XIAO RP2040 and its breakout, Sony interface board, DC-to-DC converter, and USB-C power/data splitter all sit inside the box. The exterior connections are one 8-pin knob/Sony harness, one 2-pin vehicle power connector, and the USB-C programming jack.
 
-## XIAO breakout pin map
-
-![XIAO breakout top view and installed header locations](../hardware/xiao-breakout.svg)
-
-View the **component side with the XIAO USB-C end at the top**. Row 9 is nearest USB-C. Use the printed letters and numbers to locate each pad. Each numbered row has two independent copper strips, A–E and F–J. The XIAO is mounted in columns D and H. The main access headers are B3–B9 and J3–J9. A7–A9 duplicate the three power rails for separate leads.
-
-| Row | Breakout D pad and B header | Extra A header | Breakout H pad and J header |
-| --- | --- | --- | --- |
-| 9 | D9 / B9 = 5 V / VBUS | A9 = 5 V / VBUS | H9 / J9 = XIAO D0 / CS (GPIO26) |
-| 8 | D8 / B8 = GND | A8 = GND | H8 / J8 = XIAO D1 / relay enable (GPIO27) |
-| 7 | D7 / B7 = 3.3 V | A7 = 3.3 V | H7 / J7 = XIAO D2 / camera request (GPIO28) |
-| 6 | D6 / B6 = XIAO D10 / MOSI (GPIO3) | — | H6 / J6 = XIAO D3 (GPIO29) |
-| 5 | D5 / B5 = XIAO D9 / MISO (GPIO4) | — | H5 / J5 = XIAO D4 / SDA (GPIO6) |
-| 4 | D4 / B4 = XIAO D8 / SCK (GPIO2) | — | H4 / J4 = XIAO D5 / SCL (GPIO7) |
-| 3 | D3 / B3 = XIAO D7 / RX (GPIO1) | — | H3 / J3 = XIAO D6 / TX (GPIO0) |
-
-**Breakout D9 is 5 V. XIAO D9 is the unused MISO signal at breakout B5.** The tables below spell out which board each coordinate belongs to.
-
 ## Internal jumper wires
 
-Use the **breakout header** in the first column and the **component-board pad** in the last column. The component-board pads refer to the [all-component placement](../hardware/sony-remote/placement-full.svg) and [pad map](../hardware/sony-remote/pad-map.md). Its internal harness is called J1 and uses distributed header pins.
+![Seven internal jumpers between the XIAO breakout and the Sony interface board](../hardware/internal-jumpers.svg)
+
+Connect the seven jumpers shown above before wiring [P1](#8-pin-box-harness-p1) and [P2](#2-pin-power-connector-p2-and-usb-c-programming). The XIAO breakout is shown from the component side. The Sony board is shown from the header side, with columns mirrored horizontally and the same printed pad IDs. See the [component placement](../hardware/sony-remote/placement-full.svg) and [pad map](../hardware/sony-remote/pad-map.md) for assembly details.
 
 | XIAO breakout header | Signal | Component-board contact and pad |
 | --- | --- | --- |
@@ -81,3 +65,21 @@ The converter/splitter/XIAO arrangement passed programming on the bench. The fin
 | Manual preview | CAMERA IN 1 | Box P1.7 to Sony EXT IN 1 | No lines |
 
 The camera feed splits directly to the Sony inputs using the bench-tested RCA Y. Camera power is separate from the box, with switched power available during manual preview. See [camera control](camera-control.md) for the trigger circuit, reverse priority and acceptance checks.
+
+## XIAO breakout pin map
+
+![XIAO breakout top view and installed header locations](../hardware/xiao-breakout.svg)
+
+View the **component side with the XIAO USB-C end at the top**. Row 9 is nearest USB-C. Use the printed letters and numbers to locate each pad. Each numbered row has two independent copper strips, A–E and F–J. The XIAO is mounted in columns D and H. The main access headers are B3–B9 and J3–J9. A7–A9 duplicate the three power rails for separate leads.
+
+| Row | Breakout D pad and B header | Extra A header | Breakout H pad and J header |
+| --- | --- | --- | --- |
+| 9 | D9 / B9 = 5 V / VBUS | A9 = 5 V / VBUS | H9 / J9 = XIAO D0 / CS (GPIO26) |
+| 8 | D8 / B8 = GND | A8 = GND | H8 / J8 = XIAO D1 / relay enable (GPIO27) |
+| 7 | D7 / B7 = 3.3 V | A7 = 3.3 V | H7 / J7 = XIAO D2 / camera request (GPIO28) |
+| 6 | D6 / B6 = XIAO D10 / MOSI (GPIO3) | — | H6 / J6 = XIAO D3 (GPIO29) |
+| 5 | D5 / B5 = XIAO D9 / MISO (GPIO4) | — | H5 / J5 = XIAO D4 / SDA (GPIO6) |
+| 4 | D4 / B4 = XIAO D8 / SCK (GPIO2) | — | H4 / J4 = XIAO D5 / SCL (GPIO7) |
+| 3 | D3 / B3 = XIAO D7 / RX (GPIO1) | — | H3 / J3 = XIAO D6 / TX (GPIO0) |
+
+**Breakout D9 is 5 V. XIAO D9 is the unused MISO signal at breakout B5.** Use the board names in the hookup tables to distinguish repeated coordinates.

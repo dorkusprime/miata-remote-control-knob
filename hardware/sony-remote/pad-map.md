@@ -1,6 +1,6 @@
-# Complete proposed pad allocation
+# Sony interface pad allocation
 
-**Electrically checked design, not a physically verified build.** Use the [circuit guide](../../docs/sony-interface.md) for device limits and acceptance. [All-component image](placement-full.svg) separates top and horizontally mirrored underside views. No firmware outputs were enabled.
+The [component placement image](placement-full.svg) shows the top and horizontally mirrored underside. See the [bench results](../../docs/bench-results-2026-11-05.md) for observed hardware behavior and the [circuit guide](../../docs/sony-interface.md) for installation limits.
 
 ## Component terminals
 
@@ -25,7 +25,7 @@
 
 ## Underside header pins
 
-J1 lands in columns B and I; J2 lands in column H. Insert header pins from underneath and solder their tails from the top. Use individual pins at spaced pads and a two-pin header at H4–H5. J1 numbering matches the current harness. Sony Input 2 stays insulated.
+J1 lands in columns B and I; J2 lands in column H. Insert header pins from underneath and solder their tails from the top. Use individual pins at spaced pads and a two-pin header at H4–H5. Use the [consolidated jumper image](../internal-jumpers.svg) for the seven J1 wires to the XIAO breakout. J1.7 at B9 is spare ground. Sony Input 2 stays insulated.
 
 | Contact | Net | Pad |
 | --- | --- | --- |

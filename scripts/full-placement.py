@@ -167,7 +167,7 @@ def draw(d):
     s.text(35,43,'Sony remote + Camera 1 · BOARD COMPONENTS',29)
     s.text(35,74,'MCP41050 + HCT125 + LCC110 · proposed no-cut ElectroCookie Mini layout',18)
     s.rect(35,94,1690,66,'#fff3cd',radius=8)
-    s.text(52,120,'ELECTRICAL PAD ALLOCATION CHECKED · PHYSICAL FIT / SOCKETS / MOUNTING STILL UNVERIFIED',18,'#92400e')
+    s.text(52,120,'CHECKED PAD ALLOCATION · VERIFY CLEARANCE IN THE FINAL ENCLOSURE',18,'#92400e')
     s.text(52,145,'Components on top. Headers and 12 wire pieces underneath. Circles also show where opposite-face leads and wires land.',16,'#92400e')
     for side,bx in [('top',55),('bottom',705)]:
         by=220
@@ -260,9 +260,9 @@ def draw(d):
     for i,t in enumerate(top_legend):s.text(x,226+i*25,t,16)
     s.text(x,450,'UNDERSIDE',20)
     for i,t in enumerate(['No component bodies underneath.','BG1–BG6   six ground jumpers','BV1/BV2   two power wires, 4 pads','W10–W13   four signal wires','12 pieces; 24 solder landings.','Crossings are insulated and have no joint.']):s.text(x,481+i*27,t,16)
-    s.text(x,690,'J1 · eight-wire controller pigtail',18)
+    s.text(x,690,'J1 · seven controller jumpers',18)
     contacts = {c['ref']: c['pad'] for c in d['contacts']}
-    j1_signals = ['GND', '+5 V', 'SCK', 'MOSI', 'CS', 'ENABLE', 'GND', 'CAMERA']
+    j1_signals = ['GND', '+5 V', 'SCK', 'MOSI', 'CS', 'ENABLE', 'SPARE GND', 'CAMERA']
     for pin, signal in enumerate(j1_signals, start=1):
         s.text(x,687+pin*23,f'{pin} {signal} → {contacts[f"J1.{pin}"]}',16)
     s.text(x,910,'J2 · Sony pigtail',18)
@@ -277,16 +277,16 @@ def draw(d):
       'C1/C2 leads need careful forming. C3 negative stripe goes to J10 (GND). R10 1 kΩ is sleeved inline in the camera cable; it is not a board component.',
       'Each underside wire has two through-hole ends. Sleeve the full span between joints.',
       'Nominal body envelopes do not certify sockets, mounting holes or final height. Dry-fit the actual board before soldering.',
-      'See pad-map.md and layout.json for every pin, terminal and jumper. Electrical mapping is checked; hardware remains untested.',
+      'See pad-map.md for component terminals and internal-jumpers.svg for the seven wires to the XIAO breakout.',
     ]
     for i,t in enumerate(notes):s.text(52,1070+i*26,t,16)
     return s.finish()
 
 
 def tables(d):
-    s=['# Complete proposed pad allocation','', '**Electrically checked design, not a physically verified build.** Use the [circuit guide](../../docs/sony-interface.md) for device limits and acceptance. [All-component image](placement-full.svg) separates top and horizontally mirrored underside views. No firmware outputs were enabled.','', '## Component terminals','', '| Ref | Part / side | Terminal → pad |','| --- | --- | --- |']
+    s=['# Sony interface pad allocation','', 'The [component placement image](placement-full.svg) shows the top and horizontally mirrored underside. See the [bench results](../../docs/bench-results-2026-11-05.md) for observed hardware behavior and the [circuit guide](../../docs/sony-interface.md) for installation limits.','', '## Component terminals','', '| Ref | Part / side | Terminal → pad |','| --- | --- | --- |']
     for p in d['parts']:s.append(f'| {p["ref"]} | {p["part"]} / {p["side"]} | '+', '.join(f'{n} → {pad}' for n,pad in p['pins'].items())+' |')
-    s+=['','## Underside header pins','', 'J1 lands in columns B and I; J2 lands in column H. Insert header pins from underneath and solder their tails from the top. Use individual pins at spaced pads and a two-pin header at H4–H5. J1 numbering matches the current harness. Sony Input 2 stays insulated.','', '| Contact | Net | Pad |','| --- | --- | --- |']
+    s+=['','## Underside header pins','', 'J1 lands in columns B and I; J2 lands in column H. Insert header pins from underneath and solder their tails from the top. Use individual pins at spaced pads and a two-pin header at H4–H5. Use the [consolidated jumper image](../internal-jumpers.svg) for the seven J1 wires to the XIAO breakout. J1.7 at B9 is spare ground. Sony Input 2 stays insulated.','', '| Contact | Net | Pad |','| --- | --- | --- |']
     for c in d['contacts']:s.append(f'| {c["ref"]} | {c["net"]} | {c["pad"]} |')
     s+=['','## Camera output cable','', f'J2.3 at {next(c["pad"] for c in d["contacts"] if c["ref"] == "J2.3")} is the buffer output. Insert R10 (1 kohm) in series in this pigtail, sleeve both joints and the resistor, then connect to EXT IN 1. R10 is outside the board geometry model. Never connect this lead to vehicle 12 V.','', '## Underside wire pieces and bus taps','', 'Crossings are not junctions. Use insulated wire; route clear of resistor bodies and keep leads sleeved over unrelated pads. Coordinates are endpoint and routing references, not validated three-dimensional wire bends.','', '| Wire | Net | Solder pads in order |','| --- | --- | --- |']
     for w in d['jumpers']:s.append(f'| {w["ref"]} | {w["net"]} | '+ ' → '.join(w['pads'])+' |')

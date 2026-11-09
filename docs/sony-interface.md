@@ -1,12 +1,12 @@
 # Sony interface — through-hole prototype
 
-Selected 2026-10-27; assembled and bench-tested through 2026-11-06. The user verified GPIO camera assertion/release, relay drive, and three output resistances. Controller v3 integrates gestures with this interface; the user verified all five gesture/Sony assignments. Additional learning-window limits and power-transition acceptance remain pending. Supersedes the [AD8400 version](archive/sony-interface-ad8400.md) and earlier five-relay diagrams. Use the current pad map and learned-code table below.
+Selected 2026-10-27; assembled and bench-tested through 2026-11-06. The user verified GPIO camera assertion/release, relay drive, and three output resistances. Controller v3 integrates gestures with this interface; the user verified all five gesture/Sony assignments. Power-transition acceptance remains pending. Supersedes the [AD8400 version](archive/sony-interface-ad8400.md) and earlier five-relay diagrams. Use the current pad map and learned-code table below.
 
 ## Active firmware profile: six audio commands plus Camera 1
 
 Controller v3.5 uses the user's accepted codes: Volume + **255**, Volume - **0**, Play/Pause **238**, Previous Track **215**, Next Track **248**, and Mute **230**. The five original physical gestures are user-verified; Mute 230 was accepted through serial probing and is now assigned to a >=700 ms stationary hold released before ten seconds. Its new physical gesture remains pending user upload/test. Existing Sony assignments can stay. Camera 1 uses the separate EXT IN 1 circuit and double-click gesture. See [current controls](gestures.md#current-controls--controller-v35).
 
-The firmware/console now calls the single-click action `play_pause`; `mute_att` refers to the distinct Mute code. Six-second learning holds and the ten-second learning-mode toggle remain. The board, R3 and all other wiring are unchanged. Further capacity probing is outside the requested scope.
+The firmware/console now calls the single-click action `play_pause`; `mute_att` refers to the distinct Mute code. Six-second learning holds and the ten-second learning-mode toggle remain. The [gesture guide](gestures.md#bulk-volume-gestures--controller-v40) covers v4.0 bulk gestures.
 
 ## Complete prototype BOM
 
@@ -52,7 +52,7 @@ flowchart TD
 
 The arrows show functional connections; the pin table below is the electrical wiring reference. Q1 controls the optocoupler LED, not the Sony signal. U2 translates CS, SCK and MOSI; its fourth channel generates the Camera 1 trigger. An open relay releases the command independently of the pot's stored code; software shutdown of the pot is not a substitute for opening the relay.
 
-Reference designators: U1 pot, U2 buffer, K1 optical relay, Q1 transistor; R1 330 ohm LED resistor, R2 1 kohm base resistor, R3 2.7 kohm signal resistor; R4/R5/R6 47 kohm on CS/SCK/MOSI; R7 47 kohm base-to-ground; R8/R9 camera pull-downs; R10 1 kohm camera series resistor in cable; C1/C2 100 nF at U1/U2; C3 10 uF at power entry. [Point-to-point assembly and acceptance](assembly-and-test.md) expands the sequence.
+Reference designators: U1 pot, U2 buffer, K1 optical relay, Q1 transistor; R1 330 ohm LED resistor, R2 1 kohm base resistor, R3 2.7 kohm signal resistor; R4/R5/R6 47 kohm on CS/SCK/MOSI; R7 47 kohm base-to-ground; R8/R9 camera pull-downs; R10 1 kohm camera series resistor in cable; C1/C2 100 nF at U1/U2; C3 10 uF at power entry. [Assembly and acceptance](assembly-and-test.md) covers electrical checks.
 
 ## Physical pin wiring
 
@@ -73,11 +73,11 @@ Check actual notch/dot and transistor E/B/C assignment. Do not connect a buffer 
 
 ## Harness
 
-The internal J1 contacts connect the XIAO breakout to the Sony interface board. Use the [point-to-point jumper table](wiring.md#internal-jumper-wires) for both boards' pad coordinates. J1.2 carries USB 5 V and J1.7 is the spare ground contact. The [external 8-pin box connector P1](wiring.md#8-pin-box-harness-p1) carries the separate Twist and Sony branches.
+The internal J1 contacts connect the XIAO breakout to the Sony interface board. Use the [consolidated jumper image and table](wiring.md#internal-jumper-wires) for both boards' pad coordinates. J1.2 carries USB 5 V and J1.7 is the spare ground contact. The [external 8-pin box connector P1](wiring.md#8-pin-box-harness-p1) carries the separate Twist and Sony branches.
 
 ## Driver and calibration
 
-Initialize relay enable LOW and CS HIGH before configuring outputs. While the relay is open, write MCP41050 command byte 0x11 followed by the calibrated 8-bit wiper value using SPI mode 0, MSB first. Wait initially 1 ms, then use normal press and release-gap durations (55 ms each by default, live-adjustable in v3.6). Use nonblocking timers and clear queued commands on reset/fault; the controller backend includes a five-second watchdog. Only one command at a time. No chip readback or Sony acknowledgement is available.
+Initialize relay enable LOW and CS HIGH before configuring outputs. While the relay is open, write MCP41050 command byte 0x11 followed by the calibrated 8-bit wiper value using SPI mode 0, MSB first. Wait initially 1 ms, then use normal press and release-gap durations (30 ms each by default in v4.0, adjustable through the console). Use nonblocking timers and clear queued commands on reset/fault; the controller backend includes a five-second watchdog. Only one command at a time. No chip readback or Sony acknowledgement is available.
 
 Sony Custom learning accepts the tested volume endpoints. Use the active profile above; the original five-code table below is historical evidence of the collision, not the current mapping.
 
@@ -114,7 +114,7 @@ The following **historical** profile produced Sony assignment collisions. Do not
 | Held positive turn / Next Track | 160 | about 23.2 kohm, interpolated |
 | Held negative turn / Prev Track | 192 | 16.4 kohm measured |
 
-The end measurements imply about 54.6 kohm full pot resistance. At the measured minimum 16.4 kohm, a 3.3 V source would supply at most about 0.20 mA, ignoring its internal resistance. Even an ideal 5 V source would supply about 0.31 mA. These are steady-state estimates, not power-transition validation. That earlier profile wrote codes 64–192; the active five-command calibration profile above supersedes it.
+The end measurements imply about 54.6 kohm full pot resistance. At the measured minimum 16.4 kohm, a 3.3 V source would supply at most about 0.20 mA, ignoring its internal resistance. Even an ideal 5 V source would supply about 0.31 mA. These are steady-state estimates, not power-transition validation. That earlier profile wrote codes 64–192; the active six-command profile above supersedes it.
 
 For Sony Custom assignment, use [knob-operated learning mode](gestures.md#knob-operated-learning--controller-v32): ten-second stationary hold toggles the mode, and each mapped gesture holds its code for six seconds rather than sending normal short pulses. Each learning hold releases automatically and ignores intervening gestures. The first 55 ms learning attempt did not register; six-second holds subsequently allowed the receiver to distinguish the volume endpoints.
 
@@ -128,12 +128,12 @@ The current firmware does not measure interface supply, Sony voltage, or relay s
 
 ## Required Camera 1 extension
 
-See [camera circuit and acceptance](camera-control.md). R8/R9 add two 47 kohm board resistors; R10 is one 1 kohm inline camera-cable resistor. No additional IC or transistor. Use revised pad map; old unused-channel ties must be removed.
+See [camera circuit and acceptance](camera-control.md). R8/R9 add two 47 kohm board resistors; R10 is one 1 kohm inline camera-cable resistor. No additional IC or transistor. See the [current pad map](../hardware/sony-remote/pad-map.md) for board endpoints.
 
 ## Receiver measurements
 
-See [2026-10-28 bench report](bench-results-2026-10-28.md) for raw readings, assumptions, derived command currents and remaining tests. Sony powered successfully; resistor sensing was characterized at one load point. No steering command has been learned or validated yet. See also the [assembled-board results](bench-results-2026-11-05.md).
+See [2026-10-28 bench report](bench-results-2026-10-28.md) for raw readings, assumptions, derived command currents and remaining tests. The later [assembled-board results](bench-results-2026-11-05.md) record receiver learning and recognition for the active codes.
 
 ## Observed learning functions
 
-The actual receiver offers Prev Track, Play/Pause, Next Track, Source, Mute, Volume -, Volume +, Voice, Answer Call and Hang Up; see [user observation](bench-results-2026-10-28.md#user-observed-steering-remote-learning-options). The five mapped functions use the current learned-code table. The old external-controller Mute/ATT resistance is superseded. Camera control remains a separate EXT IN 1 output. No resistance values for the additional functions are established by this menu observation.
+The actual receiver offers Prev Track, Play/Pause, Next Track, Source, Mute, Volume -, Volume +, Voice, Answer Call and Hang Up; see [user observation](bench-results-2026-10-28.md#user-observed-steering-remote-learning-options). The six mapped functions use the current learned-code table. The old external-controller Mute/ATT resistance is superseded. Camera control remains a separate EXT IN 1 output. No resistance values for the additional functions are established by this menu observation.

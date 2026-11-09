@@ -2,31 +2,32 @@
 
 A multifunction knob for a Sony XAV-9000ES in a 2005 Mazdaspeed Miata: Seeed Studio XIAO RP2040 plus SparkFun Qwiic Twist RGB, mounted in the cigarette-lighter location.
 
+## Hook up the project box
+
+1. [Connect the seven internal jumpers](hardware/internal-jumpers.svg) using a single view of the XIAO breakout and Sony interface headers.
+2. [Wire the box connectors](docs/wiring.md) for the Twist, Sony, vehicle power and USB-C programming.
+3. [Run the assembly and acceptance checks](docs/assembly-and-test.md) before connecting the receiver.
+
 ## Current status
 
-The user has bench-verified rotation, button events, gestures and RGB feedback over USB. Idle lighting is full-brightness blue for the opaque cap; gesture colors are brief acknowledgements, not confirmed radio state. The original diagnostic is preserved. Earlier Picotool updates worked without physical button access, but repeated controller uploads have failed; reliable software-only updating remains an installation requirement.
+The assembled MCP41050/HCT125/LCC110 interface passed bench checks for relay drive, three programmed resistances and GPIO camera assertion/release. The original five physical audio gestures worked with the Sony. The receiver accepted code 230 for Mute through serial probing. Hold/release Mute and v4.0 bulk gestures still await physical verification. See the [assembled-interface bench record](docs/bench-results-2026-11-05.md).
 
-The selected Sony interface is **MCP41050-I/P + SN74HCT125N + one existing LCC110**, with a 2N3904 driver, all through-hole. The assembled board passed user bench checks of relay switching, GPIO camera output and three programmed resistances; see [results](docs/bench-results-2026-11-05.md). Controller v3 now connects gestures/LEDs to real output requests. The user verified all five controller v3.4 assignments: Volume +/-, Play/Pause, and Next/Previous Track. Controller v3.5 adds hold/release Mute using accepted code 230, completing the six requested audio controls alongside Camera 1; new Mute gesture verification and installed power-transition acceptance remain pending; see [current code assignments](docs/sony-interface.md#calibration-model-and-firmware-contract).
+The box houses the XIAO and row-strip breakout, Sony interface, DC-to-DC converter and USB-C power/data splitter. The Twist mounts separately. Enclosure fit, repeat uploads through the final panel jack, loaded Camera 1 trigger behavior and installed power transitions remain open. Separate Sony camera tests established reverse priority, trigger/release and guidelines behavior, including the passive RCA split. See the [Sony bench record](docs/bench-results-2026-10-28.md).
 
-The project box houses the XIAO on its row-strip breakout, the Sony interface protoboard, the DC-to-DC converter and the USB-C power/data splitter. The Twist mounts separately. The box hookup uses an 8-pin knob/Sony harness, a 2-pin power connection and an accessible USB-C programming jack. Final enclosure fit and installed power-transition acceptance are still pending. Camera 1 trigger/release, live video, guideline separation and reverse priority passed separate-input bench tests; a passive RCA splitter subsequently passed reverse/Camera 1 switching with the intended guideline separation and no visible image degradation (2026-10-31).
-
-## Start here
+## Reference
 
 | Document | Purpose |
 | --- | --- |
-| [Sony bench results](docs/bench-results-2026-10-28.md) | Measured values, observed camera behavior, calculations and remaining tests |
-| [Camera control](docs/camera-control.md) | Required preview circuit, trigger contract and acceptance |
-| [Design and evidence](docs/design.md) | Requirements, choices, what is and is not verified |
-| [Sony circuit](docs/sony-interface.md) | Current schematic overview, complete pin map, limits and backend contract |
-| [Assembly and test](docs/assembly-and-test.md) | Staged permanent assembly, calibration and acceptance gates |
-| [Project box hookup](docs/wiring.md) | Breakout pin map, internal jumpers, external connectors and diagrams |
-| [Parts and order](docs/parts-sourcing.md) | Exact ordered parts, quantities, existing supplies |
+| [Sony circuit](docs/sony-interface.md) | Electrical pin map, receiver codes and limits |
 | [Hardware index](hardware/sony-remote/README.md) | BOM, all-component placement and checked pad map |
-| [Development checklist](docs/tasks.md) | Completed work and next milestones |
-| [Gestures and monitor](docs/gestures.md) | Mapping, timing, LED behavior and serial protocol |
+| [Camera control](docs/camera-control.md) | Preview circuit, trigger contract and acceptance |
+| [Gestures and monitor](docs/gestures.md) | Current gestures, timing, learning, LED behavior and serial protocol |
 | [Firmware environment](firmware/README.md) | Pinned toolchain, diagnostics and USB recovery |
+| [Parts and order](docs/parts-sourcing.md) | Exact ordered parts, quantities and existing supplies |
+| [Design and evidence](docs/design.md) | Requirements, design choices and evidence |
+| [Development checklist](docs/tasks.md) | Completed work and open milestones |
 | [Workspace](docs/workspace.md) | Repository access and working conventions |
-| [Archive](docs/archive/README.md) | Superseded designs; not build instructions |
+| [Archive](docs/archive/README.md) | Superseded designs and sourcing history |
 
 ## Development
 
