@@ -1,0 +1,180 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1136 648" width="1136" height="648" role="img" aria-labelledby="title desc">
+<title id="title">XIAO RP2040 breakout hookup</title>
+<desc id="desc">Component side, USB-C at the top. Rows 9 to 3 go down, and columns J to A go left to right. J and B are the main headers. A7 through A9 duplicate power rails.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#495e73"/></marker></defs>
+<rect x="0" y="0" width="1136" height="648" rx="0" fill="#ffffff" stroke="none"/>
+<text x="28" y="40" fill="#17273a" font-family="Arial, sans-serif" font-size="30" font-weight="700" text-anchor="start">XIAO RP2040 breakout</text>
+<text x="28" y="69" fill="#495e73" font-family="Arial, sans-serif" font-size="17" font-weight="400" text-anchor="start">Component side · USB-C up · Find pads by their printed coordinates</text>
+<rect x="28" y="98" width="600" height="472" rx="8" fill="#f3f7fb" stroke="#bbc9d6"/>
+<rect x="652" y="98" width="456" height="472" rx="8" fill="#f3f7fb" stroke="#bbc9d6"/>
+<text x="674" y="130" fill="#17273a" font-family="Arial, sans-serif" font-size="21" font-weight="700" text-anchor="start">Jumper destinations</text>
+<text x="674" y="154" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">Breakout header → other end of wire</text>
+<rect x="665" y="163" width="430" height="29" rx="4" fill="#ffffff" stroke="none"/>
+<text x="677" y="183" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">B8</text>
+<text x="730" y="183" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">GND</text>
+<text x="858" y="183" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">Component board B4</text>
+<rect x="665" y="196" width="430" height="29" rx="4" fill="#f3f7fb" stroke="none"/>
+<text x="677" y="216" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">B9</text>
+<text x="730" y="216" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">USB 5 V</text>
+<text x="858" y="216" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">Component board I1</text>
+<rect x="665" y="229" width="430" height="29" rx="4" fill="#ffffff" stroke="none"/>
+<text x="677" y="249" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">B4</text>
+<text x="730" y="249" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">SCK</text>
+<text x="858" y="249" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">Component board B10</text>
+<rect x="665" y="262" width="430" height="29" rx="4" fill="#f3f7fb" stroke="none"/>
+<text x="677" y="282" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">B6</text>
+<text x="730" y="282" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">MOSI</text>
+<text x="858" y="282" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">Component board I11</text>
+<rect x="665" y="295" width="430" height="29" rx="4" fill="#ffffff" stroke="none"/>
+<text x="677" y="315" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">J9</text>
+<text x="730" y="315" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">CS</text>
+<text x="858" y="315" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">Component board B7</text>
+<rect x="665" y="328" width="430" height="29" rx="4" fill="#f3f7fb" stroke="none"/>
+<text x="677" y="348" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">J8</text>
+<text x="730" y="348" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">Relay enable</text>
+<text x="858" y="348" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">Component board B5</text>
+<rect x="665" y="361" width="430" height="29" rx="4" fill="#ffffff" stroke="none"/>
+<text x="677" y="381" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">J7</text>
+<text x="730" y="381" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">Camera request</text>
+<text x="858" y="381" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">Component board I8</text>
+<rect x="665" y="394" width="430" height="29" rx="4" fill="#f3f7fb" stroke="none"/>
+<text x="677" y="414" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">A8</text>
+<text x="730" y="414" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">GND</text>
+<text x="858" y="414" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">P1.1 → Twist GND</text>
+<rect x="665" y="427" width="430" height="29" rx="4" fill="#ffffff" stroke="none"/>
+<text x="677" y="447" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">A7</text>
+<text x="730" y="447" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">3.3 V</text>
+<text x="858" y="447" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">P1.2 → Twist 3.3 V</text>
+<rect x="665" y="460" width="430" height="29" rx="4" fill="#f3f7fb" stroke="none"/>
+<text x="677" y="480" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">J5</text>
+<text x="730" y="480" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">SDA</text>
+<text x="858" y="480" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">P1.3 → Twist SDA</text>
+<rect x="665" y="493" width="430" height="29" rx="4" fill="#ffffff" stroke="none"/>
+<text x="677" y="513" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">J4</text>
+<text x="730" y="513" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">SCL</text>
+<text x="858" y="513" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">P1.4 → Twist SCL</text>
+<text x="674" y="553" fill="#495e73" font-family="Arial, sans-serif" font-size="14" font-weight="400" text-anchor="start">A9 and B7 remain available as spare rail taps.</text>
+<rect x="75" y="491" width="226" height="32" rx="6" fill="#e6edf4" stroke="none"/>
+<rect x="351" y="491" width="226" height="32" rx="6" fill="#e6edf4" stroke="none"/>
+<text x="55" y="512" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">3</text>
+<text x="596" y="512" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">3</text>
+<rect x="75" y="442" width="226" height="32" rx="6" fill="#e6edf4" stroke="none"/>
+<rect x="351" y="442" width="226" height="32" rx="6" fill="#e6edf4" stroke="none"/>
+<text x="55" y="463" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">4</text>
+<text x="596" y="463" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">4</text>
+<rect x="75" y="393" width="226" height="32" rx="6" fill="#e6edf4" stroke="none"/>
+<rect x="351" y="393" width="226" height="32" rx="6" fill="#e6edf4" stroke="none"/>
+<text x="55" y="414" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">5</text>
+<text x="596" y="414" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">5</text>
+<rect x="75" y="344" width="226" height="32" rx="6" fill="#e6edf4" stroke="none"/>
+<rect x="351" y="344" width="226" height="32" rx="6" fill="#e6edf4" stroke="none"/>
+<text x="55" y="365" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">6</text>
+<text x="596" y="365" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">6</text>
+<rect x="75" y="295" width="226" height="32" rx="6" fill="#e6edf4" stroke="none"/>
+<rect x="351" y="295" width="226" height="32" rx="6" fill="#e6edf4" stroke="none"/>
+<text x="55" y="316" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">7</text>
+<text x="596" y="316" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">7</text>
+<rect x="75" y="246" width="226" height="32" rx="6" fill="#e6edf4" stroke="none"/>
+<rect x="351" y="246" width="226" height="32" rx="6" fill="#e6edf4" stroke="none"/>
+<text x="55" y="267" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">8</text>
+<text x="596" y="267" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">8</text>
+<rect x="75" y="197" width="226" height="32" rx="6" fill="#e6edf4" stroke="none"/>
+<rect x="351" y="197" width="226" height="32" rx="6" fill="#e6edf4" stroke="none"/>
+<text x="55" y="218" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">9</text>
+<text x="596" y="218" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">9</text>
+<rect x="177" y="175" width="250" height="350" rx="9" fill="#253c56" stroke="#253c56"/>
+<rect x="278" y="149" width="48" height="33" rx="4" fill="#d8e1eb" stroke="#667b91"/>
+<text x="302" y="141" fill="#495e73" font-family="Arial, sans-serif" font-size="13" font-weight="700" text-anchor="middle">USB-C</text>
+<text x="92" y="548" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">J</text>
+<text x="140" y="548" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">I</text>
+<text x="188" y="548" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">H</text>
+<text x="236" y="548" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">G</text>
+<text x="284" y="548" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">F</text>
+<text x="368" y="548" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">E</text>
+<text x="416" y="548" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">D</text>
+<text x="464" y="548" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">C</text>
+<text x="512" y="548" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">B</text>
+<text x="560" y="548" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">A</text>
+<circle cx="92" cy="507" r="9" fill="#e7efff" stroke="#255bb1" stroke-width="1.4"/>
+<text x="92" y="533" fill="#255bb1" font-family="Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">J3</text>
+<circle cx="140" cy="507" r="5" fill="#ffffff" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="188" cy="507" r="5" fill="#9cb0c4" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="416" cy="507" r="5" fill="#9cb0c4" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="464" cy="507" r="5" fill="#ffffff" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="512" cy="507" r="9" fill="#e7efff" stroke="#255bb1" stroke-width="1.4"/>
+<text x="512" y="533" fill="#255bb1" font-family="Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">B3</text>
+<circle cx="560" cy="507" r="5" fill="#ffffff" stroke="#8599ad" stroke-width="1.4"/>
+<text x="201" y="512" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="600" text-anchor="start">D6</text>
+<text x="403" y="512" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="600" text-anchor="end">D7</text>
+<circle cx="92" cy="458" r="9" fill="#e7efff" stroke="#255bb1" stroke-width="1.4"/>
+<text x="92" y="484" fill="#255bb1" font-family="Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">J4</text>
+<circle cx="140" cy="458" r="5" fill="#ffffff" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="188" cy="458" r="5" fill="#9cb0c4" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="416" cy="458" r="5" fill="#9cb0c4" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="464" cy="458" r="5" fill="#ffffff" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="512" cy="458" r="9" fill="#e7efff" stroke="#255bb1" stroke-width="1.4"/>
+<text x="512" y="484" fill="#255bb1" font-family="Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">B4</text>
+<circle cx="560" cy="458" r="5" fill="#ffffff" stroke="#8599ad" stroke-width="1.4"/>
+<text x="201" y="463" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="600" text-anchor="start">D5 / SCL</text>
+<text x="403" y="463" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="600" text-anchor="end">D8 / SCK</text>
+<circle cx="92" cy="409" r="9" fill="#e7efff" stroke="#255bb1" stroke-width="1.4"/>
+<text x="92" y="435" fill="#255bb1" font-family="Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">J5</text>
+<circle cx="140" cy="409" r="5" fill="#ffffff" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="188" cy="409" r="5" fill="#9cb0c4" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="416" cy="409" r="5" fill="#9cb0c4" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="464" cy="409" r="5" fill="#ffffff" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="512" cy="409" r="9" fill="#e7efff" stroke="#255bb1" stroke-width="1.4"/>
+<text x="512" y="435" fill="#255bb1" font-family="Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">B5</text>
+<circle cx="560" cy="409" r="5" fill="#ffffff" stroke="#8599ad" stroke-width="1.4"/>
+<text x="201" y="414" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="600" text-anchor="start">D4 / SDA</text>
+<text x="403" y="414" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="600" text-anchor="end">D9 / MISO</text>
+<circle cx="92" cy="360" r="9" fill="#e7efff" stroke="#255bb1" stroke-width="1.4"/>
+<text x="92" y="386" fill="#255bb1" font-family="Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">J6</text>
+<circle cx="140" cy="360" r="5" fill="#ffffff" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="188" cy="360" r="5" fill="#9cb0c4" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="416" cy="360" r="5" fill="#9cb0c4" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="464" cy="360" r="5" fill="#ffffff" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="512" cy="360" r="9" fill="#e7efff" stroke="#255bb1" stroke-width="1.4"/>
+<text x="512" y="386" fill="#255bb1" font-family="Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">B6</text>
+<circle cx="560" cy="360" r="5" fill="#ffffff" stroke="#8599ad" stroke-width="1.4"/>
+<text x="201" y="365" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="600" text-anchor="start">D3</text>
+<text x="403" y="365" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="600" text-anchor="end">D10 / MOSI</text>
+<circle cx="92" cy="311" r="9" fill="#e7efff" stroke="#255bb1" stroke-width="1.4"/>
+<text x="92" y="337" fill="#255bb1" font-family="Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">J7</text>
+<circle cx="140" cy="311" r="5" fill="#ffffff" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="188" cy="311" r="5" fill="#9cb0c4" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="416" cy="311" r="5" fill="#9cb0c4" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="464" cy="311" r="5" fill="#ffffff" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="512" cy="311" r="9" fill="#e7efff" stroke="#255bb1" stroke-width="1.4"/>
+<text x="512" y="337" fill="#255bb1" font-family="Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">B7</text>
+<circle cx="560" cy="311" r="9" fill="#e7efff" stroke="#255bb1" stroke-width="1.4"/>
+<text x="560" y="337" fill="#255bb1" font-family="Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">A7</text>
+<text x="201" y="316" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="600" text-anchor="start">D2 / Camera</text>
+<text x="403" y="316" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="600" text-anchor="end">3.3 V</text>
+<circle cx="92" cy="262" r="9" fill="#e7efff" stroke="#255bb1" stroke-width="1.4"/>
+<text x="92" y="288" fill="#255bb1" font-family="Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">J8</text>
+<circle cx="140" cy="262" r="5" fill="#ffffff" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="188" cy="262" r="5" fill="#9cb0c4" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="416" cy="262" r="5" fill="#9cb0c4" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="464" cy="262" r="5" fill="#ffffff" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="512" cy="262" r="9" fill="#e7efff" stroke="#255bb1" stroke-width="1.4"/>
+<text x="512" y="288" fill="#255bb1" font-family="Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">B8</text>
+<circle cx="560" cy="262" r="9" fill="#e7efff" stroke="#255bb1" stroke-width="1.4"/>
+<text x="560" y="288" fill="#255bb1" font-family="Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">A8</text>
+<text x="201" y="267" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="600" text-anchor="start">D1 / Relay</text>
+<text x="403" y="267" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="600" text-anchor="end">GND</text>
+<circle cx="92" cy="213" r="9" fill="#e7efff" stroke="#255bb1" stroke-width="1.4"/>
+<text x="92" y="239" fill="#255bb1" font-family="Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">J9</text>
+<circle cx="140" cy="213" r="5" fill="#ffffff" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="188" cy="213" r="5" fill="#9cb0c4" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="416" cy="213" r="5" fill="#9cb0c4" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="464" cy="213" r="5" fill="#ffffff" stroke="#8599ad" stroke-width="1.4"/>
+<circle cx="512" cy="213" r="9" fill="#e7efff" stroke="#255bb1" stroke-width="1.4"/>
+<text x="512" y="239" fill="#255bb1" font-family="Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">B9</text>
+<circle cx="560" cy="213" r="9" fill="#e7efff" stroke="#255bb1" stroke-width="1.4"/>
+<text x="560" y="239" fill="#255bb1" font-family="Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">A9</text>
+<text x="201" y="218" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="600" text-anchor="start">D0 / CS</text>
+<text x="403" y="218" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="600" text-anchor="end">5 V / VBUS</text>
+<text x="30" y="599" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">Blue circles show installed access headers. Each numbered row has two isolated strips, A–E and F–J.</text>
+<text x="30" y="625" fill="#9c4510" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">Breakout D9 = USB 5 V. XIAO D9 = MISO at breakout B5.</text>
+</svg>

@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 604" width="1160" height="604" role="img" aria-labelledby="title desc">
+<title id="title">Miata project box wiring overview</title>
+<desc id="desc">The 2-pin power connector feeds the DC-to-DC converter, which feeds the splitter power input. The programming jack feeds the splitter data input. The splitter connects to XIAO USB-C. The eight-pin harness branches to the external Twist and Sony.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#495e73"/></marker></defs>
+<rect x="0" y="0" width="1160" height="604" rx="0" fill="#ffffff" stroke="none"/>
+<text x="24" y="41" fill="#17273a" font-family="Arial, sans-serif" font-size="30" font-weight="700" text-anchor="start">Project box wiring</text>
+<text x="24" y="69" fill="#495e73" font-family="Arial, sans-serif" font-size="17" font-weight="400" text-anchor="start">Three exterior connections · USB-C programming, P1 signal harness, P2 vehicle power</text>
+<rect x="263" y="101" width="634" height="433" rx="12" fill="#f3f7fb" stroke="#a8b9cb"/>
+<text x="282" y="131" fill="#253c56" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="start">INSIDE BOX</text>
+<rect x="24" y="161" width="160" height="71" rx="8" fill="#ffeedc" stroke="#bbc9d6"/>
+<text x="37" y="187" fill="#9c4510" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">Vehicle power</text>
+<text x="37" y="208" fill="#495e73" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="start">Fused, switched 12 V</text>
+<text x="37" y="225" fill="#495e73" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="start">and vehicle GND</text>
+<rect x="24" y="277" width="160" height="59" rx="8" fill="#e7efff" stroke="#bbc9d6"/>
+<text x="37" y="303" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">Laptop</text>
+<text x="37" y="324" fill="#495e73" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="start">USB-C data cable</text>
+<rect x="329" y="161" width="166" height="69" rx="8" fill="#ffeedc" stroke="#bbc9d6"/>
+<text x="342" y="187" fill="#9c4510" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">DC-to-DC converter</text>
+<text x="342" y="208" fill="#495e73" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="start">12 V in · USB 5 V out</text>
+<rect x="575" y="202" width="244" height="82" rx="8" fill="#ffffff" stroke="#bbc9d6"/>
+<text x="588" y="228" fill="#17273a" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">USB-C power/data splitter</text>
+<text x="588" y="249" fill="#495e73" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="start">Power from converter</text>
+<text x="588" y="266" fill="#495e73" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="start">Data from panel jack</text>
+<rect x="575" y="326" width="244" height="66" rx="8" fill="#e7efff" stroke="#bbc9d6"/>
+<text x="588" y="352" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">XIAO RP2040 on breakout</text>
+<text x="588" y="373" fill="#495e73" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="start">USB-C device connection</text>
+<rect x="575" y="442" width="244" height="66" rx="8" fill="#e2f5f5" stroke="#bbc9d6"/>
+<text x="588" y="468" fill="#006b72" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">Sony interface board</text>
+<text x="588" y="489" fill="#495e73" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="start">J1 from XIAO · J2 to P1</text>
+<rect x="947" y="313" width="189" height="70" rx="8" fill="#e7efff" stroke="#bbc9d6"/>
+<text x="960" y="339" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">Qwiic Twist knob</text>
+<text x="960" y="360" fill="#495e73" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="start">P1.1–4 · GND, 3.3 V,</text>
+<text x="960" y="377" fill="#495e73" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="start">SDA and SCL</text>
+<rect x="947" y="429" width="189" height="82" rx="8" fill="#e2f5f5" stroke="#bbc9d6"/>
+<text x="960" y="455" fill="#006b72" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">Sony XAV-9000ES</text>
+<text x="960" y="476" fill="#495e73" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="start">P1.5–6 · Remote input/GND</text>
+<text x="960" y="493" fill="#495e73" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="start">P1.7 · EXT IN 1 via R10</text>
+<text x="960" y="510" fill="#495e73" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="start">P1.8 spare</text>
+<polyline points="184,196 218,196" fill="none" stroke="#495e73" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="298,196 329,196" fill="none" stroke="#495e73" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="218" y="174" width="80" height="44" rx="8" fill="#ffeedc" stroke="#bbc9d6"/>
+<text x="258" y="201" fill="#9c4510" font-family="Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">P2 · 2 pin</text>
+<polyline points="495,195 534,195 534,222 575,222" fill="none" stroke="#495e73" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="500" y="181" fill="#9c4510" font-family="Arial, sans-serif" font-size="13" font-weight="700" text-anchor="start">USB 5 V</text>
+<polyline points="184,306 215,306" fill="none" stroke="#495e73" stroke-width="2" stroke-linejoin="round"/>
+<rect x="215" y="284" width="96" height="44" rx="8" fill="#e7efff" stroke="#bbc9d6"/>
+<text x="263" y="311" fill="#255bb1" font-family="Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">USB-C jack</text>
+<polyline points="311,306 535,306 535,262 575,262" fill="none" stroke="#495e73" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="350" y="296" fill="#255bb1" font-family="Arial, sans-serif" font-size="14" font-weight="700" text-anchor="start">USB-C data path</text>
+<polyline points="697,284 697,326" fill="none" stroke="#495e73" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="697,392 697,442" fill="none" stroke="#495e73" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="709" y="420" fill="#495e73" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="start">7 internal jumpers</text>
+<polyline points="819,348 851,348" fill="none" stroke="#255bb1" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="819,473 851,473" fill="none" stroke="#006b72" stroke-width="2" stroke-linejoin="round"/>
+<rect x="851" y="330" width="72" height="161" rx="8" fill="#ffffff" stroke="#a8b9cb"/>
+<text x="887" y="396" fill="#253c56" font-family="Arial, sans-serif" font-size="18" font-weight="700" text-anchor="middle">P1</text>
+<text x="887" y="418" fill="#495e73" font-family="Arial, sans-serif" font-size="14" font-weight="600" text-anchor="middle">8 pin</text>
+<polyline points="923,348 947,348" fill="none" stroke="#255bb1" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="923,473 947,473" fill="none" stroke="#006b72" stroke-width="2" stroke-linejoin="round"/>
+<text x="24" y="563" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">Use the hookup tables for individual pin numbers and board coordinates. R10 is 1 kΩ in series with EXT IN 1.</text>
+<text x="24" y="586" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">Camera video and reverse-light trigger run directly to the Sony outside the box.</text>
+</svg>

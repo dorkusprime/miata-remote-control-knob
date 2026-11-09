@@ -73,20 +73,7 @@ Check actual notch/dot and transistor E/B/C assignment. Do not connect a buffer 
 
 ## Harness
 
-Fresh allocation; do not reuse old harnesses by contact number. In particular contact 2 carries 5 V.
-
-| Contact | XIAO | GPIO | Purpose |
-| --- | --- | ---: | --- |
-| 1 | GND | — | Shared ground |
-| 2 | 5V/VBUS | — | Interface supply |
-| 3 | D8/SCK | 2 | Buffer clock input |
-| 4 | D10/MOSI | 3 | Buffer data input |
-| 5 | D0 | 26 | Buffer CS input |
-| 6 | D1 | 27 | Relay driver enable |
-| 7 | GND | — | Additional return |
-| 8 | D2 | 28 | U2 channel 4 camera request |
-
-Eight wires serve the complete remote-plus-camera design. D9/MISO remains unused. Twist wiring on D4/D5 is unchanged. Start with 100 kHz SPI and short cable; validate final cable and connector orientation before installation.
+The internal J1 contacts connect the XIAO breakout to the Sony interface board. Use the [point-to-point jumper table](wiring.md#internal-jumper-wires) for both boards' pad coordinates. J1.2 carries USB 5 V and J1.7 is the spare ground contact. The [external 8-pin box connector P1](wiring.md#8-pin-box-harness-p1) carries the separate Twist and Sony branches.
 
 ## Driver and calibration
 

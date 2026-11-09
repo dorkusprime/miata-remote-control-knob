@@ -4,7 +4,7 @@ Selected: **MCP41050-I/P + SN74HCT125N + LCC110 + 2N3904**, all through-hole, sh
 
 - [Circuit and complete pin-level connections](../../docs/sony-interface.md)
 - [Assembly, calibration and acceptance](../../docs/assembly-and-test.md)
-- [Harness and controller pins](../../docs/wiring.md)
+- [Project box hookup and XIAO breakout pin translation](../../docs/wiring.md)
 - [Exact purchased parts and spare quantities](../../docs/parts-sourcing.md)
 - [Per-controller BOM](bom.csv)
 - [All-component placement SVG](placement-full.svg) — top and mirrored underside

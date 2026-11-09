@@ -8,7 +8,7 @@ The user has bench-verified rotation, button events, gestures and RGB feedback o
 
 The selected Sony interface is **MCP41050-I/P + SN74HCT125N + one existing LCC110**, with a 2N3904 driver, all through-hole. The assembled board passed user bench checks of relay switching, GPIO camera output and three programmed resistances; see [results](docs/bench-results-2026-11-05.md). Controller v3 now connects gestures/LEDs to real output requests. The user verified all five controller v3.4 assignments: Volume +/-, Play/Pause, and Next/Previous Track. Controller v3.5 adds hold/release Mute using accepted code 230, completing the six requested audio controls alongside Camera 1; new Mute gesture verification and installed power-transition acceptance remain pending; see [current code assignments](docs/sony-interface.md#calibration-model-and-firmware-contract).
 
-A small protoboard near the Sony is approved. Twist and XIAO need no carrier board. Final enclosure, no-cut permanent board placement, cable length, vehicle power protection and assembled camera interface remain unfinished. Camera 1 trigger/release, live video, guideline separation and reverse priority passed separate-input bench tests; a passive RCA splitter subsequently passed reverse/Camera 1 switching with the intended guideline separation and no visible image degradation (2026-10-31).
+The project box houses the XIAO on its row-strip breakout, the Sony interface protoboard, the DC-to-DC converter and the USB-C power/data splitter. The Twist mounts separately. The box hookup uses an 8-pin knob/Sony harness, a 2-pin power connection and an accessible USB-C programming jack. Final enclosure fit and installed power-transition acceptance are still pending. Camera 1 trigger/release, live video, guideline separation and reverse priority passed separate-input bench tests; a passive RCA splitter subsequently passed reverse/Camera 1 switching with the intended guideline separation and no visible image degradation (2026-10-31).
 
 ## Start here
 
@@ -19,7 +19,7 @@ A small protoboard near the Sony is approved. Twist and XIAO need no carrier boa
 | [Design and evidence](docs/design.md) | Requirements, choices, what is and is not verified |
 | [Sony circuit](docs/sony-interface.md) | Current schematic overview, complete pin map, limits and backend contract |
 | [Assembly and test](docs/assembly-and-test.md) | Staged permanent assembly, calibration and acceptance gates |
-| [Wiring](docs/wiring.md) | Twist/XIAO pins, eight-wire harness, power and camera plan |
+| [Project box hookup](docs/wiring.md) | Breakout pin map, internal jumpers, external connectors and diagrams |
 | [Parts and order](docs/parts-sourcing.md) | Exact ordered parts, quantities, existing supplies |
 | [Hardware index](hardware/sony-remote/README.md) | BOM, all-component placement and checked pad map |
 | [Development checklist](docs/tasks.md) | Completed work and next milestones |
