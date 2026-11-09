@@ -4,7 +4,7 @@ The XIAO RP2040 and its breakout, Sony interface board, DC-to-DC converter, and 
 
 ## Internal jumper wires
 
-![Seven internal jumpers between the XIAO breakout and the Sony interface board](../hardware/internal-jumpers.svg)
+![Complete box hookup with numbered internal jumpers and the P1, P2, and USB-C connections](../hardware/internal-jumpers.svg)
 
 Connect the seven jumpers shown above before wiring [P1](#8-pin-box-harness-p1) and [P2](#2-pin-power-connector-p2-and-usb-c-programming). The XIAO breakout is shown from the component side. The Sony board is shown from the header side, with columns mirrored horizontally and the same printed pad IDs. See the [component placement](../hardware/sony-remote/placement-full.svg) and [pad map](../hardware/sony-remote/pad-map.md) for assembly details.
 
@@ -48,7 +48,7 @@ Connect the converter's regulated USB-C output to the splitter's **power** input
 
 The converter/splitter/XIAO arrangement passed programming on the bench. The final panel-to-splitter connection still needs to be verified. Retain the working USB-C data path, including its CC attachment, when adding the panel connection. Keep laptop VBUS separate from the converter's 5 V output. With the converter on, check that the XIAO enumerates through the panel jack with the external plug in both orientations. Keep access to XIAO BOOT and RESET for recovery.
 
-![Project box connections and harness branches](../hardware/project-box-wiring.svg)
+[Box-level power and data overview](../hardware/project-box-wiring.svg)
 
 ## Before connecting the Sony
 

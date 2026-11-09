@@ -4,7 +4,7 @@ A multifunction knob for a Sony XAV-9000ES in a 2005 Mazdaspeed Miata: Seeed Stu
 
 ## Hook up the project box
 
-1. [Connect the seven internal jumpers](hardware/internal-jumpers.svg) using a single view of the XIAO breakout and Sony interface headers.
+1. [Open the complete hookup image](hardware/internal-jumpers.svg) for the seven internal jumpers, P1, P2 and USB-C.
 2. [Wire the box connectors](docs/wiring.md) for the Twist, Sony, vehicle power and USB-C programming.
 3. [Run the assembly and acceptance checks](docs/assembly-and-test.md) before connecting the receiver.
 
