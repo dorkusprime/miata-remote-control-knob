@@ -9,52 +9,56 @@
 <rect x="652" y="98" width="456" height="472" rx="8" fill="#f3f7fb" stroke="#bbc9d6"/>
 <text x="674" y="130" fill="#17273a" font-family="Arial, sans-serif" font-size="21" font-weight="700" text-anchor="start">Jumper destinations</text>
 <text x="674" y="154" fill="#495e73" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">By header, left to right and top to bottom</text>
-<rect x="665" y="163" width="430" height="29" rx="4" fill="#ffffff" stroke="none"/>
-<text x="677" y="183" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">J9</text>
-<text x="730" y="183" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">CS</text>
-<text x="858" y="183" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">Component board B7</text>
-<rect x="665" y="196" width="430" height="29" rx="4" fill="#f3f7fb" stroke="none"/>
-<text x="677" y="216" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">J8</text>
-<text x="730" y="216" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">Relay enable</text>
-<text x="858" y="216" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">Component board B5</text>
-<rect x="665" y="229" width="430" height="29" rx="4" fill="#ffffff" stroke="none"/>
-<text x="677" y="249" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">J7</text>
-<text x="730" y="249" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">Camera request</text>
-<text x="858" y="249" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">Component board I8</text>
-<rect x="665" y="262" width="430" height="29" rx="4" fill="#f3f7fb" stroke="none"/>
-<text x="677" y="282" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">J5</text>
-<text x="730" y="282" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">SDA</text>
-<text x="858" y="282" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">P1.3 → Twist SDA</text>
-<rect x="665" y="295" width="430" height="29" rx="4" fill="#ffffff" stroke="none"/>
-<text x="677" y="315" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">J4</text>
-<text x="730" y="315" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">SCL</text>
-<text x="858" y="315" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">P1.4 → Twist SCL</text>
-<line x1="665" y1="326" x2="1095" y2="326" stroke="#bbc9d6"/>
-<rect x="665" y="328" width="430" height="29" rx="4" fill="#f3f7fb" stroke="none"/>
-<text x="677" y="348" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">B9</text>
-<text x="730" y="348" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">USB 5 V</text>
-<text x="858" y="348" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">Component board I1</text>
-<rect x="665" y="361" width="430" height="29" rx="4" fill="#ffffff" stroke="none"/>
-<text x="677" y="381" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">B8</text>
-<text x="730" y="381" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">GND</text>
-<text x="858" y="381" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">Component board B4</text>
-<rect x="665" y="394" width="430" height="29" rx="4" fill="#f3f7fb" stroke="none"/>
-<text x="677" y="414" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">B6</text>
-<text x="730" y="414" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">MOSI</text>
-<text x="858" y="414" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">Component board I11</text>
-<rect x="665" y="427" width="430" height="29" rx="4" fill="#ffffff" stroke="none"/>
-<text x="677" y="447" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">B4</text>
-<text x="730" y="447" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">SCK</text>
-<text x="858" y="447" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">Component board B10</text>
-<line x1="665" y1="458" x2="1095" y2="458" stroke="#bbc9d6"/>
-<rect x="665" y="460" width="430" height="29" rx="4" fill="#f3f7fb" stroke="none"/>
-<text x="677" y="480" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">A8</text>
-<text x="730" y="480" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">GND</text>
-<text x="858" y="480" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">P1.1 → Twist GND</text>
-<rect x="665" y="493" width="430" height="29" rx="4" fill="#ffffff" stroke="none"/>
-<text x="677" y="513" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">A7</text>
-<text x="730" y="513" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">3.3 V</text>
-<text x="858" y="513" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">P1.2 → Twist 3.3 V</text>
+<rect x="665" y="163" width="430" height="27" rx="4" fill="#ffffff" stroke="none"/>
+<text x="677" y="182" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">J9</text>
+<text x="730" y="182" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">CS</text>
+<text x="858" y="182" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">Component board B7</text>
+<rect x="665" y="193" width="430" height="27" rx="4" fill="#f3f7fb" stroke="none"/>
+<text x="677" y="212" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">J8</text>
+<text x="730" y="212" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">Relay enable</text>
+<text x="858" y="212" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">Component board B5</text>
+<rect x="665" y="223" width="430" height="27" rx="4" fill="#ffffff" stroke="none"/>
+<text x="677" y="242" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">J7</text>
+<text x="730" y="242" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">Camera request</text>
+<text x="858" y="242" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">Component board I8</text>
+<rect x="665" y="253" width="430" height="27" rx="4" fill="#f3f7fb" stroke="none"/>
+<text x="677" y="272" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">J6</text>
+<text x="730" y="272" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">GPIO29 / D3</text>
+<text x="858" y="272" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">P1.8 → Spare 3.3 V GPIO</text>
+<rect x="665" y="283" width="430" height="27" rx="4" fill="#ffffff" stroke="none"/>
+<text x="677" y="302" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">J5</text>
+<text x="730" y="302" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">SDA</text>
+<text x="858" y="302" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">P1.3 → Twist SDA</text>
+<rect x="665" y="313" width="430" height="27" rx="4" fill="#f3f7fb" stroke="none"/>
+<text x="677" y="332" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">J4</text>
+<text x="730" y="332" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">SCL</text>
+<text x="858" y="332" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">P1.4 → Twist SCL</text>
+<line x1="665" y1="341" x2="1095" y2="341" stroke="#bbc9d6"/>
+<rect x="665" y="343" width="430" height="27" rx="4" fill="#ffffff" stroke="none"/>
+<text x="677" y="362" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">B9</text>
+<text x="730" y="362" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">USB 5 V</text>
+<text x="858" y="362" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">Component board I1</text>
+<rect x="665" y="373" width="430" height="27" rx="4" fill="#f3f7fb" stroke="none"/>
+<text x="677" y="392" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">B8</text>
+<text x="730" y="392" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">GND</text>
+<text x="858" y="392" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">Component board B4</text>
+<rect x="665" y="403" width="430" height="27" rx="4" fill="#ffffff" stroke="none"/>
+<text x="677" y="422" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">B6</text>
+<text x="730" y="422" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">MOSI</text>
+<text x="858" y="422" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">Component board I11</text>
+<rect x="665" y="433" width="430" height="27" rx="4" fill="#f3f7fb" stroke="none"/>
+<text x="677" y="452" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">B4</text>
+<text x="730" y="452" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">SCK</text>
+<text x="858" y="452" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">Component board B10</text>
+<line x1="665" y1="461" x2="1095" y2="461" stroke="#bbc9d6"/>
+<rect x="665" y="463" width="430" height="27" rx="4" fill="#ffffff" stroke="none"/>
+<text x="677" y="482" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">A8</text>
+<text x="730" y="482" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">GND</text>
+<text x="858" y="482" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">P1.1 → Twist GND</text>
+<rect x="665" y="493" width="430" height="27" rx="4" fill="#f3f7fb" stroke="none"/>
+<text x="677" y="512" fill="#255bb1" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start">A7</text>
+<text x="730" y="512" fill="#17273a" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start">3.3 V</text>
+<text x="858" y="512" fill="#006b72" font-family="Arial, sans-serif" font-size="15" font-weight="600" text-anchor="start">P1.2 → Twist 3.3 V</text>
 <text x="674" y="553" fill="#495e73" font-family="Arial, sans-serif" font-size="14" font-weight="400" text-anchor="start">A9 and B7 remain available as spare rail taps.</text>
 <rect x="75" y="491" width="226" height="32" rx="6" fill="#e6edf4" stroke="none"/>
 <rect x="351" y="491" width="226" height="32" rx="6" fill="#e6edf4" stroke="none"/>

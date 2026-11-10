@@ -33,9 +33,11 @@ Use the cavity numbers molded into the chosen keyed connector. This table assign
 | 5 | Component board **H5** (J2.1) | Sony Steering Remote **Input 1** |
 | 6 | Component board **H4** (J2.2) | Sony **ST Remote GND** |
 | 7 | Component board **H9** (J2.3) | Sony **EXT IN 1**, through one inline **R10, 1 kΩ** |
-| 8 | Spare | Spare |
+| 8 | XIAO breakout **J6** (D3 / GPIO29) | Reserved **3.3 V GPIO** for a future accessory |
 
 Split the vehicle-side P1 cable into the four-wire Twist branch and the three-wire Sony branch. The Twist uses 3.3 V, including its LED. Its INT and RST remain open. Keep the Sony ground on its own P1 pin even though it shares logic ground inside the box. Insulate the Sony steering adapter's unused Input 2. Leave the existing sleeved R10 in series anywhere along the H9-to-EXT IN 1 path.
+
+Wire breakout J6 to P1.8 inside the box. On the mating side, leave cavity 8 empty or fit a short, individually insulated pigtail for later access. The current firmware leaves D3 unused. Treat P1.8 as a 3.3 V logic signal. A future accessory can reference P1.1 ground and use an appropriate external driver or level shifter if needed.
 
 ## 2-pin power connector (P2) and USB-C programming
 
