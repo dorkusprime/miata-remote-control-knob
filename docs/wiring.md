@@ -8,32 +8,36 @@ The XIAO RP2040 and its breakout, Sony interface board, DC-to-DC converter, and 
 
 Connect the seven jumpers shown above before wiring [P1](#8-pin-box-harness-p1) and [P2](#2-pin-power-connector-p2-and-usb-c-programming). The XIAO breakout is shown from the component side. The Sony board is shown from the header side, with columns mirrored horizontally and the same printed pad IDs. See the [component placement](../hardware/sony-remote/placement-full.svg) and [pad map](../hardware/sony-remote/pad-map.md) for assembly details.
 
-| XIAO breakout header | Signal | Component-board contact and pad |
-| --- | --- | --- |
-| B8 | Shared GND | J1.1 at **B4** |
-| B9 | USB 5 V / VBUS | J1.2 at **I1** |
-| B4 | XIAO D8 / SCK | J1.3 at **B10** |
-| B6 | XIAO D10 / MOSI | J1.4 at **I11** |
-| J9 | XIAO D0 / CS | J1.5 at **B7** |
-| J8 | XIAO D1 / relay enable | J1.6 at **B5** |
-| J7 | XIAO D2 / camera request | J1.8 at **I8** |
+| XIAO breakout header | Wire color | Signal | Component-board contact and pad |
+| --- | --- | --- | --- |
+| B8 | **Black** | Shared GND | J1.1 at **B4** |
+| B9 | **Red** | USB 5 V / VBUS | J1.2 at **I1** |
+| B4 | **Yellow** | XIAO D8 / SCK | J1.3 at **B10** |
+| B6 | **Blue** | XIAO D10 / MOSI | J1.4 at **I11** |
+| J9 | **Grey** | XIAO D0 / CS | J1.5 at **B7** |
+| J8 | **White** | XIAO D1 / relay enable | J1.6 at **B5** |
+| J7 | **Green** | XIAO D2 / camera request | J1.8 at **I8** |
+
+**Label the red leads at both ends.** The red internal jumper is **5 V / VBUS**. The red P1.2 lead is **3.3 V** for the Twist.
 
 Component-board J1.7 at B9 is the redundant ground header left unused in the working bench setup. Breakout A8 supplies the knob's ground independently of the B8-to-B4 jumper, so the previous ground Y splice is unnecessary. Breakout B7 and A9 are spare rail access points in this allocation.
 
 ## 8-pin box harness (P1)
 
-Use the cavity numbers molded into the chosen keyed connector. This table assigns signals to those numbers and works for either a panel connector or an inline plug on a box pigtail. Confirm the mating cavity numbers before crimping. **P1 is the external 8-pin connector. J1 is the internal component-board wiring.**
+Build both halves of P1 with stranded 22 AWG wire and the 2×4 Mini-Fit Jr.–style connector kit. Use the same color for each numbered cavity on both halves. Confirm the molded cavity numbers before inserting the crimped terminals. **P1 is the external 8-pin connector. J1 is the internal component-board wiring.**
 
-| P1 cavity | Inside the box | Outside the box |
-| --- | --- | --- |
-| 1 | XIAO breakout **A8** | Twist GND |
-| 2 | XIAO breakout **A7** | Twist 3.3 V |
-| 3 | XIAO breakout **J5** | Twist SDA |
-| 4 | XIAO breakout **J4** | Twist SCL |
-| 5 | Component board **H5** (J2.1) | Sony Steering Remote **Input 1** |
-| 6 | Component board **H4** (J2.2) | Sony **ST Remote GND** |
-| 7 | Component board **H9** (J2.3) | Sony **EXT IN 1**, through one inline **R10, 1 kΩ** |
-| 8 | XIAO breakout **J6** (D3 / GPIO29) | Reserved **3.3 V GPIO** for a future accessory |
+| P1 cavity | Wire color | Inside the box | Outside the box |
+| --- | --- | --- | --- |
+| 1 | **Black** | XIAO breakout **A8** | Twist GND |
+| 2 | **Red** | XIAO breakout **A7** | Twist 3.3 V |
+| 3 | **Blue** | XIAO breakout **J5** | Twist SDA |
+| 4 | **Yellow** | XIAO breakout **J4** | Twist SCL |
+| 5 | **White** | Component board **H5** (J2.1) | Sony Steering Remote **Input 1** |
+| 6 | **Brown** | Component board **H4** (J2.2) | Sony **ST Remote GND** |
+| 7 | **Green** | Component board **H9** (J2.3) | Sony **EXT IN 1**, through one inline **R10, 1 kΩ** |
+| 8 | **Grey** | XIAO breakout **J6** (D3 / GPIO29) | Reserved **3.3 V GPIO** for a future accessory |
+
+P1.1–P1.4 match the [SparkFun Qwiic wire colors](https://learn.sparkfun.com/tutorials/qwiic-multiport-hookup-guide/hardware-overview). Match the Sony pigtail by its signal labels.
 
 Split the vehicle-side P1 cable into the four-wire Twist branch and the three-wire Sony branch. The Twist uses 3.3 V, including its LED. Its INT and RST remain open. Keep the Sony ground on its own P1 pin even though it shares logic ground inside the box. Insulate the Sony steering adapter's unused Input 2. Leave the existing sleeved R10 in series anywhere along the H9-to-EXT IN 1 path.
 
