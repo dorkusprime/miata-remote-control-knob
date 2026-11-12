@@ -1,6 +1,6 @@
 # Through-hole assembly and acceptance
 
-This procedure applies only to the [MCP41050/HCT125/LCC110 circuit](sony-interface.md). The board is assembled. Initial electrical results are recorded in [November 5 bench results](bench-results-2026-11-05.md). The separate [interface diagnostic](interface-diagnostic.md) provides gated bench controls for SPI, relay and camera testing.
+This procedure applies only to the [MCP41050/HCT125/LCC110 circuit](sony-interface.md). The board is assembled. See the [November 12 bench record](bench-results-2026-11-12.md) for end-to-end results and links to the initial electrical measurements. The separate [interface diagnostic](interface-diagnostic.md) provides gated bench controls for SPI, relay and camera testing.
 
 ## Connect and check the box
 
@@ -77,4 +77,4 @@ Follow [camera-control.md](camera-control.md): receiver-disconnected low/high/re
 
 ## Existing receiver evidence
 
-Consult [bench report](bench-results-2026-10-28.md) before repeating Sony-only tests. Camera assertion/release, live picture, guideline separation and reverse priority passed with external supplies. Repeat through the assembled interface; do not mark electrical gates passed from external-source results. Check the active profile's [wiper current limits](sony-interface.md#acceptance-boundaries-before-installation) before enabling commands. Passive RCA splitter image quality and reverse/manual switching passed user testing on 2026-10-31; assembled-buffer acceptance remains outstanding.
+Consult [bench report](bench-results-2026-10-28.md) before repeating Sony-only tests. Camera assertion/release, live picture, guideline separation and reverse priority passed with external supplies. Repeat through the assembled interface; do not mark electrical gates passed from external-source results. Check the active profile's [wiper current limits](sony-interface.md#acceptance-boundaries-before-installation) before enabling commands. Passive RCA splitter image quality and reverse/manual switching passed user testing on 2026-10-31; the assembled buffer passed functional switching and reverse override on November 12. Loaded trigger voltage/current and fault-transition measurements remain open.

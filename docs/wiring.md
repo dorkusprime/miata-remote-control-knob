@@ -52,7 +52,7 @@ Wire breakout J6 to P1.8 inside the box. On the mating side, leave cavity 8 empt
 
 Connect the converter's regulated USB-C output to the splitter's **power** input. The splitter's device connection goes to the XIAO USB-C port. The panel USB-C jack feeds the splitter's **data** input for programming. The XIAO breakout supplies VBUS to the component board and 3.3 V to the Twist.
 
-The converter/splitter/XIAO arrangement passed programming on the bench. The final panel-to-splitter connection still needs to be verified. Retain the working USB-C data path, including its CC attachment, when adding the panel connection. Keep laptop VBUS separate from the converter's 5 V output. With the converter on, check that the XIAO enumerates through the panel jack with the external plug in both orientations. Keep access to XIAO BOOT and RESET for recovery.
+The converter/splitter/XIAO arrangement passed programming on the bench. The user successfully flashed through the installed panel jack and ran the box on 12 V with the laptop unplugged. See the [bench record](bench-results-2026-11-12.md) for intermittent host USB behavior and repeat-upload checks. Retain the working USB-C data path, including its CC attachment, when adding the panel connection. Keep laptop VBUS separate from the converter's 5 V output. With the converter on, check that the XIAO enumerates through the panel jack with the external plug in both orientations. Keep access to XIAO BOOT and RESET for recovery.
 
 [Box-level power and data overview](../hardware/project-box-wiring.svg)
 

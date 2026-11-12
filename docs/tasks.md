@@ -53,23 +53,25 @@ Initial functional diagnostic complete: USB/I2C, rotation, button, RGB, and repe
 - [ ] Dry-fit actual components, sockets, mounting holes, formed leads and bus construction; verify insulation, clearances and overall height.
 - [x] Assemble permanent board; user verified rails, continuity corrections and relay LED current.
 - [x] Implement interface diagnostic; user verified GPIO outputs and pot codes 64/128/192.
-- [ ] Measure and record the five calibrated output resistances.
+- [x] Measure and record all six calibrated output resistances with Sony disconnected.
 - [ ] Validate simulated-input current, reset/fault behavior and both supply-loss orders.
 - [x] Estimate Sony source impedance from user measurements: about 1.1–1.2 kohm; see bench report.
-- [x] Replace historical low-resistance ATT candidate with Sony-learned codes 64–192; measured minimum 16.4 kohm gives estimated steady-state current below 0.5 mA. Receiver acceptance remains pending.
-- [ ] Validate Sony recognition, learning and pulse timing at low volume.
+- [x] Replace the colliding initial profile with the final Sony-learned codes 0, 215, 230, 238, 248 and 255. The measured minimum is 3.047 kΩ at code 255. Endpoint current remains open.
+- [x] Verify Sony learning and recognition of all six final commands at the final normal pulse timing.
 - [ ] Validate final cable length, connector orientation, mounting and strain relief.
 - [ ] Repeat electrical acceptance after permanent assembly.
 - [x] Implement controller v3 bounded pulse queue, fault release, watchdog and real requests; host-tested/compiled.
-- [ ] User upload and disconnected controller test, repeat cold-start upload, then controlled Sony learning; integrated hardware behavior remains unverified.
+- [x] User uploaded v4.0 and verified the integrated knob and Sony functions.
+- [ ] Repeat software-only uploads through the enclosure panel jack, including after cold startup.
 
 ## Camera and installation
 
 Required scope: [Camera 1 hardware/firmware plan](camera-control.md).
 
-- [x] Integrate spare HCT125 camera channel, R8/R9 pull-downs and inline R10 into checked layout/BOM/docs; hardware untested.
-- [ ] Allocate harness contact 8 to D2/GPIO28; verify eight-wire connector orientation.
-- [x] Implement camera-request backend and host fault-release tests; user upload and integrated hardware acceptance pending.
+- [x] Integrate spare HCT125 camera channel, R8/R9 pull-downs and inline R10 into checked layout/BOM/docs.
+- [x] Route D2/GPIO28 through internal J1.8 to the buffer and external P1.7 to EXT IN 1. P1.8 is reserved for D3.
+- [ ] Verify final connector orientation and cable fit in the vehicle.
+- [x] Implement camera-request backend and host fault-release tests.
 - [x] Verify external-source EXT IN 1 assertion and release to previous screen (2026-10-28).
 - [ ] Test touchscreen Back/retrigger and repeat release with actual buffer.
 - [ ] Provide camera power during manual preview, independent of reverse-lamp-only power.
@@ -77,18 +79,20 @@ Required scope: [Camera 1 hardware/firmware plan](camera-control.md).
 - [ ] Identify actual camera/DVR model and supply requirements.
 - [x] User confirmed Camera 1 without camera-generated lines, rear input with Sony guidelines, and reverse priority in sequential-input bench test (2026-10-28).
 - [x] User tested passive RCA split: reverse with lines and Camera 1 without lines, switching successfully with no reported image-quality degradation (2026-10-31).
-- [x] User verified external 5 V/resistor Camera 1 trigger assertion/release, live picture, and reverse priority (2026-10-28); proposed buffer remains untested.
-- [ ] Validate buffer trigger electrical limits and reverse exit behavior.
+- [x] User verified external 5 V/resistor Camera 1 trigger assertion/release, live picture, and reverse priority (2026-10-28).
+- [x] Verify the assembled buffer drives manual Camera 1 on/off and Sony reverse overrides it.
+- [x] Verify normal cold startup on the 12 V bench supply with the laptop unplugged.
+- [ ] Measure loaded trigger voltage/current and record reverse-exit screen with a standing manual request.
 - [ ] Measure lighter opening and rear clearance.
 - [ ] Finalize mechanical support, power protection, and strain relief.
 
 ## Bench evidence and next session
 
-[2026-10-28 results](bench-results-2026-10-28.md) separate observations from estimates. Head unit may be packed away pending interface components. Passive RCA split-video and reverse/manual switching passed on 2026-10-31. Next work is staged permanent assembly and a disabled-by-default calibration/backend diagnostic. No firmware was flashed or live outputs enabled during documentation work.
+The [November 12 bench record](bench-results-2026-11-12.md) is the current status and links the earlier measurements and fixes. The milestones below preserve the development history, including test plans that later versions superseded.
 
-## Latest implementation — 2026-11-06
+## Historical implementation milestone — 2026-11-06
 
-See [assembled bench results](bench-results-2026-11-05.md) and [controller v3 workflow](gestures.md). Historical checklist descriptions above are evidence of earlier plans, not a reason to repeat already completed strip-continuity tests. Sony learning, integrated physical behavior and power-loss acceptance remain open.
+See [assembled bench results](bench-results-2026-11-05.md) and [controller v3 workflow](gestures.md). Historical checklist descriptions above are evidence of earlier plans, not a reason to repeat already completed strip-continuity tests. At that stage, Sony learning, integrated physical behavior and power-loss acceptance were open.
 
 ## Learning mode — 2026-11-06
 
@@ -167,5 +171,5 @@ This current status supersedes older pending endpoint and initial learning-mode 
 - [x] Replace volume queue using signed committed-pulse accounting; finish active pulse and preserve its gap, unrelated queued commands and camera state.
 - [x] Preserve ordinary proportional behavior for unsuccessful patterns and bypass detection for learning/held-track gestures.
 - [x] Add console tuning, recognition/tail reporting, purple recognition feedback and host tests. Tuning is RAM-only during trials.
-- [ ] User upload, tune natural thresholds, and validate counts/interruption on Sony. No physical v4.0 test performed by agent.
+- [x] User verified normal operation on Sony with v4.0. Traces confirmed four pulses for four ordinary detents, both ten-step bulk directions and mid-burst interruption. Exact Sony display counts were not recorded.
 - [ ] Retain selected tuning values across power cycles once settled (current trial values reset on reboot).

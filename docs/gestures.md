@@ -1,6 +1,6 @@
 # Gesture controller and live monitor
 
-Controller v4.0 provides the six requested audio controls plus Camera 1 through EXT IN 1. The user verified five physical steering gestures in v3.4 and taught Sony the separate Mute code through a serial probe. The new hold/release Mute gesture still needs user testing after upload. Original diagnostics remain available.
+Controller v4.0 provides the six requested audio controls plus Camera 1 through EXT IN 1. The user verified all six audio controls, including hold/release Mute, and manual Camera 1 in the [v4.0 bench test](bench-results-2026-11-12.md). Original diagnostics remain available.
 
 ## Current controls — controller v3.5
 

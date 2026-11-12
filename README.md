@@ -10,9 +10,7 @@ A multifunction knob for a Sony XAV-9000ES in a 2005 Mazdaspeed Miata: Seeed Stu
 
 ## Current status
 
-The assembled MCP41050/HCT125/LCC110 interface passed bench checks for relay drive, three programmed resistances and GPIO camera assertion/release. The original five physical audio gestures worked with the Sony. The receiver accepted code 230 for Mute through serial probing. Hold/release Mute and v4.0 bulk gestures still await physical verification. See the [assembled-interface bench record](docs/bench-results-2026-11-05.md).
-
-The box houses the XIAO and row-strip breakout, Sony interface, DC-to-DC converter and USB-C power/data splitter. The Twist mounts separately. Enclosure fit, repeat uploads through the final panel jack, loaded Camera 1 trigger behavior and installed power transitions remain open. Separate Sony camera tests established reverse priority, trigger/release and guidelines behavior, including the passive RCA split. See the [Sony bench record](docs/bench-results-2026-10-28.md).
+The assembled Knob Goblin passed end-to-end bench testing with controller v4.0 and the Sony XAV-9000ES. The user verified all six audio commands, manual Camera 1, reverse override and cold startup on 12 V without the laptop. Controller traces confirm proportional turns, both bulk flicks and cancellation during a burst. The [bench record](docs/bench-results-2026-11-12.md) links the earlier measurements, fixes and remaining electrical and vehicle checks.
 
 ## Reference
 

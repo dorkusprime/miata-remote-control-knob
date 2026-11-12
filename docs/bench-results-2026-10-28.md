@@ -1,5 +1,7 @@
 # Sony bench results — 2026-10-28
 
+For the assembled-box and end-to-end follow-up, see the [November 12 bench record](bench-results-2026-11-12.md). Pending items below describe the stage at which they were recorded.
+
 User-performed tests reported in the project conversation. This records observations and calculations; the agent did not operate hardware. No photos, scope captures, calibrated instrument specification or firmware-driven Sony commands were supplied.
 
 ## Configuration and scope

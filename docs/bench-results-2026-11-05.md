@@ -1,5 +1,7 @@
 # Interface board bench checks — 2026-11-05
 
+For the assembled-box and end-to-end follow-up, see the [November 12 bench record](bench-results-2026-11-12.md). Pending items below describe the stage at which they were recorded.
+
 The assembled board was tested with the XIAO and Sony disconnected. These measurements were taken before the interface diagnostic firmware was built.
 
 | Check | Result |

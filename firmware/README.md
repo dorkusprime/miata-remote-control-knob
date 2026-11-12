@@ -2,7 +2,7 @@
 
 Three sketches are available: the preserved [Twist diagnostic](diagnostic/diagnostic.ino), the [interface bench diagnostic](interface/interface.ino), and the integrated [gesture controller](controller/controller.ino). Build/upload defaults to `controller`; uploading is always explicit and performed by the user.
 
-Controller v4.0 drives the assembled board: turn=volume, click=Play/Pause, held turn=track, stationary hold/release >=700 ms=Mute, double click=Camera 1 request, ten-second stationary hold=learning toggle. It preserves USB maintenance and diagnostics. Sony has accepted the six required audio codes; user testing of the new Mute gesture after upload remains pending. See [current controls](../docs/gestures.md#current-controls--controller-v35).
+Controller v4.0 drives the assembled board: turn=volume, click=Play/Pause, held turn=track, stationary hold/release >=700 ms=Mute, double click=Camera 1 request, ten-second stationary hold=learning toggle. It preserves USB maintenance and diagnostics. The user verified all six audio commands and Camera 1 in the [assembled-system bench test](../docs/bench-results-2026-11-12.md). See [current controls](../docs/gestures.md#current-controls--controller-v35).
 
 ## Current upload workflow — Arduino CLI
 
@@ -75,7 +75,7 @@ The diagnostic starts USB serial at 115200, scans I2C, and looks for a Twist at 
 | `w` | All channels at 8/255 |
 | `o` | LED off |
 
-This diagnostic reports raw events only. The separate [controller sketch](../docs/gestures.md) implements gestures and LED feedback; the current controller implements real requests; Sony learning/recognition remain pending. Snapshot reads check the device ID and exact returned byte count. Read failures suspend events and trigger a retry; this diagnostic is not a validated fault-tolerant controller. The difference register is shown for comparison but is no longer cleared or used to derive TURN events.
+This diagnostic reports raw events only. The separate [controller sketch](../docs/gestures.md) implements gestures and LED feedback; the current controller sends the six learned Sony commands and Camera 1 requests. Snapshot reads check the device ID and exact returned byte count. Read failures suspend events and trigger a retry; this diagnostic is not a validated fault-tolerant controller. The difference register is shown for comparison but is no longer cleared or used to derive TURN events.
 
 ## USB updates without board-button access
 

@@ -1,6 +1,6 @@
 # Camera 1 control
 
-Manual camera preview is an integral knob function, not an optional future peripheral. Double-click requests Camera 1 through EXT IN 1; the resistive steering-remote connection remains responsible for volume, ATT and track commands.
+Manual camera preview is an integral knob function, not an optional future peripheral. Double-click requests Camera 1 through EXT IN 1; the resistive steering-remote connection remains responsible for the six audio commands.
 
 ## Sony evidence
 
@@ -44,7 +44,7 @@ Use the [internal jumper image](../hardware/internal-jumpers.svg) for the XIAO-t
 - LED provides a brief acknowledgement only, never a latched camera-state indication.
 - Real reverse goes directly to Sony REVERSE IN independently of the MCU. Sony supplies priority; no reverse GPIO or sensing circuit is required for that priority alone.
 - Whether Camera 1 resumes after leaving reverse is a bench acceptance question. No claim that firmware clears a request on reverse without a reverse-sensing input.
-- The controller implements the camera request separately from steering pulses. Buffer-to-Sony recognition and power-transition acceptance remain pending.
+- The controller implements the camera request separately from steering pulses. The assembled buffer successfully triggered Camera 1 in the [end-to-end test](bench-results-2026-11-12.md). Loaded voltage/current and independent power transitions remain open.
 
 ## Video and camera power
 
@@ -52,12 +52,11 @@ Camera video feeds REAR CAMERA IN for actual reversing and CAMERA IN 1 for manua
 
 ## Acceptance and next work
 
-The assembled board passed GPIO camera assertion and release with Sony disconnected. Independent Sony tests verified external-source assertion, release, reverse priority and the intended guideline split, including the passive RCA Y. The following checks remain open for the assembled installation.
+The assembled board measured 0 V off and 5 V on with Sony disconnected. The full bench setup passed manual preview on/off and reverse override. The following checks remain open.
 
-1. Dry-fit the assembled board and sleeved R10 in the enclosure.
-2. With Sony disconnected, measure buffer low/high levels and verify pull-down behavior, reset, fault release and both supply-loss orders.
-3. Verify actual Sony input loading and recognition with the assembled buffer. Check return to prior content, touchscreen Back and reassertion.
-4. Verify reverse exit with a standing manual request and installed camera power.
+1. Verify reset, fault release and both supply-loss orders.
+2. Measure actual Sony input loading and loaded trigger voltage. Check touchscreen Back and reassertion.
+3. Record the screen shown on reverse exit with a standing manual request, and verify installed camera power.
 
 ## User-observed Sony bench results — 2026-10-28
 
